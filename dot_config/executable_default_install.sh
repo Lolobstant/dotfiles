@@ -1,0 +1,50 @@
+#!/bin/sh
+
+command_exists() {
+  [ -x "$(command -v $1)" ]
+}
+
+
+if ! command_exists omz; then
+  echo "installing ohmyzsh"
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi
+# install homebrew if not exists
+if ! command_exists brew; then
+  echo "installing homebrew"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" 
+# else
+#   echo "brew exists"
+fi
+
+# run homebrew
+if command_exists brew; then
+  brew analytics off
+  brew bundle
+
+# font smoothing:
+defaults write -g AppleFontSmoothing -int 0
+
+  ## use dnscrypt-proxy config with quad9 & start service
+  # DNSCRYPT_CONFIG=~/.config/homebrew/dnscrypt-proxy.toml
+  # if test -f "$DNSCRYPT_CONFIG"; then
+  #   echo 'dnscrypt config exist'
+  #   mv "$DNSCRYPT_CONFIG" "$HOMEBREW_PREFIX/etc/dnscrypt-proxy.toml"
+  # else
+  #   echo "couldn not find dnscrypt-proxy config file, fallback to default"
+  # fi
+
+  # if ! pgrep -x dnscrypt-proxy &> /dev/null; then
+  #   brew services start dnscrypt-proxy
+  # else
+  #   echo 'dnscrypt already started'
+  #   echo "$(brew services info dnscrypt-proxy)"
+  # fi
+
+  # networksetup -setdnsservers Wi-Fi 127.0.0.1
+  ## end dnscrypt-proxy config
+
+fi
+
+
+

@@ -1,0 +1,215 @@
+--TODO:
+-- git (gutter, +commit etc..)
+-- undo tree
+-- DAP
+-- affichage ligne buffer (active buffers, modifierd..)
+-- gestion des tab (creation, navigation, session)
+return {
+  { -- Useful plugin to show you pending keybinds.
+    'folke/which-key.nvim',
+    event = "VeryLazy",
+    opts = require 'plugins.configs.which-key',
+  },
+  { 'echasnovski/mini.bufremove', version = false },
+  { -- swap lines with jk keys
+    'echasnovski/mini.move',
+    version = false,
+    event = "VeryLazy",
+    opts = require 'plugins.configs.mini-move',
+  },
+  {
+    'mrjones2014/smart-splits.nvim',
+    event = "VeryLazy",
+    build = './kitty/install-kittens.bash',
+    opts = { ignored_filetypes = { "nofile", "quickfix", "qf", "prompt" }, ignored_buftypes = { "nofile" } },
+  },
+  { -- nice display for TODO|INFO|WARN|... comments
+    "folke/todo-comments.nvim",
+    cmd = { "TodoTrouble", "TodoTelescope" },
+    event = { "BufReadPost", "BufNewFile" },
+    opts = require 'plugins.configs.todo-comments',
+    config = true,
+  },
+
+  { -- "gc" to comment visual regions/lines
+    'numToStr/Comment.nvim',
+    event = { 'BufReadPre', 'BufNewFile' },
+    opts = {}
+  },
+  {
+    'echasnovski/mini.pairs',
+    version = false,
+    event = { 'BufReadPre', 'BufNewFile' },
+  },
+  {
+    "kylechui/nvim-surround",
+    version = "*", -- Use for stability; omit to use `main` branch for the latest features
+    event = { 'BufReadPre', 'BufNewFile' },
+    config = function()
+      require("nvim-surround").setup()
+    end
+  },
+  {
+    "shellRaining/hlchunk.nvim",
+    event = { "UIEnter" },
+    opts = require 'plugins.configs.hlchunk'
+  },
+  { -- nice ui for input & selects
+    'stevearc/dressing.nvim',
+    event = 'VeryLazy',
+    init = function()
+      ---@diagnostic disable-next-line: duplicate-set-field
+      vim.ui.select = function(...)
+        require("lazy").load({ plugins = { "dressing.nvim" } })
+        return vim.ui.select(...)
+      end
+      ---@diagnostic disable-next-line: duplicate-set-field
+      vim.ui.input = function(...)
+        require("lazy").load({ plugins = { "dressing.nvim" } })
+        return vim.ui.input(...)
+      end
+    end,
+  },
+  {
+    "rcarriga/nvim-notify",
+    event = 'VeryLazy',
+    opts = { on_open = function(win) vim.api.nvim_win_set_config(win, { zindex = 1000 }) end },
+    config = function(_, opts)
+      local notify = require "notify"
+      notify.setup(opts)
+      vim.notify = notify
+    end
+  },
+  {
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    opts = require 'plugins.configs.noice',
+    dependencies = {
+      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+      "MunifTanjim/nui.nvim",
+      -- OPTIONAL:
+      --   `nvim-notify` is only needed, if you want to use the notification view.
+      --   If not available, we use `mini` as the fallback
+      "rcarriga/nvim-notify",
+    }
+  },
+  { -- statusLine
+    'nvim-lualine/lualine.nvim',
+    event = { "BufReadPost", "BufNewFile" },
+    -- event = 'VeryLazy',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    opts = require 'plugins.configs.lualine',
+  },
+
+  { -- better keyboard mouvements
+    'smoka7/hop.nvim',
+    lazy = true,
+    event = { "BufReadPost", "BufNewFile" },
+    version = "v2.x",
+    opts = {}
+  },
+  { -- better folding
+    'kevinhwang91/nvim-ufo',
+    lazy = true,
+    event = { "BufReadPost", "BufNewFile" },
+    dependencies = { 'kevinhwang91/promise-async' },
+    config = function(_, opts) require('ufo').setup(opts) end
+  },
+  { -- show the code context
+    'nvim-treesitter/nvim-treesitter-context',
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    opts = {
+      enable = true
+    },
+    config = function(_, opts) require('treesitter-context').setup(opts) end
+  },
+  {
+    'ThePrimeagen/git-worktree.nvim',
+    event = 'VeryLazy',
+    config = require "plugins.configs.git-worktree",
+  },
+  { -- file explorer
+    'echasnovski/mini.files',
+    event = 'VeryLazy',
+    version = false,
+    opts = require 'plugins.configs.mini-files',
+  },
+  { -- home screen
+    'goolord/alpha-nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    opts = function()
+      return require 'plugins.configs.alpha'
+    end
+  },
+  {
+    'akinsho/toggleterm.nvim',
+    version = "*",
+    config = true,
+    cmd = { "ToggleTerm", "TermExec" },
+    opts = require 'plugins.configs.toggleterm'
+  },
+  {
+    "coffebar/neovim-project",
+    -- event = 'VeryLazy',
+    -- lazy = true,
+    opts = {
+      projects = { -- define project roots
+        "~/Dev/mangas.io/*",
+        "~/.config/nvim.custom",
+      },
+      last_session_on_startup = false,
+    },
+    init = function()
+      -- enable saving the state of plugins in the session
+      vim.opt.sessionoptions:append("globals") -- save global variables that start with an uppercase letter and contain at least one lowercase letter.
+    end,
+    dependencies = {
+      { "nvim-lua/plenary.nvim" },
+      { "nvim-telescope/telescope.nvim", tag = "0.1.4" },
+      { "Shatur/neovim-session-manager" },
+    },
+  },
+}
+-- {
+--   "nvim-telescope/telescope-file-browser.nvim",
+--   dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" }
+-- }
+--
+-- {
+--   'echasnovski/mini.indentscope',
+--   version = false,
+--   opts = {
+--     draw = {
+--       delay = 50,
+--     },
+--     symbol = "▏",
+--   },
+--   configs = function(_, opts) require('mini.indentscope').setup(opts) end
+-- },
+-- {
+--   "lukas-reineke/indent-blankline.nvim",
+--   opts = {
+--     pace_char_blankline = " ",
+--     show_current_context_start = true,
+--     show_trailing_blankline_indent = false,
+--     use_treesitter = true,
+--     char = "▏",
+--     -- context_char = "▏",
+--     show_current_context = true,
+--
+--   }
+-- },
+-- {
+--   "folke/twilight.nvim",
+--   opts = {
+--     context = [ 5,
+--     dimming = {
+--       alpha = 0.55, -- amount of dimming
+--       -- we try to get the foreground from the highlight groups or fallback color
+--       -- color = { "Normal", "#ffffff" },
+--       -- term_bg = "#000000", -- if guibg=NONE, this will be used to calculate text color
+--       -- inactive = false, -- when true, other windows will be fully dimmed (unless they contain the same buffer)
+--     },
+--   },
+--   configs = function(_, opts) require().setup(opts) end
+-- },

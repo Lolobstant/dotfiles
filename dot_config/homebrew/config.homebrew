@@ -1,0 +1,57 @@
+cask_args appdir: "~/Applications"
+
+# Tap homebrew
+tap "homebrew/cask"
+tap "homebrew/bundle"
+tap "homebrew/cask-fonts"
+## tap "jesseduffield/lazygit/lazygit"
+
+# cask (graphical interface)
+cask "iina"
+cask "rectangle"
+cask "transmission"
+cask "mongodb-compass"
+cask "calibre"
+cask "soundsource"
+cask "raycast"
+cask "element"
+cask "whatsapp"
+cask "ngrok/ngrok/ngrok"
+cask "neovide"
+# cask "iterm2"
+# cask "alacritty"
+cask "kitty"
+cask "via"
+cask "anki"
+cask "orion"
+cask "netnewswire"
+cask "freetube"
+cask "handbrake"
+
+## Fonts
+cask "font-fira-code-nerd-font"
+cask "font-hack-nerd-font"
+
+# brew (cli)
+# brew "mas"
+brew "bat"
+brew "stripe/stripe-cli/stripe"
+brew "exa"
+brew "neovim"
+brew "ripgrep"
+brew "fd"
+brew "tokei"
+brew "tealdeer"
+brew "cocoapods"
+brew "starship"
+brew "tree"
+brew "dnscrypt-proxy"
+brew "neofetch"
+brew "lazygit"
+brew "wget"
+brew "rename"
+brew "convmv"
+brew "chezmoi"
+
+#mas (mac app store)
+# mas "type fu"
