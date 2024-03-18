@@ -105,6 +105,7 @@ export HOMEBREW_BUNDLE_FILE="$HOME/.config/homebrew/config.homebrew"
 export HOMEBREW_NO_ANALYTICS=1
 export HOMEBREW_NO_INSECURE_REDIRECT=1
 export HOMEBREW_CASK_OPTS=--require-sha
+export HOMEBREW_GITHUB_API_TOKEN={{ keyring "homebrew_api" .email }}
 
 #aliases
 alias vim="nvim"
@@ -163,4 +164,3 @@ launchctl setenv NEOVIDE_FRAME buttonless
 # tmux attach
 
 
-export HOMEBREW_GITHUB_API_TOKEN={{ keyring "homebrew_api" .email }}
