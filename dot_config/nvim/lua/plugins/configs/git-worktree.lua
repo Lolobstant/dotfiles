@@ -61,12 +61,16 @@ return function(_, opts)
           npm_install(bare_path, meta.path)
         end
       }):start();
+    elseif op == Worktree.Operations.Switch then
+      if utils.is_available('toggleterm.nvim') then
+        -- print('worktree switch', meta.path)
+        local terminals = vim.fn.filter(
+          vim.api.nvim_list_chans(),
+          function(i, chan) return chan['mode'] == 'terminal' and chan['pty'] ~= "" end
+        )
+        vim.fn.map(terminals,
+          function(i, value) vim.api.nvim_chan_send(value['id'], 'cd ' .. vim.fn.getcwd() .. '\n') end)
+      end
     end
-    -- if op == Worktree.Operations.Switch then
-    --   if utils.is_available('toggleterm.nvim') then
-    --     local term = require('nvterm.terminal')
-    --     term.send('cd ' .. meta.path, 'float')
-    --   end
-    -- end
   end)
 end

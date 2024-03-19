@@ -61,7 +61,7 @@ local options = {
     sidescrolloff = 8,     -- minimal number of screen columns either side of cursor if wrap is `false`
 
     -- GUI
-    guifont = "CartographCF Nerd Font",
+    guifont = "CartographCF Nerd Font:h14",
     -- "CartographCF Nerd Font:h-slight:h15, FiraCode Nerd Font:h-slight:h13, Iosevka Nerd Font, Menlo, Monaco, 'Courier New', monospace", -- the font used in graphical neovim applications
     list = true, -- show invisible char (tabs, spaces..)
     -- colorcolumn = "80",

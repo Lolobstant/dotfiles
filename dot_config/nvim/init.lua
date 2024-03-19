@@ -40,3 +40,4 @@ local opts = {
 
 require("lazy").setup(opts)
 require("config.mappings")
+require("config.autocmds")

@@ -4,6 +4,7 @@
 -- DAP
 -- affichage ligne buffer (active buffers, modifierd..)
 -- gestion des tab (creation, navigation, session)
+-- Note taking
 return {
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
