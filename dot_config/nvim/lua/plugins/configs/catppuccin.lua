@@ -12,6 +12,9 @@ return {
     conditionals = { "italic" },
     comments = { "italic" },
     variables = { "italic" },
+    keywords = { "italic" },
+    functions = { "italic" },
+    properties = { "italic" },
   },
   integrations = {
     -- aerial = true,
