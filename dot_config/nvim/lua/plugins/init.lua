@@ -193,6 +193,24 @@ return {
 			vim.fn["mkdp#util#install"]()
 		end,
 	},
+	{ "shortcuts/no-neck-pain.nvim", version = "*" },
+	{
+		"folke/twilight.nvim",
+		-- opts = {
+		-- 	context = 5,
+		-- 	dimming = {
+		-- 		alpha = 0.55, -- amount of dimming
+		-- 		-- we try to get the foreground from the highlight groups or fallback color
+		-- 		-- color = { "Normal", "#ffffff" },
+		-- 		-- term_bg = "#000000", -- if guibg=NONE, this will be used to calculate text color
+		-- 		-- inactive = false, -- when true, other windows will be fully dimmed (unless they contain the same buffer)
+		-- 	},
+		-- },
+		-- configs = true,
+		-- configs = function(_, opts)
+		-- 	require().setup(opts)
+		-- end,
+	},
 	-- { 'edluffy/hologram.nvim',      opts = { auto_display = true } }
 	-- {
 	-- 	"nvim-zh/colorful-winsep.nvim",
