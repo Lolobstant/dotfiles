@@ -1,3 +1,3 @@
 return function()
-vim.cmd [[colorscheme catppuccin-mocha]]
+vim.cmd [[colorscheme rose-pine-main]]
 end
