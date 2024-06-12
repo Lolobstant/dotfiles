@@ -66,6 +66,7 @@ dashboard.section.header.val = {
   "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┃┃━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
   "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┗┛━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
 }
+-- "https://github.com/aPeoplesCalendar/apc.nvim"
 dashboard.section.buttons.val = {
   dashboard.button("r", "  > Recent files", ":Telescope oldfiles<CR>"),
   dashboard.button("SPC W r", " load last Worspace"),
