@@ -39,10 +39,10 @@ return {
 	{ "jacoborus/tender.vim" },
 	{ "savq/melange-nvim" },
 	{ "cvigilv/patana.nvim" },
-	{
-		dir = "/lua/themes/simplered",
-		lazy = false,
-	},
+	-- {
+	-- 	dir = "/lua/themes/simplered",
+	-- 	lazy = false,
+	-- },
 	-- {
 	-- 	"rebelot/kanagawa.nvim",
 	-- 	opts = {
