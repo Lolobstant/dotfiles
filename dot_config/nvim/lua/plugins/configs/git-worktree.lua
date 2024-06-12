@@ -1,4 +1,4 @@
-return function(_, opts)
+return function()
   local Worktree = require('git-worktree');
   local Job      = require('plenary.job');
   local utils    = require('utils')
@@ -11,7 +11,7 @@ return function(_, opts)
         command = 'cp',
         cwd = from,
         args = { '.env', './' .. to },
-        on_exit = function(_, value)
+        on_exit = function()
           -- print('[copy]' .. utils.dump(j))
           -- print('[copy_dotenv] value = ' .. value)
           print('dotenv copied')
@@ -25,8 +25,10 @@ return function(_, opts)
   local function npm_install(base, path)
     if utils.file_exists(base .. '/' .. path .. '/package.json') then
       print('start npm install=' .. path)
+      -- print(utils.dump(os.getenv('PATH')))
       Job:new({
         command = 'yarn',
+        -- args = { 'i' },
         cwd = base .. '/' .. path,
         on_exit = function(_, value)
           -- print('[ npm_install ]' .. utils.dump(j))
@@ -62,15 +64,15 @@ return function(_, opts)
         end
       }):start();
     elseif op == Worktree.Operations.Switch then
-      if utils.is_available('toggleterm.nvim') then
-        -- print('worktree switch', meta.path)
-        local terminals = vim.fn.filter(
-          vim.api.nvim_list_chans(),
-          function(i, chan) return chan['mode'] == 'terminal' and chan['pty'] ~= "" end
-        )
-        vim.fn.map(terminals,
-          function(i, value) vim.api.nvim_chan_send(value['id'], 'cd ' .. vim.fn.getcwd() .. '\n') end)
-      end
+      -- if utils.is_available('toggleterm.nvim') then
+      -- print('worktree switch', meta.path)
+      local terminals = vim.fn.filter(
+        vim.api.nvim_list_chans(),
+        function(_, chan) return chan['mode'] == 'terminal' and chan['pty'] ~= "" end
+      )
+      vim.fn.map(terminals,
+        function(_, value) vim.api.nvim_chan_send(value['id'], 'cd ' .. vim.fn.getcwd() .. '\n') end)
+      -- end
     end
   end)
 end
