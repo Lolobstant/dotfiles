@@ -5,11 +5,11 @@ return {
   -- Fuzzy Finder (files, lsp, etc)
   {
     "nvim-telescope/telescope.nvim",
-    lazy = true,
-    event = 'VeryLazy',
+    -- lazy = true,
+    event = 'VimEnter',
     dependencies = {
-      "nvim-treesitter/nvim-treesitter",
       'nvim-lua/plenary.nvim',
+      "nvim-treesitter/nvim-treesitter",
       { 'nvim-telescope/telescope-fzf-native.nvim', enabled = vim.fn.executable "make" == 1, build = "make" }
     },
     cmd = "Telescope",
