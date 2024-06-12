@@ -1,7 +1,7 @@
 cask_args appdir: "~/Applications"
 
 # Tap homebrew
-tap "homebrew/cask"
+# tap "homebrew/cask"
 tap "homebrew/bundle"
 tap "homebrew/cask-fonts"
 ## tap "jesseduffield/lazygit/lazygit"
@@ -28,16 +28,18 @@ cask "orion"
 cask "netnewswire"
 cask "freetube"
 cask "handbrake"
+cask "brave-browser"
 
 ## Fonts
 cask "font-fira-code-nerd-font"
 cask "font-hack-nerd-font"
+cask "font-maple"
 
 # brew (cli)
 # brew "mas"
 brew "bat"
 brew "stripe/stripe-cli/stripe"
-brew "exa"
+brew "eza"
 brew "neovim"
 brew "ripgrep"
 brew "fd"
