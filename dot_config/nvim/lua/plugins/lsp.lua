@@ -1,35 +1,35 @@
 return {
-	"neovim/nvim-lspconfig",
-	event = { "BufReadPre", "BufNewFile" },
-	cmd = "Mason",
-	dependencies = {
-		-- Automatically install LSPs and related tools to stdpath for Neovim
-		{ "williamboman/mason.nvim", config = true }, -- NOTE: Must be loaded before dependants
-		-- {
-		-- 	"williamboman/mason.nvim",
-		-- 	build = function()
-		-- 		print("here")
-		-- 		pcall(vim.cmd, "MasonUpdate")
-		-- 	end,
-		-- }, -- Optional
-		"williamboman/mason-lspconfig.nvim",
-		"WhoIsSethDaniel/mason-tool-installer.nvim",
+  "neovim/nvim-lspconfig",
+  event = { "BufReadPre", "BufNewFile" },
+  cmd = "Mason",
+  dependencies = {
+    -- Automatically install LSPs and related tools to stdpath for Neovim
+    { "williamboman/mason.nvim", config = true }, -- NOTE: Must be loaded before dependants
+    -- {
+    -- 	"williamboman/mason.nvim",
+    -- 	build = function()
+    -- 		print("here")
+    -- 		pcall(vim.cmd, "MasonUpdate")
+    -- 	end,
+    -- }, -- Optional
+    "williamboman/mason-lspconfig.nvim",
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
 
-		-- Useful status updates for LSP.
-		-- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-		{ "j-hui/fidget.nvim", opts = {} },
+    -- Useful status updates for LSP.
+    -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
+    { "j-hui/fidget.nvim", opts = {} },
 
-		-- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
-		-- used for completion, annotations and signatures of Neovim apis
-		{ "folke/neodev.nvim", opts = {} },
-	},
-	config = require("plugins.configs.lsp"),
-	-- build = function()
-	-- 	local utils = require("utils")
-	-- 	vim.notify("run mason update")
-	-- 	local res = pcall(vim.cmd, "MasonUpdate")
-	-- 	vim.print(utils.dump(res))
-	-- end,
+    -- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
+    -- used for completion, annotations and signatures of Neovim apis
+    { "folke/neodev.nvim", opts = {} },
+  },
+  config = require("plugins.configs.lsp"),
+  -- build = function()
+  -- 	local utils = require("utils")
+  -- 	vim.notify("run mason update")
+  -- 	local res = pcall(vim.cmd, "MasonUpdate")
+  -- 	vim.print(utils.dump(res))
+  -- end,
 }
 -- return  {
 --
