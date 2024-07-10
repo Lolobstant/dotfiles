@@ -54,20 +54,25 @@ return {
         "--type",
         "f",
         "--strip-cwd-prefix",
-        '--max-depth',
-        '5',
-        '--prune',
-        '--unrestricted',
-        "--exclude", 'node_modules'
-      }
+        "--max-depth",
+        "5",
+        "--prune",
+        "--unrestricted",
+        "--exclude",
+        "node_modules",
+        "--exclude",
+        ".swap",
+        "--exclude",
+        ".git",
+      },
       -- find_command = { 'rg', "--files", "--hidden", "--glob", "!{.git,node_modules}/*" }
     },
     buffers = {
-      sort_lastused = true
+      sort_lastused = true,
     },
     colorscheme = {
       enable_preview = true,
-    }
+    },
   },
-  extensions_list = { 'fzf', 'git_worktree', 'todo-comments', 'workspaces' }
+  extensions_list = { "fzf", "git_worktree", "todo-comments", "workspaces" },
 }
