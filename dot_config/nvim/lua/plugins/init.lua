@@ -214,9 +214,8 @@ return {
   },
   {
     "MagicDuck/grug-far.nvim",
-    config = function()
-      require("grug-far").setup({})
-    end,
+    cmd = { "GrugFar" },
+    config = true,
   }, -- { 'edluffy/hologram.nvim',      opts = { auto_display = true } }
   -- {
   -- 	"nvim-zh/colorful-winsep.nvim",
