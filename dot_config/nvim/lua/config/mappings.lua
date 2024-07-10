@@ -131,6 +131,66 @@ if is_available("telescope.nvim") then
   M.n["<leader>gf"] = { builtin.git_files, "Search [G]it [F]iles" }
   M.n["<leader>gs"] = { builtin.git_status, "Search [G]it [S]tatus" }
 
+  if is_available("neogit") then
+    local neogit = require("neogit")
+    M.n["<leader>gs"] = { neogit.open, "[G]it [S]tatus" }
+    -- M.n["<leader>gd"] = { neogit.git_diff, "[G]it [D]iff" }
+    -- M.n["<leader>gb"] = {
+    --   function()
+    --     neogit.git_blame({})
+    --   end,
+    --   "[G]it [B]lame",
+    -- }
+    -- M.n["<leader>gl"] = { neogit.git_graph, "[G]it [L]og" }
+  end
+  if is_available("diffview.nvim") then
+    local diffview = require("diffview")
+    M.n["<leader>gd"] = { "<cmd>DiffviewOpen<cr>", "[G]it [D]iff" }
+    M.n["<leader>gl"] = { "<cmd>DiffviewFileHistory<cr>", "[G]it [L]og" }
+  end
+
+  if is_available("fugit2.nvim") then
+    local fugit2 = require("fugit2")
+    M.n["<leader>gs"] = { fugit2.git_status, "[G]it [S]tatus" }
+    M.n["<leader>gd"] = { fugit2.git_diff, "[G]it [D]iff" }
+    M.n["<leader>gb"] = {
+      function()
+        fugit2.git_blame({})
+      end,
+      "[G]it [B]lame",
+    }
+    M.n["<leader>gl"] = { fugit2.git_graph, "[G]it [L]og" }
+  end
+  -- if is_available("lazygit.nvim") then
+  --   -- local lazygit = require("lazygit")
+  --   M.n["<leader>gs"] = { "<cmd>LazyGit<cr>", "[G]it [S]tatus" }
+  -- end
+
+  -- if is_available("nvim-tinygit") then
+  --   local tinygit = require("tinygit")
+  --   -- M.n["<leader>"]vim.keymap.set("n", "ga", "<cmd>Gitsigns add_hunk<CR>") -- gitsigns.nvim
+  --   M.n["<leader>gs"] = { tinygit.interactiveStaging, "[G]it [S]tage" }
+  --   M.n["<leader>gu"] = { tinygit.undoLastCommit, "[G]it [U]ndo last commit" }
+  --   M.n["<leader>gc"] = {
+  --     function()
+  --       tinygit.smartCommit({ pullBeforePush = true })
+  --     end,
+  --     "[G]it [C]ommit",
+  --   }
+  --   M.n["<leader>gp"] = {
+  --     function()
+  --       tinygit.push({ pullBeforePush = true })
+  --     end,
+  --     "[G]it [P]ush",
+  --   }
+  --   M.n["<leader>ga"] = {
+  --     function()
+  --       tinygit.amendOnlyMsg({ forcePushIfDiverged = false })
+  --     end,
+  --     "[G]it [A]mend commit message",
+  --   }
+  -- end
+
   -- INFO: Git-worktree
   M.n["<leader>gwl"] = { extensions.git_worktree.git_worktrees, "[G]it [W]orktree [L]ist" }
   M.n["<leader>gwc"] = { extensions.git_worktree.create_git_worktree, "[G]it [W]orktree [C]reate" }
@@ -260,7 +320,7 @@ end
 M.n["<leader>bn"] = { "<cmd>enew<cr>", "[B]uffer [N]ew" }
 M.n["<leader>bs"] = { "<cmd>w<cr>", "[B]uffer [S]ave" }
 
-if is_available("conform") then
+if is_available("conform.nvim") then
   M.n["<leader>bf"] = {
     function()
       require("conform").format({ async = true, lsp_fallback = true })

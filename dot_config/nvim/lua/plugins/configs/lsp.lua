@@ -162,7 +162,6 @@ return function()
     ensure_installed = vim.tbl_keys(servers),
     handlers = {
       function(server_name)
-        print("mason-lspconfig")
         local server = servers[server_name] or {}
         -- This handles overriding only values explicitly passed
         -- by the server configuration above. Useful when disabling
