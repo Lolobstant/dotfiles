@@ -380,7 +380,6 @@ if not is_available("mini.move") then
 end
 
 if not is_available("grug-far") then
-  local grugfar = require("grug-far")
   M.n["<leader>cs"] = { "<cmd>GrugFar<cr>", "[C]ode [S]earch and replace" }
 end
 
