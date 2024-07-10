@@ -81,6 +81,7 @@ return {
     "rcarriga/nvim-notify",
     event = "VeryLazy",
     opts = {
+      background_colour = "#EFF1EB",
       on_open = function(win)
         vim.api.nvim_win_set_config(win, { zindex = 1000 })
       end,
@@ -211,7 +212,12 @@ return {
     -- 	require().setup(opts)
     -- end,
   },
-  -- { 'edluffy/hologram.nvim',      opts = { auto_display = true } }
+  {
+    "MagicDuck/grug-far.nvim",
+    config = function()
+      require("grug-far").setup({})
+    end,
+  }, -- { 'edluffy/hologram.nvim',      opts = { auto_display = true } }
   -- {
   -- 	"nvim-zh/colorful-winsep.nvim",
   -- 	config = true,

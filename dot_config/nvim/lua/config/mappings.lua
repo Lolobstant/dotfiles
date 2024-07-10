@@ -379,6 +379,11 @@ if not is_available("mini.move") then
   M.v["<S-k>"] = { ":m '<-2<cr>gv=gv", "Move line up" }
 end
 
+if not is_available("grug-far") then
+  local grugfar = require("grug-far")
+  M.n["<leader>cs"] = { "<cmd>GrugFar<cr>", "[C]ode [S]earch and replace" }
+end
+
 --INFO: Neovide
 if vim.g.neovide then
   vim.g.neovide_scale_factor = 1.0
