@@ -279,6 +279,11 @@ if is_available("telescope.nvim") then
   if is_available("todo-comments.nvim") then
     M.n["<leader>st"] = { "<cmd>TodoTelescope<cr>", "[S]earch [T]odoComments" }
   end
+
+  --INFO: undo tree
+  if is_available("telescope-undo.nvim") then
+    M.n["<leader>su"] = { "<cmd>Telescope undo<cr>", "[S]earch [U]ndo" }
+  end
 end
 
 -- INFO: Explorer

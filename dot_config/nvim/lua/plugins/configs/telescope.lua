@@ -74,5 +74,6 @@ return {
       enable_preview = true,
     },
   },
-  extensions_list = { "fzf", "git_worktree", "todo-comments", "workspaces" },
+  extensions_list = { "fzf", "git_worktree", "todo-comments", "workspaces", "undo" },
+  extensions = {},
 }

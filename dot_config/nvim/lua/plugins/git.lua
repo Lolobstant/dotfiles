@@ -24,8 +24,11 @@ return {
 
       -- Only one of these is needed, not both.
       "nvim-telescope/telescope.nvim", -- optional
-      "ibhagwan/fzf-lua", -- optional
+      -- "ibhagwan/fzf-lua", -- optional
     },
+    event = "VeryLazy",
+    -- lazy = true,
+    cmd = { "Neogit" },
     config = true,
   },
   {

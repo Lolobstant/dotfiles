@@ -6,22 +6,23 @@ return {
   {
     "nvim-telescope/telescope.nvim",
     -- lazy = true,
-    event = 'VimEnter',
+    event = "VimEnter",
     dependencies = {
-      'nvim-lua/plenary.nvim',
+      "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
-      { 'nvim-telescope/telescope-fzf-native.nvim', enabled = vim.fn.executable "make" == 1, build = "make" }
+      { "nvim-telescope/telescope-fzf-native.nvim", enabled = vim.fn.executable("make") == 1, build = "make" },
+      "debugloop/telescope-undo.nvim",
     },
     cmd = "Telescope",
     -- init = function()
     --   require("core.utils").load_mappings "telescope"
     -- end,
     opts = function()
-      return require "plugins.configs.telescope"
+      return require("plugins.configs.telescope")
     end,
     config = function(_, opts)
       -- dofile(vim.g.base46_cache .. "telescope")
-      local telescope = require "telescope"
+      local telescope = require("telescope")
       telescope.setup(opts)
 
       -- load extensions
