@@ -29,10 +29,11 @@ return {
     event = "VeryLazy",
     -- lazy = true,
     cmd = { "Neogit" },
-    config = true,
-  },
-  {
-    "sindrets/diffview.nvim",
+    config = {
+      integrations = {
+        diffview = true,
+      },
+    },
   },
   -- {
   --   "kdheepak/lazygit.nvim",
