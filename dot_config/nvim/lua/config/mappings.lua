@@ -128,7 +128,7 @@ if is_available("telescope.nvim") then
     "Fuzzily search in current buffer",
   }
   -- INFO: Git
-  M.n["<leader>gf"] = { builtin.git_files, "Search [G]it [F]iles" }
+  -- M.n["<leader>gf"] = { builtin.git_files, "Search [G]it [F]iles" }
   M.n["<leader>gs"] = { builtin.git_status, "Search [G]it [S]tatus" }
   M.n["<leader>gb"] = { builtin.git_branches, "[G]it [B]ranches" }
 
@@ -160,6 +160,18 @@ if is_available("telescope.nvim") then
     local gitsigns = require("gitsigns")
     M.n["<leader>gd"] = { gitsigns.diffthis, "[G]it [D]iff This" }
     M.n["<leader>gp"] = { gitsigns.preview_hunk, "[G]it [P]review Hunk" }
+    M.n["<leader>hn"] = {
+      function()
+        gitsigns.nav_hunk("next")
+      end,
+      "[H]unk [N]ext",
+    }
+    M.n["<leader>hp"] = {
+      function()
+        gitsigns.nav_hunk("prev")
+      end,
+      "[H]unk [P]revious",
+    }
   end
 
   if is_available("fugit2.nvim") then
@@ -210,8 +222,28 @@ if is_available("telescope.nvim") then
   -- M.n['<leader>gc'] = {builtin.git_commits, 'Search [G]it [C]ommits'}
   -- M.n['<leader>gb'] = {builtin.git_branches, 'Search [G]it [B]ranches'}
 
-  -- INFO: Search
-  M.n["<leader>sf"] = { builtin.find_files, "[S]earch [F]iles" }
+  -- INFO: Search git files in git repo or fall back to find_files
+  -- We cache the results of "git rev-parse"
+  -- Process creation is expensive in Windows, so this reduces latency
+  local is_inside_work_tree = {}
+  M.n["<leader>sf"] = {
+    function()
+      local opts = { hidden = true, show_untracked = true } -- define here if you want to define something
+
+      local cwd = vim.fn.getcwd()
+      if is_inside_work_tree[cwd] == nil then
+        vim.fn.system("git rev-parse --is-inside-work-tree")
+        is_inside_work_tree[cwd] = vim.v.shell_error == 0
+      end
+
+      if is_inside_work_tree[cwd] then
+        builtin.git_files(opts)
+      else
+        builtin.find_files(opts)
+      end
+    end,
+    "[S]earch [F]iles",
+  }
   M.n["<leader>sh"] = { builtin.help_tags, "[S]earch [H]elp" }
   M.n["<leader>sw"] = { builtin.grep_string, "[S]earch [W]ord" }
   M.n["<leader>sg"] = { builtin.live_grep, "[S]earch by [G]rep" }
