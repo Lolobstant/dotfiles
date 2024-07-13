@@ -1,9 +1,41 @@
+-- local C = require("catppuccin.palettes").get_palette()
+-- local config = {
+--   left_separator = "",
+--   right_separator = "",
+--   mode_icon = "",
+--   dir = "󰉖",
+--   file = "󰈙",
+--   lsp = {
+--     icons = {
+--       formatter = "󰛿",
+--       linter = "󰸥",
+--       server = "󰅡",
+--       error = "",
+--       warning = "",
+--       info = "",
+--       hint = "",
+--     },
+--     exclude = {},
+--     server_to_name_map = {},
+--     update_in_insert = false,
+--   },
+--   git = {
+--     branch = "",
+--     added = "",
+--     changed = "",
+--     removed = "",
+--   },
+-- }
+-- return {
+--
+-- };
 return {
   options = {
     icons_enabled = true,
-    theme = "auto",
+    -- theme = "base16",
     component_separators = { left = "", right = "" },
-    section_separators = { left = "", right = "" },
+    -- section_separators = { left = "", right = "" },
+    section_separators = { left = "", right = "" },
     disabled_filetypes = {
       statusline = {},
       winbar = {},
@@ -18,7 +50,7 @@ return {
     },
   },
   sections = {
-    lualine_a = { "mode" },
+    lualine_a = { { "mode", icon = "" } },
     lualine_b = { "branch", "diff", "diagnostics" },
     lualine_c = { "filename" },
     lualine_x = { "encoding", "fileformat", "filetype" },

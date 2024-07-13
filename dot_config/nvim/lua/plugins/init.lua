@@ -41,7 +41,7 @@ return {
   { -- "gc" to comment visual regions/lines
     "numToStr/Comment.nvim",
     event = { "BufReadPre", "BufNewFile" },
-    opts = {},
+    config = true,
   },
   {
     "echasnovski/mini.pairs",
@@ -106,6 +106,7 @@ return {
     },
   },
   { -- statusLine
+    -- TODO: replace with heirline nvim
     "nvim-lualine/lualine.nvim",
     event = { "BufReadPost", "BufNewFile" },
     -- event = 'VeryLazy',
@@ -118,16 +119,14 @@ return {
     lazy = true,
     event = { "BufReadPost", "BufNewFile" },
     version = "v2.x",
-    opts = {},
+    config = true,
   },
   { -- better folding
     "kevinhwang91/nvim-ufo",
     lazy = true,
     event = { "BufReadPost", "BufNewFile" },
     dependencies = { "kevinhwang91/promise-async" },
-    config = function(_, opts)
-      require("ufo").setup(opts)
-    end,
+    config = true,
   },
   { -- show the code context
     "nvim-treesitter/nvim-treesitter-context",
@@ -136,9 +135,6 @@ return {
       enable = true,
       max_lines = 3,
     },
-    config = function(_, opts)
-      require("treesitter-context").setup(opts)
-    end,
   },
   {
     "ThePrimeagen/git-worktree.nvim",

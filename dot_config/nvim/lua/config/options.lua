@@ -103,7 +103,7 @@ vim.opt.viewoptions:remove("curdir") -- disable saving current directory with vi
 vim.opt.shortmess:append({ s = true, I = true }) -- disable startup message
 vim.opt.backspace:append({ "nostop" }) -- Don't stop backspace at insert
 vim.opt.whichwrap:append("bs<>[]hl") -- which "horizontal" keys are allowed to travel to prev/next line
-vim.opt.listchars:append("tab:-->, space: ,trail:·")
+vim.opt.listchars:append("tab:-->, space: ,trail:·,nbsp =␣")
 
 if vim.fn.has("nvim-0.9") == 1 then
   vim.opt.diffopt:append("linematch:60") -- enable linematch diff algorithm

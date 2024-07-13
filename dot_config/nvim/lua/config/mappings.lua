@@ -20,21 +20,21 @@ local M = {
 if is_available("which-key.nvim") then
   local wk = require("which-key")
   wk.add({
-    { "<leader>b", group = "Buffers", icon = "󰓩" },
-    { "<leader>c", group = "Code" },
-    { "<leader>d", group = "Diagnostics", icon = "󰓙" },
-    { "<leader>g", group = "Git", icon = "" },
-    { "<leader>gw", group = "Worktree", icon = "" },
-    { "<leader>l", group = "LSP", icon = "󱧤" },
-    { "<leader>p", group = "Packages", icon = "󰏖" },
-    { "<leader>s", group = "Search" },
-    { "<leader>S", group = "Session" },
-    { "<leader>t", group = "Terminal", icon = "" },
+    { "<leader>b", group = "[B]uffers", icon = "󰓩" },
+    { "<leader>c", group = "[C]ode" },
+    { "<leader>d", group = "[D]iagnostics", icon = "󰓙" },
+    { "<leader>g", group = "[G]it", icon = "" },
+    { "<leader>gw", group = "[W]orktree", icon = "" },
+    { "<leader>l", group = "[L]SP", icon = "󱧤" },
+    { "<leader>p", group = "[P]ackages", icon = "󰏖" },
+    { "<leader>s", group = "[S]earch" },
+    { "<leader>S", group = "[S]ession" },
+    { "<leader>t", group = "[T]erminal", icon = "" },
     -- ['<leader>f'] = {group ="Files" },
-    { "<leader>u", group = "UI", icon = "󰺾" },
-    { "<leader>un", group = "Notifications", icon = "󰎟" },
-    { "<leader>w", group = "Window", icon = "" },
-    { "<leader>W", group = "Workspace", icon = "" },
+    { "<leader>u", group = "[U]I", icon = "󰺾" },
+    { "<leader>un", group = "[N]otifications", icon = "󰎟" },
+    { "<leader>w", group = "[W]indow", icon = "" },
+    { "<leader>W", group = "[W]orkspace", icon = "" },
   })
 end
 
@@ -59,7 +59,7 @@ local function applyMapping(table)
           vim.keymap.set(mode, keymap, cmd, opts)
         end
       else
-        vim.notify("Key already exists for: %s, %s, %s", mode, keymap, cmd)
+        vim.notify("Key already exists for: %s, %s, %s", mode, keymap)
       end
     end
   end
@@ -441,10 +441,10 @@ M.n["<leader>pu"] = { lazy.update, "[P]lugins [U]pdate" }
 
 -- INFO: diagnostics
 M.n["[d"] = { vim.diagnostic.goto_prev, "Go to previous diagnostic message" }
-M.n["]d"] = { vim.diagnostic.goto_next, "Go to previous diagnostic message" }
+M.n["]d"] = { vim.diagnostic.goto_next, "Go to next diagnostic message" }
 M.n["<leader>dm"] = {
   function()
-    vim.diagnostic.open_float({ border = "rounded" })
+    vim.diagnostic.open_float()
   end,
   "[D]iagnostics [M]essage",
 }
