@@ -19,22 +19,22 @@ local M = {
 
 if is_available("which-key.nvim") then
   local wk = require("which-key")
-  wk.register({
-    ["<leader>b"] = { name = "󰓩 Buffers" },
-    ["<leader>c"] = { name = " Code" },
-    ["<leader>d"] = { name = "󰓙 Diagnostics" },
-    ["<leader>g"] = { name = " Git" },
-    ["<leader>gw"] = { name = " Worktree" },
-    ["<leader>l"] = { name = "󱧤 LSP" },
-    ["<leader>p"] = { name = "󰏖 Packages" },
-    ["<leader>s"] = { name = "󰍉 Search" },
-    ["<leader>S"] = { name = "󱂬 Session" },
-    ["<leader>t"] = { desc = " Terminal" },
-    -- ['<leader>f'] = {name ="Files" },
-    ["<leader>u"] = { name = "󰺾 UI" },
-    ["<leader>un"] = { name = "󰎟 Notifications" },
-    ["<leader>w"] = { name = " Window" },
-    ["<leader>W"] = { name = " Workspace" },
+  wk.add({
+    { "<leader>b", group = "Buffers", icon = "󰓩" },
+    { "<leader>c", group = "Code" },
+    { "<leader>d", group = "Diagnostics", icon = "󰓙" },
+    { "<leader>g", group = "Git", icon = "" },
+    { "<leader>gw", group = "Worktree", icon = "" },
+    { "<leader>l", group = "LSP", icon = "󱧤" },
+    { "<leader>p", group = "Packages", icon = "󰏖" },
+    { "<leader>s", group = "Search" },
+    { "<leader>S", group = "Session" },
+    { "<leader>t", group = "Terminal", icon = "" },
+    -- ['<leader>f'] = {group ="Files" },
+    { "<leader>u", group = "UI", icon = "󰺾" },
+    { "<leader>un", group = "Notifications", icon = "󰎟" },
+    { "<leader>w", group = "Window", icon = "" },
+    { "<leader>W", group = "Workspace", icon = "" },
   })
 end
 
@@ -52,14 +52,14 @@ local function applyMapping(table)
           -- for v, k in pairs(opts) do
           --   keymapOpts[k] = v
           -- end
-          wk.register({
-            [keymap] = { cmd, opts.desc, noremap = false },
+          wk.add({
+            { keymap, cmd, desc = opts.desc, noremap = false },
           }, { mode })
         else
           vim.keymap.set(mode, keymap, cmd, opts)
         end
       else
-        print("Key already exists for: %s, %s, %s", mode, keymap, cmd)
+        vim.notify("Key already exists for: %s, %s, %s", mode, keymap, cmd)
       end
     end
   end
@@ -120,20 +120,27 @@ if is_available("telescope.nvim") then
   -- local git_worktree = require("git-worktree");
 
   M.n["<leader>sr"] = { builtin.oldfiles, "[S]earch [R]ecently opened files" }
-  M.n["<leader><space>"] = { builtin.buffers, "[ ] Find existing buffers" }
+  M.n["<leader><space>"] = { builtin.buffers, "Find existing buffers" }
   M.n["<leader>/"] = {
     function()
       builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({ winblend = 10, previewer = false }))
     end,
-    "[/] Fuzzily search in current buffer",
+    "Fuzzily search in current buffer",
   }
   -- INFO: Git
   M.n["<leader>gf"] = { builtin.git_files, "Search [G]it [F]iles" }
   M.n["<leader>gs"] = { builtin.git_status, "Search [G]it [S]tatus" }
+  M.n["<leader>gb"] = { builtin.git_branches, "[G]it [B]ranches" }
 
   if is_available("neogit") then
     local neogit = require("neogit")
     M.n["<leader>gs"] = { neogit.open, "[G]it [S]tatus" }
+    M.n["<leader>gS"] = {
+      function()
+        neogit.open({ kind = "floating" })
+      end,
+      "[G]it [S]tatus Floating",
+    }
     -- M.n["<leader>gd"] = { neogit.git_diff, "[G]it [D]iff" }
     -- M.n["<leader>gb"] = {
     --   function()
@@ -145,8 +152,14 @@ if is_available("telescope.nvim") then
   end
   if is_available("diffview.nvim") then
     local diffview = require("diffview")
-    M.n["<leader>gd"] = { "<cmd>DiffviewOpen<cr>", "[G]it [D]iff" }
+    M.n["<leader>gD"] = { "<cmd>DiffviewOpen<cr>", "[G]it [D]iff All" }
     M.n["<leader>gl"] = { "<cmd>DiffviewFileHistory<cr>", "[G]it [L]og" }
+  end
+
+  if is_available("gitsigns.nvim") then
+    local gitsigns = require("gitsigns")
+    M.n["<leader>gd"] = { gitsigns.diffthis, "[G]it [D]iff This" }
+    M.n["<leader>gp"] = { gitsigns.preview_hunk, "[G]it [P]review Hunk" }
   end
 
   if is_available("fugit2.nvim") then
@@ -218,7 +231,7 @@ if is_available("telescope.nvim") then
   -- Execute a code action, usually your cursor needs to be on top of an error
   -- or a suggestion from your LSP for this to activate.
   M.n["<leader>ca"] = { vim.lsp.buf.code_action, "LSP: [C]ode [A]ction" }
-  M.n["<leader>hd"] = { vim.lsp.buf.hover, "LSP: [H]over [D]ocumentation" }
+  M.n["<leader>cd"] = { vim.lsp.buf.hover, "LSP: [C]ode hover [D]ocumentation" }
 
   if is_available("huez.nvim") then
     local pickers = require("huez.pickers")

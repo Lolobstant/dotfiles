@@ -2,6 +2,7 @@
 local options = {
   opt = {
     backup = false, -- creates a backup file
+    autoread = true, -- Auto read change on buffers
     autowrite = true, -- Auto write buffers
     confirm = true, -- Confirm to save changes before exiting modified buffer
     clipboard = "unnamedplus", -- allows neovim to access the system clipboard

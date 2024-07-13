@@ -104,7 +104,9 @@ end
 -- local BaseColor = HSL(0, 0, 12) -- Grey
 -- local BaseColor = HSL(0, 0, 0) -- Black
 local BaseColor = HSL(249, 22, 12) -- Rose-Pine Default
--- local BaseColor = HSL(0, 0, 6) -- Custom
+-- local BaseColor = HSL(32, 55, 94) -- Rose-Pine-moon Default
+-- local BaseColor = HSL(40, 18, 93) -- light
+-- local BaseColor = HSL(0, 0, 0) -- Custom
 local BoldOption = true
 local ItalicOption = true
 local UnderlineOption = true
@@ -146,6 +148,7 @@ c.ui4 = HSL(c.bgH, c.bgS, c.bgL + 15)
 local hlgroups = {
   Normal = { fg = c.grey6 },
   NormalNC = { link = "Normal" },
+  -- NotifyBackground = { bg = c.bg, link = "Normal" },
   MsgArea = { link = "Normal" },
   EndOfBuffer = { link = "Normal" },
   Delimiter = { link = "Normal" },
@@ -230,6 +233,9 @@ local hlgroups = {
   VisualNOS = { link = "Visual" },
   VertSplit = { link = "Visual" },
   TermCursor = { reverse = true },
+
+  --Notify
+  NotifyBackground = { fg = c.fg, bg = c.bg, link = "Normal" },
 
   --yankhighlight
   YankHighlight = { fg = c.black, bg = c.Grey7 },

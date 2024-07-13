@@ -28,10 +28,25 @@ return {
     },
     event = "VeryLazy",
     -- lazy = true,
-    cmd = { "Neogit" },
+    cmd = "Neogit",
     config = {
       integrations = {
         diffview = true,
+      },
+    },
+  },
+  {
+    "lewis6991/gitsigns.nvim",
+    event = "VeryLazy",
+    cmd = "Gitsigns",
+    config = {
+      current_line_blame = true,
+      signs = {
+        add = { text = "+" },
+        change = { text = "~" },
+        delete = { text = "_" },
+        topdelete = { text = "‾" },
+        changedelete = { text = "~" },
       },
     },
   },

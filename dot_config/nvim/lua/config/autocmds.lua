@@ -23,14 +23,14 @@ if is_available("mini.files") then
     local cur_entry_path = mini_files.get_fs_entry().path
     local cur_directory = vim.fs.dirname(cur_entry_path)
     vim.fn.chdir(cur_directory)
-    print("path changed to " .. cur_directory)
+    vim.notify("path changed to " .. cur_directory)
   end
 
   autocmd("User", {
     group = "AutoCommands",
     pattern = "MiniFilesBufferCreate",
     callback = function(args)
-      print("mini file set path")
+      -- vim.notify("mini file set path")
       vim.keymap.set("n", ".", files_set_cwd, { buffer = args.data.buf_id, desc = "Set current directory" })
     end,
   })

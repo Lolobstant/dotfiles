@@ -1,6 +1,7 @@
 local utils = require("utils")
 
 return function()
+  local lspconfig = require("lspconfig")
   -- Brief aside: **What is LSP?**
   --
   -- LSP is an initialism you've probably heard, but might not understand what it is.
@@ -31,7 +32,7 @@ return function()
   --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
   --    function will be executed to configure the current buffer
   vim.api.nvim_create_autocmd("LspAttach", {
-    group = vim.api.nvim_create_augroup("kickstart-lsp-attach", { clear = true }),
+    group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
     callback = function(event)
       -- NOTE: Remember that Lua is a real programming language, and as such it is possible
       -- to define small helper and utility functions so you don't have to repeat yourself.
@@ -48,7 +49,7 @@ return function()
       -- When you move your cursor, the highlights will be cleared (the second autocommand).
       local client = vim.lsp.get_client_by_id(event.data.client_id)
       if client and client.server_capabilities.documentHighlightProvider then
-        local highlight_augroup = vim.api.nvim_create_augroup("kickstart-lsp-highlight", { clear = false })
+        local highlight_augroup = vim.api.nvim_create_augroup("UserLspHighlight", { clear = false })
         vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
           buffer = event.buf,
           group = highlight_augroup,
@@ -62,10 +63,10 @@ return function()
         })
 
         vim.api.nvim_create_autocmd("LspDetach", {
-          group = vim.api.nvim_create_augroup("kickstart-lsp-detach", { clear = true }),
+          group = vim.api.nvim_create_augroup("UserLspDetach", { clear = true }),
           callback = function(event2)
             vim.lsp.buf.clear_references()
-            vim.api.nvim_clear_autocmds({ group = "kickstart-lsp-highlight", buffer = event2.buf })
+            vim.api.nvim_clear_autocmds({ group = "UserLspHighlight", buffer = event2.buf })
           end,
         })
       end
@@ -167,7 +168,7 @@ return function()
         -- by the server configuration above. Useful when disabling
         -- certain features of an LSP (for example, turning off formatting for tsserver)
         server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-        require("lspconfig")[server_name].setup(server)
+        lspconfig[server_name].setup(server)
       end,
     },
   })

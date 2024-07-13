@@ -1,5 +1,4 @@
 --TODO:
--- git (gutter, +commit etc..)
 -- undo tree
 -- DAP
 -- affichage ligne buffer (active buffers, modifierd..)
@@ -15,6 +14,7 @@ return {
   { -- Useful plugin to show you pending keybinds.
     "folke/which-key.nvim",
     event = "VeryLazy",
+    -- dependencies = { "echasnovski/mini.icons", version = false },
     opts = require("plugins.configs.which-key"),
   },
   { "echasnovski/mini.bufremove", version = false },

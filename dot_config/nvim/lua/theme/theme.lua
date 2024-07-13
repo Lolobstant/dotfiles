@@ -37,41 +37,41 @@ vim.api.nvim_command("highlight clear")
 
 -- CLEAR HIGHLIGHT GROUPS
 if highlightcheck then
-	for _, group in ipairs(vim.fn.getcompletion("", "highlight")) do
-		vim.api.nvim_set_hl(0, group, { fg = "Green", bg = "Pink" })
-	end
+  for _, group in ipairs(vim.fn.getcompletion("", "highlight")) do
+    vim.api.nvim_set_hl(0, group, { fg = "Green", bg = "Pink" })
+  end
 else
-	for _, group in ipairs(vim.fn.getcompletion("", "highlight")) do
-		vim.api.nvim_set_hl(0, group, {})
-	end
+  for _, group in ipairs(vim.fn.getcompletion("", "highlight")) do
+    vim.api.nvim_set_hl(0, group, {})
+  end
 end
 
 -- SET DEFAULT COLORSCHEME
 if colorscheme ~= "" then
-	vim.api.nvim_command("colorscheme " .. colorscheme)
+  vim.api.nvim_command("colorscheme " .. colorscheme)
 end
 
 -- CLEAR LSP HIGHLIGHTS
 for _, group in ipairs(vim.fn.getcompletion("@lsp", "highlight")) do
-	vim.api.nvim_set_hl(0, group, {})
+  vim.api.nvim_set_hl(0, group, {})
 end
 
 -- INITIATE FUNCTIONS
 local path = vim.fn.stdpath("config") .. "/lua/theme/"
-print("THEME:" .. path)
+vim.notify("THEME:" .. path)
 dofile(path .. "functions/blend.lua")
 dofile(path .. "functions/hsl.lua")
 
 -- APPLY HIGHLIGHT GROUPS AND COLORS
 if theme == "" then
-	return
+  return
 else
-	local M = dofile(path .. "themes/" .. theme .. ".lua")
-	for tablename, table in pairs(M) do
-		if tablename ~= "colors" then
-			for highlight, options in pairs(table) do
-				vim.api.nvim_set_hl(0, highlight, options)
-			end
-		end
-	end
+  local M = dofile(path .. "themes/" .. theme .. ".lua")
+  for tablename, table in pairs(M) do
+    if tablename ~= "colors" then
+      for highlight, options in pairs(table) do
+        vim.api.nvim_set_hl(0, highlight, options)
+      end
+    end
+  end
 end
