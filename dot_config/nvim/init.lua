@@ -21,6 +21,10 @@ local opts = {
   spec = {
     { import = "plugins" },
   },
+  ui = {
+    border = "rounded",
+    -- backdrop = 100,
+  },
   checker = { enabled = true }, -- automatically check for plugin updates
   performance = {
     rtp = {
@@ -42,6 +46,7 @@ local opts = {
 require("lazy").setup(opts)
 require("config.mappings")
 require("config.autocmds")
+require("config.diagnostics")
 -- require("themes.simplered.index")
 vim.opt.background = "light"
 vim.api.nvim_set_hl(0, "Constant", { fg = "#ff5858" })
