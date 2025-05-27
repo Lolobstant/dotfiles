@@ -204,7 +204,7 @@ editlast = "zk edit --limit 1 --sort modified- $@"
 
 # Returns the Git history for the notes found with the given arguments.
 # Note the use of a pipe and the location of $@.
-hist = "zk list --format path --delimiter0 --quiet $@ | xargs -t -0 git log --patch --"
+# hist = "zk list --format path --delimiter0 --quiet $@ | xargs -t -0 git log --patch --"
 
 # Edit this configuration file.
 #conf = '$EDITOR "$ZK_NOTEBOOK_DIR/.zk/config.toml"'
