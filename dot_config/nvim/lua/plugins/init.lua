@@ -3,7 +3,6 @@
 -- DAP
 -- affichage ligne buffer (active buffers, modifierd..)
 -- gestion des tab (creation, navigation, session)
--- Note taking
 -- scratchpad
 -- https://github.com/luckasRanarison/nvim-devdocs
 -- https://github.com/nvim-neotest/neotest?tab=readme-ov-file#supported-runners
@@ -41,7 +40,13 @@ return {
   { -- "gc" to comment visual regions/lines
     "numToStr/Comment.nvim",
     event = { "BufReadPre", "BufNewFile" },
-    config = true,
+    dependencies = { "JoosepAlviste/nvim-ts-context-commentstring" },
+    config = function()
+      require("Comment").setup({
+        pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
+        -- or vim.bo.commentstring,
+      })
+    end,
   },
   {
     "echasnovski/mini.pairs",
@@ -58,7 +63,7 @@ return {
   },
   {
     "shellRaining/hlchunk.nvim",
-    event = { "UIEnter" },
+    event = { "BufReadPre" },
     opts = require("plugins.configs.hlchunk"),
   },
   { -- nice ui for input & selects
@@ -182,14 +187,14 @@ return {
       { "Shatur/neovim-session-manager" },
     },
   },
-  {
-    "iamcco/markdown-preview.nvim",
-    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-    ft = { "markdown" },
-    build = function()
-      vim.fn["mkdp#util#install"]()
-    end,
-  },
+  -- {
+  --   "iamcco/markdown-preview.nvim",
+  --   cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+  --   ft = { "markdown" },
+  --   build = function()
+  --     vim.fn["mkdp#util#install"]()
+  --   end,
+  -- },
   { "shortcuts/no-neck-pain.nvim", version = "*" },
   {
     "folke/twilight.nvim",
@@ -218,6 +223,29 @@ return {
   -- 	config = true,
   -- 	event = { "WinNew" },
   -- },
+  {
+    "NvChad/nvim-colorizer.lua",
+    event = "BufReadPre",
+    opts = { -- set to setup table
+    },
+  },
+  {
+    "zk-org/zk-nvim",
+    config = function()
+      require("zk").setup()
+    end,
+  },
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    -- dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.nvim" }, -- if you use the mini.nvim suite
+    -- dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.icons" }, -- if you use standalone mini plugins
+    dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" }, -- if you prefer nvim-web-devicons
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {
+      completions = { lsp = { enabled = true } },
+    },
+  },
 }
 -- {
 --   "nvim-telescope/telescope-file-browser.nvim",

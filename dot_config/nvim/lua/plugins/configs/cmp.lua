@@ -53,6 +53,7 @@ return function()
       { name = "luasnip", priority = 750, keyword_length = 2 },
       { name = "buffer", priority = 500, keyword_length = 3 },
       { name = "path", priority = 250 },
+      { name = "render-markdown" },
     },
 
     -- For an understanding of why these mappings were

@@ -48,6 +48,7 @@ require("config.mappings")
 require("config.autocmds")
 require("config.diagnostics")
 -- require("themes.simplered.index")
-vim.opt.background = "light"
+-- vim.opt.background = "light"
 vim.api.nvim_set_hl(0, "Constant", { fg = "#ff5858" })
+-- vim.api.nvim_set_hl(0, "DiagnosticInfo", { fg = "#ff5858" })
 -- vim.api.nvim_set_hl(0, "Constant", { fg = "#ff5858" })

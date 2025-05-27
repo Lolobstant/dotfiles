@@ -15,10 +15,13 @@
 --   pcall(telescope.load_extension, 'projections')
 -- end
 
+local actions = require("telescope.actions")
 return {
   defaults = {
     path_display = { "smart" },
     file_ignore_patterns = { "node_modules" },
+    file_sorter = require("telescope.sorters").get_fuzzy_file,
+    generic_sorter = require("telescope.sorters").get_generic_fuzzy_sorter,
     color_devicons = true,
     set_env = { ["COLORTERM"] = "truecolor" },
     vimgrep_arguments = {
@@ -47,6 +50,15 @@ return {
       preview_cutoff = 120,
     },
   },
+  -- winblend = 0,
+  -- borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+  -- color_devicons = true,
+  -- set_env = { ["COLORTERM"] = "truecolor" }, -- default = nil,
+  -- file_previewer = require("telescope.previewers").vim_buffer_cat.new,
+  -- grep_previewer = require("telescope.previewers").vim_buffer_vimgrep.new,
+  -- qflist_previewer = require("telescope.previewers").vim_buffer_qflist.new,
+  -- buffer_previewer_maker = require("telescope.previewers").buffer_previewer_maker,
+
   pickers = {
     find_files = {
       find_command = {
@@ -69,6 +81,11 @@ return {
     },
     buffers = {
       sort_lastused = true,
+      mappings = {
+        i = {
+          ["<c-d>"] = actions.delete_buffer + actions.move_to_top,
+        },
+      },
     },
     colorscheme = {
       enable_preview = true,

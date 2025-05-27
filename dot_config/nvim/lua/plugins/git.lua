@@ -20,7 +20,7 @@ return {
     "NeogitOrg/neogit",
     dependencies = {
       "nvim-lua/plenary.nvim", -- required
-      "sindrets/diffview.nvim", -- optional - Diff integration
+      { "sindrets/diffview.nvim" }, -- optional - Diff integration
 
       -- Only one of these is needed, not both.
       "nvim-telescope/telescope.nvim", -- optional
@@ -29,7 +29,8 @@ return {
     event = "VeryLazy",
     -- lazy = true,
     cmd = "Neogit",
-    config = {
+    opts = {
+      graph_style = "unicode",
       integrations = {
         diffview = true,
       },
@@ -39,7 +40,7 @@ return {
     "lewis6991/gitsigns.nvim",
     event = "VeryLazy",
     cmd = "Gitsigns",
-    config = {
+    opts = {
       current_line_blame = true,
       signs = {
         add = { text = "+" },

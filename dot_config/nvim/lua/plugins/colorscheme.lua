@@ -14,6 +14,8 @@ return {
   {
     "vague2k/huez.nvim",
     -- if you want registry related features, uncomment this
+
+    lazy = true,
     branch = "stable",
     event = "UIEnter",
     import = "huez-manager.import",
@@ -24,6 +26,7 @@ return {
   {
     "catppuccin/nvim",
     as = "catppuccin",
+    -- lazy = true,
     opts = require("plugins.configs.catppuccin"),
     config = function(_, opts)
       require("catppuccin").setup(opts)
@@ -32,15 +35,31 @@ return {
   {
     "rose-pine/neovim",
     name = "rose-pine",
+    -- lazy = true,
     opts = require("plugins.configs.rose-pine"),
     config = function(_, opts)
       require("rose-pine").setup(opts)
     end,
   },
-  { "nyoom-engineering/oxocarbon" },
-  { "jacoborus/tender.vim" },
-  { "savq/melange-nvim" },
-  { "cvigilv/patana.nvim" },
+  {
+    "nyoom-engineering/oxocarbon", --[[ lazy = true  ]]
+  },
+  {
+    "jacoborus/tender.vim", --[[ lazy = true  ]]
+  },
+  {
+    "savq/melange-nvim", --[[ lazy = true  ]]
+  },
+  {
+    "cvigilv/patana.nvim", --[[ lazy = true  ]]
+  },
+  {
+    "andreasvc/vim-256noir", --[[ lazy = true  ]]
+  },
+  {
+    "aliqyan-21/darkvoid.nvim", --[[ lazy = true  ]]
+  },
+  { "embark-theme/vim" },
   -- {
   -- 	dir = "/lua/themes/simplered",
   -- 	lazy = false,

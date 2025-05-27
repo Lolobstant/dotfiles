@@ -20,21 +20,21 @@ local M = {
 if is_available("which-key.nvim") then
   local wk = require("which-key")
   wk.add({
-    { "<leader>b", group = "[B]uffers", icon = "󰓩" },
-    { "<leader>c", group = "[C]ode" },
-    { "<leader>d", group = "[D]iagnostics", icon = "󰓙" },
-    { "<leader>g", group = "[G]it", icon = "" },
-    { "<leader>gw", group = "[W]orktree", icon = "" },
-    { "<leader>l", group = "[L]SP", icon = "󱧤" },
-    { "<leader>p", group = "[P]ackages", icon = "󰏖" },
-    { "<leader>s", group = "[S]earch" },
-    { "<leader>S", group = "[S]ession" },
-    { "<leader>t", group = "[T]erminal", icon = "" },
+    { "<leader>b", group = "Buffers", icon = "󰓩" },
+    { "<leader>c", group = "Code" },
+    { "<leader>d", group = "Diagnostics", icon = "󰓙" },
+    { "<leader>g", group = "Git", icon = "" },
+    { "<leader>gw", group = "Worktree", icon = "" },
+    { "<leader>l", group = "LSP", icon = "󱧤" },
+    { "<leader>p", group = "Packages", icon = "󰏖" },
+    { "<leader>s", group = "Search" },
+    { "<leader>S", group = "Session" },
+    { "<leader>t", group = "Terminal", icon = "" },
     -- ['<leader>f'] = {group ="Files" },
-    { "<leader>u", group = "[U]I", icon = "󰺾" },
-    { "<leader>un", group = "[N]otifications", icon = "󰎟" },
-    { "<leader>w", group = "[W]indow", icon = "" },
-    { "<leader>W", group = "[W]orkspace", icon = "" },
+    { "<leader>u", group = "UI", icon = "󰺾" },
+    { "<leader>un", group = "Notifications", icon = "󰎟" },
+    { "<leader>w", group = "Window", icon = "" },
+    { "<leader>W", group = "Workspace", icon = "" },
   })
 end
 
@@ -118,7 +118,6 @@ if is_available("telescope.nvim") then
   local builtin = require("telescope.builtin")
   local extensions = require("telescope").extensions
   -- local git_worktree = require("git-worktree");
-
   M.n["<leader>sr"] = { builtin.oldfiles, "[S]earch [R]ecently opened files" }
   M.n["<leader><space>"] = { builtin.buffers, "Find existing buffers" }
   M.n["<leader>/"] = {
@@ -151,7 +150,7 @@ if is_available("telescope.nvim") then
     -- M.n["<leader>gl"] = { neogit.git_graph, "[G]it [L]og" }
   end
   if is_available("diffview.nvim") then
-    local diffview = require("diffview")
+    -- local diffview = require("diffview")
     M.n["<leader>gD"] = { "<cmd>DiffviewOpen<cr>", "[G]it [D]iff All" }
     M.n["<leader>gl"] = { "<cmd>DiffviewFileHistory<cr>", "[G]it [L]og" }
   end
@@ -225,9 +224,25 @@ if is_available("telescope.nvim") then
   -- INFO: Search git files in git repo or fall back to find_files
   -- We cache the results of "git rev-parse"
   -- Process creation is expensive in Windows, so this reduces latency
-  local is_inside_work_tree = {}
+  -- local is_inside_work_tree = {}
   M.n["<leader>sf"] = {
     function()
+      local function is_git_repo()
+        vim.fn.system("git rev-parse --is-inside-work-tree")
+        return vim.v.shell_error == 0
+      end
+      local function get_git_root()
+        local dot_git_path = vim.fn.finddir(".git", ".;")
+        return vim.fn.fnamemodify(dot_git_path, ":h")
+      end
+      local opts = {}
+      if is_git_repo() then
+        opts = {
+          cwd = get_git_root(),
+        }
+      end
+      require("telescope.builtin").find_files(opts)
+    end --[[ function()
       local opts = { hidden = true, show_untracked = true } -- define here if you want to define something
 
       local cwd = vim.fn.getcwd()
@@ -241,7 +256,7 @@ if is_available("telescope.nvim") then
       else
         builtin.find_files(opts)
       end
-    end,
+    end ]],
     "[S]earch [F]iles",
   }
   M.n["<leader>sh"] = { builtin.help_tags, "[S]earch [H]elp" }
@@ -456,13 +471,17 @@ if vim.g.neovide then
 end
 
 -- INFO: Remap for dealing with word wrap
-M.n["k"] = { "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true } }
-M.n["j"] = { "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true } }
+-- M.n["k"] = { "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true } }
+-- M.n["j"] = { "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true } }
+vim.keymap.set({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+vim.keymap.set({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 -- M.v["k"] = { "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true } }
 -- M.v["j"] = { "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true } }
 
 -- INFO: Keymaps for better default experience
 vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
+-- INFO: remove char without yanking into register
+vim.keymap.set("n", "x", '"_x')
 
 -- INFO: Plugin manager (Lazy.nvim)
 M.n["<leader>ph"] = { lazy.home, "[P]lugins [H]ome" }

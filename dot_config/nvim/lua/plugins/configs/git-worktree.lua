@@ -29,7 +29,7 @@ return function()
       -- print(utils.dump(os.getenv('PATH')))
       Job:new({
         command = "npm",
-        -- args = { 'i' },
+        args = { "i" },
         cwd = base .. "/" .. path,
         on_exit = function(_, value)
           -- print('[ npm_install ]' .. utils.dump(j))
@@ -58,11 +58,16 @@ return function()
     if op == Worktree.Operations.Create then
       Job:new({
         command = "git",
-        args = { "rev-parse", "--path-format=absolute", "--git-common-dir" },
+        args = {
+          "rev-parse",
+          "--show-toplevel",
+          "--path-format=absolute",
+          -- "--git-common-dir",
+        },
         on_stdout = function(_, bare_path)
-          vim.notify("bare path = " .. bare_path .. "meta: " .. utils.dump(meta))
-          -- copy_dotenv(meta.prev_path, meta.path)
-          -- npm_install(meta.prev_path, meta.path)
+          vim.notify("bare path = " .. bare_path .. " meta: " .. utils.dump(meta))
+          copy_dotenv(bare_path, meta.path)
+          npm_install(bare_path, meta.path)
         end,
       }):start()
     elseif op == Worktree.Operations.Switch then

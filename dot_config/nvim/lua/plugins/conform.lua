@@ -15,6 +15,9 @@ return { -- Autoformat
         lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
       }
     end,
+    default_format_opts = {
+      stop_after_first = true,
+    },
     formatters_by_ft = {
       lua = { "stylua" },
       -- Conform can also run multiple formatters sequentially
@@ -22,7 +25,7 @@ return { -- Autoformat
       --
       -- You can use a sub-list to tell conform to run *until* a formatter
       -- is found.
-      javascript = { { "prettierd", "prettier", "biome", "standardjs" } },
+      javascript = { "prettierd", "prettier", "biome", "standardjs" },
     },
     formatters = {
       stylua = {

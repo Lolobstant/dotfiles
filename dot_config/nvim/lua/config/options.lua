@@ -1,3 +1,7 @@
+-- => >=~~> <-> <=>
+--@> $>
+--$$ @@
+-- 0 o O
 -- :help options
 local options = {
   opt = {
@@ -63,9 +67,12 @@ local options = {
     sidescrolloff = 8, -- minimal number of screen columns either side of cursor if wrap is `false`
 
     -- GUI
+    -- guimont = "PragmataPro Mono Liga:h15",
     -- guifont = "CommitMono:h14",
     -- guifont = "CartographCF Nerd Font:h14",
-    guifont = "JetBrainsMono Nerd Font:h14",
+    -- guifont = "FiraCode Nerd Font:h14",
+    -- guifont = "JetBrainsMono Nerd Font:h14",
+    -- guifont = "Iosevka Nerd Font:h15",
     -- "CartographCF Nerd Font:h-slight:h15, FiraCode Nerd Font:h-slight:h13, Iosevka Nerd Font, Menlo, Monaco, 'Courier New', monospace", -- the font used in graphical neovim applications
     list = true, -- show invisible char (tabs, spaces..)
     -- colorcolumn = "80",

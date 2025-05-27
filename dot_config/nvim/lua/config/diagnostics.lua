@@ -3,14 +3,14 @@ vim.diagnostic.config({
   -- virtual_text = false,
   virtual_text = {
     prefix = "●", -- Could be '●', '▎', 'x'
-    source = true,
+    source = "if_many",
     severity = vim.diagnostic.severity.ERROR,
   },
   update_in_insert = false,
   severity_sort = true,
   float = {
     border = "rounded",
-    source = true,
+    source = "if_many",
   },
   underline = {
     severity = vim.diagnostic.severity.ERROR,
