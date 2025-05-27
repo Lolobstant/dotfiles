@@ -1,3 +1,27 @@
 # multigrid=true
 frame="buttonless"
 maximized=true
+
+[font]
+normal = [ 
+  "PragmataPro Mono Liga",
+  "Maple Mono",
+  "Iosevka Nerd Font Mono",
+  "Berkeley Mono Trial",
+  "VictorMono Nerd Font",
+  "CommitMono",
+  "Cartograph CF",
+  "CaskaydiaCove Nerd Font",
+  "FiraCode Nerd Font Mono",
+  "SauceCodePro Nerd Font Mono",
+]
+size = 16
+# [[font.bold]]
+# family = "PragmataPro Mono Liga"
+# style = "W500"
+
+# "MonoLisa"
+[font.features]
+"Iosevka Nerd Font Mono" = ["+ss12"]
+# "PragmataPro Mono Liga" = ["-aalt"]
+# "PragmataPro Mono" = ["-aalt",  "-ss03"]
