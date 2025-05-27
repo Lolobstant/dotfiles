@@ -1,4 +1,4 @@
-# le racisme culturel
+# Le racisme culturel
 
 ---
 date: May 27, 2025

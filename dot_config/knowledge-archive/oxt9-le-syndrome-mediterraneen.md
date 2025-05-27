@@ -1,4 +1,4 @@
-# le syndrome méditerranéen
+# Le syndrome méditerranéen
 
 ---
 date: May 27, 2025

@@ -1,4 +1,4 @@
-# violence pragmatique
+# Violence pragmatique
 
 ---
 date: May 27, 2025
