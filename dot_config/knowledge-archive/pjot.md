@@ -1,5 +1,8 @@
 # Qu'est-ce que la méthode Zettelkasten ?
-#knowledge #connaissance #learning #zettelkasten #spaced-repetition
+
+---
+tags: [#connaissance, #learning, #zettelkasten, #spaced-repetition]
+---
 
 C'est une méthode de prise de note **personnel** permettant une meilleure **classification**, **retention** et la **connexion** de la **connaissance**.
 

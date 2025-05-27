@@ -80,7 +80,7 @@ author = "Laurent"
 paths = ["journal/**"]
 
 [group.journal.note]
-filename = "{{id}}-{{format-date now '%Y-%m-%d'}}"
+filename = "{{id}}-{{format-date now '%Y-%m-%d'}}-{{slug title}}"
 extension = "md"
 template = "journal.md"
 

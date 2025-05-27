@@ -1,5 +1,8 @@
 # Qu'est-ce que la Transparence Referentielle ?
-#review #programming #fp
+
+---
+tags: [#review, #programming, #fp]
+---
 
 La **transparence referentielle** est une concept signifiant qu'une [fonction](ypvx) a qui l'on donne les **mêmes** **arguments** retournera toujours le même **résultat**.
 
