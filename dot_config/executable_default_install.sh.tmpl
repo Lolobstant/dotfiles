@@ -5,10 +5,10 @@ command_exists() {
 }
 
 
-if ! command_exists omz; then
-  echo "installing ohmyzsh"
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-fi
+# if ! command_exists omz; then
+#   echo "installing ohmyzsh"
+#   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+# fi
 # install homebrew if not exists
 if ! command_exists brew; then
   echo "installing homebrew"
