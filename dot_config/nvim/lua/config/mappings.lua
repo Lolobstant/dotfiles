@@ -74,9 +74,9 @@ if is_available("smart-splits.nvim") then
   M.n["<C-k>"] = { ss.move_cursor_up, "Move to above split" }
   M.n["<C-l>"] = { ss.move_cursor_right, "Move to right split" }
 
+  M.n["<M-left>"] = { ss.resize_left, "Resize split left" }
   M.n["<M-down>"] = { ss.resize_down, "Resize split down" }
   M.n["<M-up>"] = { ss.resize_up, "Resize split up" }
-  M.n["<M-left>"] = { ss.resize_left, "Resize split left" }
   M.n["<M-right>"] = { ss.resize_right, "Resize split right" }
 
   -- INFO: swap splits
