@@ -51,6 +51,12 @@ return {
       },
     },
   },
+  {
+    "ThePrimeagen/git-worktree.nvim",
+    event = "VeryLazy",
+    config = require("plugins.configs.git-worktree"),
+  },
+
   -- {
   --   "kdheepak/lazygit.nvim",
   --   cmd = {

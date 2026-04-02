@@ -141,11 +141,6 @@ return {
       max_lines = 3,
     },
   },
-  {
-    "ThePrimeagen/git-worktree.nvim",
-    event = "VeryLazy",
-    config = require("plugins.configs.git-worktree"),
-  },
   { -- file explorer
     "echasnovski/mini.files",
     event = "VeryLazy",
@@ -187,14 +182,14 @@ return {
       { "Shatur/neovim-session-manager" },
     },
   },
-  -- {
-  --   "iamcco/markdown-preview.nvim",
-  --   cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-  --   ft = { "markdown" },
-  --   build = function()
-  --     vim.fn["mkdp#util#install"]()
-  --   end,
-  -- },
+  {
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    ft = { "markdown" },
+    build = function()
+      vim.fn["mkdp#util#install"]()
+    end,
+  },
   { "shortcuts/no-neck-pain.nvim", version = "*" },
   {
     "folke/twilight.nvim",
@@ -232,9 +227,31 @@ return {
   {
     "zk-org/zk-nvim",
     config = function()
-      require("zk").setup()
+      require("zk").setup({})
     end,
   },
+  -- {
+  --   "nvim-neorg/neorg",
+  --   lazy = false, -- Disable lazy loading as some `lazy.nvim` distributions set `lazy = true` by default
+  --   version = "*", -- Pin Neorg to the latest stable release
+  --   config = {
+  --     load = {
+  --       ["core.defaults"] = {},
+  --       ["core.dirman"] = {
+  --         config = {
+  --           workspaces = {
+  --             notes = "~/.config/notes",
+  --           },
+  --         },
+  --       },
+  --       ["core.concealer"] = {
+  --         config = {
+  --           icon_preset = "varied",
+  --         },
+  --       },
+  --     },
+  --   },
+  -- },
   {
     "MeanderingProgrammer/render-markdown.nvim",
     -- dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.nvim" }, -- if you use the mini.nvim suite
@@ -244,6 +261,30 @@ return {
     ---@type render.md.UserConfig
     opts = {
       completions = { lsp = { enabled = true } },
+    },
+  },
+  {
+    "obsidian-nvim/obsidian.nvim",
+    version = "*", -- recommended, use latest release instead of latest commit
+    ft = "markdown",
+    -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
+    -- event = {
+    --   -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
+    --   -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/*.md"
+    --   -- refer to `:h file-pattern` for more examples
+    --   "BufReadPre ~/notes/**/*.md",
+    --   "BufNewFile ~/notes/**/*.md",
+    -- },
+    ---@module 'obsidian'
+    ---@type obsidian.config
+    opts = {
+      workspaces = {
+        {
+          name = "my zettel",
+          path = "~/notes/",
+        },
+      },
+      templates = { folder = "templates" },
     },
   },
 }
