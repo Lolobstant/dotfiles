@@ -11,6 +11,7 @@ normal = [
   "VictorMono Nerd Font",
   "CommitMono",
   "Cartograph CF",
+  "TerminessTTF Nerd Font",
   "CaskaydiaCove Nerd Font",
   "FiraCode Nerd Font Mono",
   "SauceCodePro Nerd Font Mono",
@@ -18,7 +19,7 @@ normal = [
 size = 16
 # [[font.bold]]
 # family = "PragmataPro Mono Liga"
-# style = "W500"
+# style = "W800"
 
 # "MonoLisa"
 [font.features]
