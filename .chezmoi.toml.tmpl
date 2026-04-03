@@ -1,6 +1,6 @@
-{{- $email := promptStringOnce . "email" "Email address" -}}
-{{- $github_username := promptStringOnce . "username" "Github username" -}}
-{{- $infisical_token := promptStringOnce . "token" "infisical token" -}}
+{{- $email := promptString . "email" "Email address" -}}
+{{- $github_username := promptString . "username" "Github username" -}}
+{{- $infisical_token := promptString . "token" "infisical token" -}}
 
 [edit]
   command = "nvim"
