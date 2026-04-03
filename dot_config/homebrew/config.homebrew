@@ -76,6 +76,7 @@ brew "rsync"
 brew "pandoc"
 brew "container"
 brew "ncdu"
+brew "crane"
 
 #mas (mac app store)
 # mas "type fu"

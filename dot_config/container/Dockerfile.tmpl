@@ -30,6 +30,6 @@ USER dev
 WORKDIR /home/dev
 
 # Bootstrap dotfiles (remplace par ton URL)
-RUN chezmoi init --apply git@github.com:Lolobstant/dotfiles.git
+RUN chezmoi init --apply git@github.com:{{ .github.username }}/dotfiles.git
 
 CMD ["nvim", "--listen", "/tmp/nvim.sock"]
