@@ -35,10 +35,10 @@ container run --rm --detach \
  "${EXTRA_ENV[@]}" \
   -v "$(pwd):/app" \
   -v "$SOCKET_DIR:$SOCKET_DIR" \
-  --publish-socket "${SOCKET}:${SOCKET}" \
+  --publish-socket "${SOCKET}:/tmp/nvim.sock" \
   -w /app \
   "$IMAGE" \
-  nvim --headless --listen "$SOCKET"
+  nvim --headless --listen "/tmp/nvim.sock"
 
 CONTAINER_PID=$!
 
