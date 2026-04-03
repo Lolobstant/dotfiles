@@ -20,11 +20,11 @@ fi
 echo "⚡ Container : $PROJECT"
 echo "   Neovide  : neovide --server $SOCKET"
 
-container run --rm -it \
+container run --rm --detach \
   --name "dev-${PROJECT}" \
   ${INFISICAL_TOKEN:+-e INFISICAL_TOKEN="$INFISICAL_TOKEN"} \
   -v "$(pwd):/app" \
   -v "$SOCKET_DIR:/tmp/nvim-sockets" \
   -w /app \
   "$IMAGE" \
-  nvim --listen "/tmp/nvim-sockets/nvim-${PROJECT}.sock"
+  nvim --headless --listen "/tmp/nvim-sockets/nvim-${PROJECT}.sock"
