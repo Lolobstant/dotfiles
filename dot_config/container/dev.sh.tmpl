@@ -17,7 +17,8 @@ if security find-generic-password -a infisical -s dev -w &>/dev/null 2>&1; then
   INFISICAL_TOKEN=$(security find-generic-password -a infisical -s dev -w)
 fi
 
-echo "⚡ Container : $PROJECT"
+echo "⚡ Démarrage container : $PROJECT"
+
 echo "   Neovide  : neovide --server $SOCKET"
 
 container run --rm --detach \
@@ -28,3 +29,21 @@ container run --rm --detach \
   -w /app \
   "$IMAGE" \
   nvim --headless --listen "/tmp/nvim-sockets/nvim-${PROJECT}.sock"
+
+# Attendre que la socket soit créée (max 30s)
+echo "⏳ Attente du socket nvim..."
+TIMEOUT=30
+ELAPSED=0
+until [ -S "$SOCKET" ] || [ $ELAPSED -ge $TIMEOUT ]; do
+  sleep 0.5
+  ELAPSED=$((ELAPSED + 1))
+done
+
+if [ ! -S "$SOCKET" ]; then
+  echo "❌ Timeout — nvim n'a pas démarré"
+  container logs "dev-${PROJECT}"
+  exit 1
+fi
+
+echo "✅ Socket prêt — lancement Neovide"
+neovide --server "$SOCKET"
