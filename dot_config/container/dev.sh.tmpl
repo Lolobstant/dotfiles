@@ -33,6 +33,7 @@ container run --rm --detach \
  "${EXTRA_ENV[@]}" \
   -v "$(pwd):/app" \
   -v "$SOCKET_DIR:/tmp/nvim-sockets" \
+  --publish-socket "${SOCKET}:/tmp/nvim.sock" \
   -w /app \
   "$IMAGE" \
   nvim --headless --listen "/tmp/nvim-sockets/nvim-${PROJECT}.sock"
@@ -41,11 +42,17 @@ CONTAINER_PID=$!
 
 # Attendre que la socket soit créée (max 30s)
 echo "⏳ Attente du socket nvim..."
-TIMEOUT=60
+TIMEOUT=120
 ELAPSED=0
-until [ -S "$SOCKET" ] || [ $ELAPSED -ge $TIMEOUT ]; do
-  sleep 0.5
+until container exec "dev-${PROJECT}" \
+  nvim --server /tmp/nvim.sock --remote-expr '"ready"' 2>/dev/null | grep -q "ready"; do
+  sleep 1
   ELAPSED=$((ELAPSED + 1))
+  if [ "$ELAPSED" -ge "$TIMEOUT" ]; then
+    echo "❌ Timeout — nvim n'a pas répondu"
+    kill "$CONTAINER_PID" 2>/dev/null || true
+    exit 1
+  fi
 done
 
 if [ ! -S "$SOCKET" ]; then
