@@ -40,8 +40,6 @@ container run --rm --detach \
   "$IMAGE" \
   nvim --headless --listen "/tmp/nvim.sock"
 
-CONTAINER_PID=$!
-
 # Attendre que la socket soit créée (max 30s)
 echo "⏳ Attente du socket nvim..."
 TIMEOUT=120
@@ -52,15 +50,16 @@ until container exec "dev-${PROJECT}" \
   ELAPSED=$((ELAPSED + 1))
   if [ "$ELAPSED" -ge "$TIMEOUT" ]; then
     echo "❌ Timeout — nvim n'a pas répondu"
-    kill "$CONTAINER_PID" 2>/dev/null || true
+    container stop "dev-${PROJECT}" 2>/dev/null || true
+    # kill "$CONTAINER_PID" 2>/dev/null || true
     exit 1
   fi
 done
 
 if [ ! -S "$SOCKET" ]; then
   echo "❌ Timeout — nvim n'a pas démarré"
-  kill $CONTAINER_PID 2>/dev/null
-  # container logs "dev-${PROJECT}"
+  # kill $CONTAINER_PID 2>/dev/null
+  container logs "dev-${PROJECT}"
   exit 1
 fi
 
@@ -70,4 +69,4 @@ neovide --server "$SOCKET"
 # Quand Neovide se ferme, arrêter le container
 echo "🛑 Fermeture du container..."
 container stop "dev-${PROJECT}" 2>/dev/null || true
-wait $CONTAINER_PID 2>/dev/null || true
+# wait $CONTAINER_PID 2>/dev/null || true
