@@ -29,7 +29,7 @@ container run --rm --detach \
   --name "dev-${PROJECT}" \
   -e CHEZMOI_EMAIL="{{ .email }}" \
   -e CHEZMOI_GITHUB_USERNAME="{{ .github.username }}" \
-  -e CHEZMOI_INFISICAL_TOKEN="$INFISICAL_TOKEN" \
+  -e CHEZMOI_INFISICAL_TOKEN="${INFISICAL_TOKEN:-to-be-configured}" \
  "${EXTRA_ENV[@]}" \
   -v "$(pwd):/app" \
   -v "$SOCKET_DIR:/tmp/nvim-sockets" \
