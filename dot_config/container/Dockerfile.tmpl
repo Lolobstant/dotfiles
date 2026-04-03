@@ -1,0 +1,35 @@
+FROM ubuntu:24.04@sha256:186072bba1b2f436cbb91ef2567abca677337cfc786c86e107d25b7072feef0c
+
+# Pas d'interaction pendant le build
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Dépendances système
+RUN apt-get update && apt-get install -y \
+    curl git unzip build-essential \
+    ripgrep fd-find fzf \
+    && rm -rf /var/lib/apt/lists/*
+
+# Neovim (pinned)
+RUN curl -LO https://github.com/neovim/neovim/releases/download/v0.12.0/nvim-linux-arm64.appimage \
+    && chmod u+x nvim-linux-arm64.appimage && ./nvim-linux-arm64.appimage
+    && rm nvim-linux-arm64.appimage
+
+# chezmoi
+RUN sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /usr/local/bin
+
+# Infisical CLI (pinned)
+# RUN curl -1sLf 'https://dl.infisical.com/public-key' | gpg --dearmor -o /usr/share/keyrings/infisical-archive-keyring.gpg \
+#     && echo "deb [signed-by=/usr/share/keyrings/infisical-archive-keyring.gpg] https://dl.infisical.com/deb stable main" \
+#     | tee /etc/apt/sources.list.d/infisical.list \
+#     && apt-get update && apt-get install -y infisical \
+#     && rm -rf /var/lib/apt/lists/*
+
+# User non-root
+RUN useradd -m -s /bin/bash dev
+USER dev
+WORKDIR /home/dev
+
+# Bootstrap dotfiles (remplace par ton URL)
+RUN chezmoi init --apply git@github.com:Lolobstant/dotfiles.git
+
+CMD ["nvim", "--listen", "/tmp/nvim.sock"]
