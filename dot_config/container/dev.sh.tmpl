@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -eo pipefail
 
 # Usage: dev.sh <nom-projet>
 PROJECT=${1:?Usage: dev.sh <nom-projet>}
@@ -21,12 +21,16 @@ echo "⚡ Démarrage container : $PROJECT"
 
 echo "   Neovide  : neovide --server $SOCKET"
 
+# Construire les args dynamiquement
+EXTRA_ENV=()
+[ -n "$INFISICAL_TOKEN" ] && EXTRA_ENV+=(-e "INFISICAL_TOKEN=$INFISICAL_TOKEN")
+
 container run --rm --detach \
   --name "dev-${PROJECT}" \
   -e CHEZMOI_EMAIL="{{ .email }}" \
   -e CHEZMOI_GITHUB_USERNAME="{{ .github.username }}" \
   -e CHEZMOI_INFISICAL_TOKEN="$INFISICAL_TOKEN" \
-  ${INFISICAL_TOKEN:+-e INFISICAL_TOKEN="$INFISICAL_TOKEN"} \
+ "${EXTRA_ENV[@]}" \
   -v "$(pwd):/app" \
   -v "$SOCKET_DIR:/tmp/nvim-sockets" \
   -w /app \
