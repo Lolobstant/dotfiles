@@ -13,5 +13,5 @@
 [add]
   secrets = "error"
 [git]
-  autoCommit=true
-  autoPush=true
+  autoCommit={{ eq .chezmoi.os "darwin" }}
+  autoPush={{eq .chezmoi.os "darwin" }}
