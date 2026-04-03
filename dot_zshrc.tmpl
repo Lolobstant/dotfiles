@@ -1,14 +1,21 @@
-#Home brew bundle path
-export HOMEBREW_BUNDLE_FILE="$HOME/.config/homebrew/config.homebrew"
-export HOMEBREW_NO_ANALYTICS=1
-export HOMEBREW_NO_INSECURE_REDIRECT=1
-export HOMEBREW_CASK_OPTS=--require-sha
-export HOMEBREW_GITHUB_API_TOKEN={{ keyring "homebrew_api" .email }}
+{{ if eq .chezmoi.os "darwin" }}
+  #Home brew bundle path
+  export HOMEBREW_BUNDLE_FILE="$HOME/.config/homebrew/config.homebrew"
+  export HOMEBREW_NO_ANALYTICS=1
+  export HOMEBREW_NO_INSECURE_REDIRECT=1
+  export HOMEBREW_CASK_OPTS=--require-sha
+  export HOMEBREW_GITHUB_API_TOKEN={{ keyring "homebrew_api" .email }}
+{{ end }}
 
 # pnpm
-export PNPM_HOME="$HOME/Library/pnpm"
+{{ if eq .chezmoi.os "darwin" }}
+  export PNPM_HOME="$HOME/Library/pnpm"
+{{ else }}
+  export PNPM_HOME="$HOME/.local/share/pnpm"
+{{ end }}
 export PATH="$PNPM_HOME:$PATH"
 # pnpm end
+
 # NVM
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -66,7 +73,9 @@ zinit snippet OMZP::eza
 ### load completions
 autoload -U compinit && compinit
 zinit cdreplay -q
-source <(jj util completion zsh)
+
+# jj completion — seulement si installé
+command -v jj &>/dev/null && source <(jj util completion zsh)
 
 
 ### keybindings
@@ -120,7 +129,10 @@ alias urldecode="perl -pe 's/\%(\w\w)/chr hex $1/ge'"
 #Aliases end
 
 #Neovide
-launchctl setenv NEOVIDE_FRAME buttonless
+
+{{ if eq .chezmoi.os "darwin" }}
+  launchctl setenv NEOVIDE_FRAME buttonless
+{{ end }}
 
 ###shell integrations
 if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
