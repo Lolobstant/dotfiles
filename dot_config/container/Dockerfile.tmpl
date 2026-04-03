@@ -1,35 +1,116 @@
+# =============================================================================
+# Image de base — Env de dev sécurisé Mangas.io
+# Build: docker build --platform linux/arm64 -t ghcr.io/mangas-io/dev-base:1.0.0 .
+# =============================================================================
+
 FROM ubuntu:24.04@sha256:186072bba1b2f436cbb91ef2567abca677337cfc786c86e107d25b7072feef0c
 
-# Pas d'interaction pendant le build
 ENV DEBIAN_FRONTEND=noninteractive
 
+# -----------------------------------------------------------------------------
 # Dépendances système
-RUN apt-get update && apt-get install -y \
-    curl git unzip build-essential \
-    ripgrep fd-find fzf \
-    && rm -rf /var/lib/apt/lists/*
+# -----------------------------------------------------------------------------
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    git \
+    unzip \
+    build-essential \
+    gnupg \
+    ca-certificates \
+    ripgrep \
+    fd-find \
+    fzf \
+  && rm -rf /var/lib/apt/lists/*
 
-# Neovim (pinned)
-RUN curl -LO https://github.com/neovim/neovim/releases/download/v0.12.0/nvim-linux-arm64.appimage \
-    && chmod u+x nvim-linux-arm64.appimage && ./nvim-linux-arm64.appimage
-    && rm nvim-linux-arm64.appimage
+# -----------------------------------------------------------------------------
+# Neovim v0.12.0 — tarball ARM64, sha256 vérifié
+# SHA256 source : calculé depuis le binaire officiel GitHub Releases
+# -----------------------------------------------------------------------------
+ARG NVIM_VERSION=0.12.0
+ARG NVIM_SHA256=89024e7be2ef3c8f08e9c002b1eb3e3b36672ee44bd6343cf2d168d38b3736b2
 
-# chezmoi
-RUN sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /usr/local/bin
+RUN curl -fsSL -o /tmp/nvim.tar.gz \
+    "https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-arm64.tar.gz" \
+  && echo "${NVIM_SHA256}  /tmp/nvim.tar.gz" | sha256sum -c - \
+  && tar -xzf /tmp/nvim.tar.gz -C /opt \
+  && ln -s /opt/nvim-linux-arm64/bin/nvim /usr/local/bin/nvim \
+  && rm /tmp/nvim.tar.gz
 
-# Infisical CLI (pinned)
-# RUN curl -1sLf 'https://dl.infisical.com/public-key' | gpg --dearmor -o /usr/share/keyrings/infisical-archive-keyring.gpg \
-#     && echo "deb [signed-by=/usr/share/keyrings/infisical-archive-keyring.gpg] https://dl.infisical.com/deb stable main" \
-#     | tee /etc/apt/sources.list.d/infisical.list \
-#     && apt-get update && apt-get install -y infisical \
-#     && rm -rf /var/lib/apt/lists/*
+# -----------------------------------------------------------------------------
+# chezmoi v2.70.0 — .deb ARM64, sha256 + cosign vérifié
+#
+# Vérification cosign (signature sur checksums.txt) :
+#   Clé publique officielle chezmoi (embarquée ci-dessous) :
+#   -----BEGIN PUBLIC KEY-----
+#   MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEJDy2Dn3u5hqjQkTrcAukXwJty9Ke
+#   oquP+qONwiD4r+cjO8yrhoELoUk1ogXzvpM7f9bOS/YS5pdx2snCmMudDg==
+#   -----END PUBLIC KEY-----
+#
+#   Pour activer la vérification cosign, décommenter le bloc ci-dessous
+#   et pinner COSIGN_SHA256 depuis https://github.com/sigstore/cosign/releases
+# -----------------------------------------------------------------------------
+ARG CHEZMOI_VERSION=2.70.0
+ARG CHEZMOI_SHA256=e32dc88a2c48e86a8751b51e042dac475b09657f1dcb866ce1a2899eae1163fd
+ARG CHEZMOI_PUB='-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEJDy2Dn3u5hqjQkTrcAukXwJty9Ke\noquP+qONwiD4r+cjO8yrhoELoUk1ogXzvpM7f9bOS/YS5pdx2snCmMudDg==\n-----END PUBLIC KEY-----\n'
 
-# User non-root
+RUN curl -fsSL -o /tmp/chezmoi.deb \
+    "https://github.com/twpayne/chezmoi/releases/download/v${CHEZMOI_VERSION}/chezmoi_${CHEZMOI_VERSION}_linux_arm64.deb" \
+  && echo "${CHEZMOI_SHA256}  /tmp/chezmoi.deb" | sha256sum -c - \
+  && dpkg -i /tmp/chezmoi.deb \
+  && rm /tmp/chezmoi.deb
+
+## Option cosign (décommenter pour activer) :
+ARG COSIGN_VERSION=3.0.5
+ARG COSIGN_SHA256=d098f3168ae4b3aa70b4ca78947329b953272b487727d1722cb3cb098a1a20ab
+
+RUN curl -fsSL -o /usr/local/bin/cosign \
+    "https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-arm64" \
+  && echo "${COSIGN_SHA256}  /usr/local/bin/cosign" | sha256sum -c - \
+  && chmod +x /usr/local/bin/cosign \
+  && curl -fsSL -o /tmp/chezmoi_checksums.txt \
+    "https://github.com/twpayne/chezmoi/releases/download/v${CHEZMOI_VERSION}/chezmoi_${CHEZMOI_VERSION}_checksums.txt" \
+  && curl -fsSL -o /tmp/chezmoi_checksums.txt.sig \
+    "https://github.com/twpayne/chezmoi/releases/download/v${CHEZMOI_VERSION}/chezmoi_${CHEZMOI_VERSION}_checksums.txt.sig" \
+  && printf ${CHEZMOI_PUB} > /tmp/chezmoi_cosign.pub \
+  && cosign verify-blob \
+    --key /tmp/chezmoi_cosign.pub \
+    --signature /tmp/chezmoi_checksums.txt.sig \
+    /tmp/chezmoi_checksums.txt \
+  && rm -f /usr/local/bin/cosign /tmp/chezmoi_cosign.pub /tmp/chezmoi_checksums.txt /tmp/chezmoi_checksums.txt.sig
+
+# -----------------------------------------------------------------------------
+# Infisical CLI — APT repo signé GPG (pas de binaire standalone disponible)
+# Le keyring GPG garantit l'authenticité du paquet
+# -----------------------------------------------------------------------------
+RUN curl -1sLf 'https://artifacts-cli.infisical.com/infisical.gpg' \
+    | gpg --dearmor -o /usr/share/keyrings/infisical-archive-keyring.gpg \
+  && echo "deb [signed-by=/usr/share/keyrings/infisical-archive-keyring.gpg] \
+    https://artifacts-cli.infisical.com stable main" \
+    | tee /etc/apt/sources.list.d/infisical.list \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends infisical=0.43.68 \
+  && rm -rf /var/lib/apt/lists/*
+
+# Pour pinner la version Infisical, remplacer la ligne apt-get install par :
+#   apt-get install -y infisical=<version>
+# Trouver la version disponible après un premier build :
+#   apt-cache policy infisical
+
+# -----------------------------------------------------------------------------
+# User non-root + entrypoint
+# -----------------------------------------------------------------------------
 RUN useradd -m -s /bin/bash dev
+
+COPY --chown=dev:dev entrypoint.sh /home/dev/.entrypoint.sh
+RUN chmod +x /home/dev/.entrypoint.sh
+
 USER dev
 WORKDIR /home/dev
 
-# Bootstrap dotfiles (remplace par ton URL)
-RUN chezmoi init --apply git@github.com:{{ .github.username }}/dotfiles.git
+# DOTFILES_REPO passé au runtime : docker run -e DOTFILES_REPO=https://...
+ENV DOTFILES_REPO="https://github.com:{{ .github.username }}/dotfiles.git"
+
+ENTRYPOINT ["/home/dev/.entrypoint.sh"]
 
 CMD ["nvim", "--listen", "/tmp/nvim.sock"]
+
