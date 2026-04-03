@@ -1,0 +1,30 @@
+#!/bin/bash
+set -euo pipefail
+
+# Usage: dev.sh <nom-projet>
+PROJECT=${1:?Usage: dev.sh <nom-projet>}
+
+IMAGE="ghcr.io/test/dev-base:1.0.0"
+SOCKET_DIR="/tmp/nvim-sockets"
+SOCKET="$SOCKET_DIR/nvim-${PROJECT}.sock"
+
+# Répertoire partagé pour les sockets Unix
+mkdir -p "$SOCKET_DIR"
+
+# Token Infisical depuis le Keychain (optionnel — pas encore configuré)
+INFISICAL_TOKEN="{{ .infisical.token }}"
+if security find-generic-password -a infisical -s dev -w &>/dev/null 2>&1; then
+  INFISICAL_TOKEN=$(security find-generic-password -a infisical -s dev -w)
+fi
+
+echo "⚡ Container : $PROJECT"
+echo "   Neovide  : neovide --server $SOCKET"
+
+container run --rm -it \
+  --name "dev-${PROJECT}" \
+  ${INFISICAL_TOKEN:+-e INFISICAL_TOKEN="$INFISICAL_TOKEN"} \
+  -v "$(pwd):/app" \
+  -v "$SOCKET_DIR:/tmp/nvim-sockets" \
+  -w /app \
+  "$IMAGE" \
+  nvim --listen "/tmp/nvim-sockets/nvim-${PROJECT}.sock"
