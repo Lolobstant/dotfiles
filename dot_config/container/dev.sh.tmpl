@@ -23,6 +23,9 @@ echo "   Neovide  : neovide --server $SOCKET"
 
 container run --rm --detach \
   --name "dev-${PROJECT}" \
+  -e CHEZMOI_EMAIL="{{ .email }}" \
+  -e CHEZMOI_GITHUB_USERNAME="{{ .github.username }}" \
+  -e CHEZMOI_INFISICAL_TOKEN="$INFISICAL_TOKEN" \
   ${INFISICAL_TOKEN:+-e INFISICAL_TOKEN="$INFISICAL_TOKEN"} \
   -v "$(pwd):/app" \
   -v "$SOCKET_DIR:/tmp/nvim-sockets" \
@@ -30,9 +33,11 @@ container run --rm --detach \
   "$IMAGE" \
   nvim --headless --listen "/tmp/nvim-sockets/nvim-${PROJECT}.sock"
 
+CONTAINER_PID=$!
+
 # Attendre que la socket soit créée (max 30s)
 echo "⏳ Attente du socket nvim..."
-TIMEOUT=30
+TIMEOUT=60
 ELAPSED=0
 until [ -S "$SOCKET" ] || [ $ELAPSED -ge $TIMEOUT ]; do
   sleep 0.5
@@ -41,9 +46,15 @@ done
 
 if [ ! -S "$SOCKET" ]; then
   echo "❌ Timeout — nvim n'a pas démarré"
-  container logs "dev-${PROJECT}"
+  kill $CONTAINER_PID 2>/dev/null
+  # container logs "dev-${PROJECT}"
   exit 1
 fi
 
 echo "✅ Socket prêt — lancement Neovide"
 neovide --server "$SOCKET"
+
+# Quand Neovide se ferme, arrêter le container
+echo "🛑 Fermeture du container..."
+container stop "dev-${PROJECT}" 2>/dev/null || true
+wait $CONTAINER_PID 2>/dev/null || true
