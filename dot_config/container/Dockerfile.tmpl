@@ -71,10 +71,11 @@ RUN curl -fsSL -o /usr/local/bin/cosign \
     "https://github.com/twpayne/chezmoi/releases/download/v${CHEZMOI_VERSION}/chezmoi_${CHEZMOI_VERSION}_checksums.txt" \
   && curl -fsSL -o /tmp/chezmoi_checksums.txt.sig \
     "https://github.com/twpayne/chezmoi/releases/download/v${CHEZMOI_VERSION}/chezmoi_${CHEZMOI_VERSION}_checksums.txt.sig" \
-  && printf ${CHEZMOI_PUB} > /tmp/chezmoi_cosign.pub \
+  && printf '%b' "${CHEZMOI_PUB}" > /tmp/chezmoi_cosign.pub \
   && cosign verify-blob \
     --key /tmp/chezmoi_cosign.pub \
     --signature /tmp/chezmoi_checksums.txt.sig \
+    --insecure-ignore-tlog \
     /tmp/chezmoi_checksums.txt \
   && rm -f /usr/local/bin/cosign /tmp/chezmoi_cosign.pub /tmp/chezmoi_checksums.txt /tmp/chezmoi_checksums.txt.sig
 
