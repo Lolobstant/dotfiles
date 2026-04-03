@@ -109,7 +109,7 @@ ARG EZA_SHA256=366e8430225f9955c3dc659b452150c169894833ccfef455e01765e265a3edda
 RUN curl -fsSL -o /tmp/eza.tar.gz \
     "https://github.com/eza-community/eza/releases/download/v${EZA_VERSION}/eza_aarch64-unknown-linux-gnu.tar.gz" \
   && echo "${EZA_SHA256}  /tmp/eza.tar.gz" | sha256sum -c - \
-  && tar -xzf /tmp/eza.tar.gz -C /usr/local/bin eza \
+  && tar -xzf /tmp/eza.tar.gz -C /usr/local/bin --strip-components=0 \
   && rm /tmp/eza.tar.gz
 
 # -----------------------------------------------------------------------------
