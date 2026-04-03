@@ -150,7 +150,7 @@ USER dev
 WORKDIR /home/dev
 
 # DOTFILES_REPO passé au runtime : docker run -e DOTFILES_REPO=https://...
-ENV DOTFILES_REPO="https://github.com:{{ .github.username }}/dotfiles.git"
+ENV DOTFILES_REPO="https://github.com/{{ .github.username }}/dotfiles.git"
 
 ENTRYPOINT ["/home/dev/.entrypoint.sh"]
 
