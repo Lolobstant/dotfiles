@@ -6,7 +6,9 @@ PROJECT=${1:?Usage: dev.sh <nom-projet>}
 
 IMAGE="ghcr.io/test/dev-base:1.0.0"
 SOCKET_DIR="/tmp/nvim-sockets"
-SOCKET="$SOCKET_DIR/nvim-${PROJECT}.sock"
+SOCKET_NAME="nvim-${PROJECT}.sock"
+SOCKET="$SOCKET_DIR/$SOCKET_NAME"
+
 
 # Répertoire partagé pour les sockets Unix
 mkdir -p "$SOCKET_DIR"
@@ -32,8 +34,8 @@ container run --rm --detach \
   -e CHEZMOI_INFISICAL_TOKEN="${INFISICAL_TOKEN:-to-be-configured}" \
  "${EXTRA_ENV[@]}" \
   -v "$(pwd):/app" \
-  -v "$SOCKET_DIR:/tmp/nvim-sockets" \
-  --publish-socket "${SOCKET}" \
+  -v "$SOCKET_DIR:$SOCKET_DIR" \
+  --publish-socket "${SOCKET}:${SOCKET}" \
   -w /app \
   "$IMAGE" \
   nvim --headless --listen "$SOCKET"
