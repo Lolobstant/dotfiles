@@ -15,4 +15,11 @@ if [ -n "${DOTFILES_REPO:-}" ]; then
   fi
 fi
 
+# Si dotfiles bootstrappés, pré-installer les plugins Lazy
+if [ -d "$HOME/.config/nvim" ]; then
+  echo "⚡ Installation plugins Lazy.nvim..."
+  nvim --headless "+Lazy! sync" +qa 2>/dev/null || true
+  echo "✅ Plugins OK"
+fi
+
 exec "$@"
