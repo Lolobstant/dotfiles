@@ -85,7 +85,7 @@ RUN curl -fsSL -o /usr/local/bin/cosign \
 # -----------------------------------------------------------------------------
 RUN curl -1sLf 'https://artifacts-cli.infisical.com/infisical.gpg' \
     | gpg --dearmor -o /usr/share/keyrings/infisical-archive-keyring.gpg \
-  && echo "deb [signed-by=/usr/share/keyrings/infisical-archive-keyring.gpg] \
+  && echo "deb [arch=arm64 signed-by=/usr/share/keyrings/infisical-archive-keyring.gpg] \
     https://artifacts-cli.infisical.com/deb stable main" \
     | tee /etc/apt/sources.list.d/infisical.list \
   && apt-get update \
