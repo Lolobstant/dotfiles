@@ -1,6 +1,11 @@
-{{- $email := env "CHEZMOI_EMAIL" | default (promptString "email") -}}
-{{- $github_username := env "CHEZMOI_GITHUB_USERNAME" | default (promptString "github_username") -}}
-{{- $infisical_token := env "CHEZMOI_INFISICAL_TOKEN" | default (promptString "infisical_token") -}}
+{{- $email := env "CHEZMOI_EMAIL" -}}
+{{- if not $email -}}{{- $email = promptString "email" -}}{{- end -}}
+
+{{- $github_username := env "CHEZMOI_GITHUB_USERNAME" -}}
+{{- if not $github_username -}}{{- $github_username = promptString "github_username" -}}{{- end -}}
+
+{{- $infisical_token := env "CHEZMOI_INFISICAL_TOKEN" -}}
+{{- if not $infisical_token -}}{{- $infisical_token = promptString "infisical_token" -}}{{- end -}}
 
 [edit]
   command = "nvim"
