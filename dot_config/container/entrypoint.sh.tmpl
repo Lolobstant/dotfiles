@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -eo pipefail
 
 # Bootstrap dotfiles via chezmoi — seulement si pas encore initialisé
 if [ -n "${DOTFILES_REPO:-}" ]; then
