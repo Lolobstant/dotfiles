@@ -20,6 +20,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ripgrep \
     fd-find \
     fzf \
+    bat \
+    zsh \
   && rm -rf /var/lib/apt/lists/*
 
 # -----------------------------------------------------------------------------
@@ -98,12 +100,51 @@ RUN curl -1sLf 'https://artifacts-cli.infisical.com/infisical.gpg' \
 #   apt-cache policy infisical
 
 # -----------------------------------------------------------------------------
-# User non-root + entrypoint
+# eza v0.23.4 — ARM64
+# SHA256 calculé depuis le binaire GitHub Releases
 # -----------------------------------------------------------------------------
-RUN useradd -m -s /bin/bash dev
+ARG EZA_VERSION=0.23.4
+ARG EZA_SHA256=366e8430225f9955c3dc659b452150c169894833ccfef455e01765e265a3edda
 
+RUN curl -fsSL -o /tmp/eza.tar.gz \
+    "https://github.com/eza-community/eza/releases/download/v${EZA_VERSION}/eza_aarch64-unknown-linux-gnu.tar.gz" \
+  && echo "${EZA_SHA256}  /tmp/eza.tar.gz" | sha256sum -c - \
+  && tar -xzf /tmp/eza.tar.gz -C /usr/local/bin eza \
+  && rm /tmp/eza.tar.gz
+
+# -----------------------------------------------------------------------------
+# zoxide v0.9.9 — ARM64
+# -----------------------------------------------------------------------------
+ARG ZOXIDE_VERSION=0.9.9
+ARG ZOXIDE_SHA256=96e6ea2e47a71db42cb7ad5a36e9209c8cb3708f8ae00f6945573d0d93315cb0
+
+RUN curl -fsSL -o /tmp/zoxide.tar.gz \
+    "https://github.com/ajeetdsouza/zoxide/releases/download/v${ZOXIDE_VERSION}/zoxide-${ZOXIDE_VERSION}-aarch64-unknown-linux-musl.tar.gz" \
+  && echo "${ZOXIDE_SHA256}  /tmp/zoxide.tar.gz" | sha256sum -c - \
+  && tar -xzf /tmp/zoxide.tar.gz -C /tmp \
+  && mv /tmp/zoxide /usr/local/bin/zoxide \
+  && rm /tmp/zoxide.tar.gz
+
+# -----------------------------------------------------------------------------
+# oh-my-posh v29.9.2 — ARM64
+# -----------------------------------------------------------------------------
+ARG OMP_VERSION=29.9.2
+ARG OMP_SHA256=8496286411570bac9cacafdfbaf62f3b29c62b436a4bced2487056b9e39ae84b
+
+RUN curl -fsSL -o /usr/local/bin/oh-my-posh \
+    "https://github.com/JanDeDobbeleer/oh-my-posh/releases/download/v${OMP_VERSION}/posh-linux-arm64" \
+  && echo "${OMP_SHA256}  /usr/local/bin/oh-my-posh" | sha256sum -c - \
+  && chmod +x /usr/local/bin/oh-my-posh
+
+
+# run starting script
 COPY --chown=dev:dev entrypoint.sh /home/dev/.entrypoint.sh
 RUN chmod +x /home/dev/.entrypoint.sh
+
+# -----------------------------------------------------------------------------
+# User non-root + entrypoint
+# -----------------------------------------------------------------------------
+RUN useradd -m -s /bin/zsh dev
 
 USER dev
 WORKDIR /home/dev
