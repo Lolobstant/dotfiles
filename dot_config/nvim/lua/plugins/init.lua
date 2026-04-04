@@ -16,9 +16,9 @@ return {
     -- dependencies = { "echasnovski/mini.icons", version = false },
     opts = require("plugins.configs.which-key"),
   },
-  { "echasnovski/mini.bufremove", version = false },
+  { "nvim-mini/mini.bufremove", version = false },
   { -- swap lines with jk keys
-    "echasnovski/mini.move",
+    "nvim-mini/mini.move",
     version = false,
     event = "VeryLazy",
     opts = require("plugins.configs.mini-move"),
@@ -37,88 +37,90 @@ return {
     config = true,
   },
 
-  { -- "gc" to comment visual regions/lines
-    "numToStr/Comment.nvim",
-    event = { "BufReadPre", "BufNewFile" },
-    dependencies = { "JoosepAlviste/nvim-ts-context-commentstring" },
-    config = function()
-      require("Comment").setup({
-        pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
-        -- or vim.bo.commentstring,
-      })
-    end,
-  },
+  -- { -- "gc" to comment visual regions/lines
+  --   "numToStr/Comment.nvim",
+  --   event = { "BufReadPre", "BufNewFile" },
+  --   dependencies = { "JoosepAlviste/nvim-ts-context-commentstring" },
+  --   config = function()
+  --     require("Comment").setup({
+  --       pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
+  --       -- or vim.bo.commentstring,
+  --     })
+  --   end,
+  -- },
   {
-    "echasnovski/mini.pairs",
+    "nvim-mini/mini.pairs",
     version = false,
+    config = true,
     event = { "BufReadPre", "BufNewFile" },
   },
-  {
-    "kylechui/nvim-surround",
-    version = "*", -- Use for stability; omit to use `main` branch for the latest features
-    event = { "BufReadPre", "BufNewFile" },
-    config = function()
-      require("nvim-surround").setup()
-    end,
-  },
+  { "nvim-mini/mini.surround", version = false, config = true },
+  -- {
+  --   "kylechui/nvim-surround",
+  --   version = "*", -- Use for stability; omit to use `main` branch for the latest features
+  --   event = { "BufReadPre", "BufNewFile" },
+  --   config = function()
+  --     require("nvim-surround").setup()
+  --   end,
+  -- },
   {
     "shellRaining/hlchunk.nvim",
     event = { "BufReadPre" },
     opts = require("plugins.configs.hlchunk"),
   },
-  { -- nice ui for input & selects
-    "stevearc/dressing.nvim",
-    event = "VeryLazy",
-    init = function()
-      ---@diagnostic disable-next-line: duplicate-set-field
-      vim.ui.select = function(...)
-        require("lazy").load({ plugins = { "dressing.nvim" } })
-        return vim.ui.select(...)
-      end
-      ---@diagnostic disable-next-line: duplicate-set-field
-      vim.ui.input = function(...)
-        require("lazy").load({ plugins = { "dressing.nvim" } })
-        return vim.ui.input(...)
-      end
-    end,
-  },
-  {
-    "rcarriga/nvim-notify",
-    event = "VeryLazy",
-    opts = {
-      background_colour = "#EFF1EB",
-      on_open = function(win)
-        vim.api.nvim_win_set_config(win, { zindex = 1000 })
-      end,
-    },
-    config = function(_, opts)
-      local notify = require("notify")
-      notify.setup(opts)
-      vim.notify = notify
-    end,
-  },
-  {
-    "folke/noice.nvim",
-    event = "VeryLazy",
-    opts = require("plugins.configs.noice"),
-    dependencies = {
-      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-      "MunifTanjim/nui.nvim",
-      -- OPTIONAL:
-      --   `nvim-notify` is only needed, if you want to use the notification view.
-      --   If not available, we use `mini` as the fallback
-      "rcarriga/nvim-notify",
-    },
-  },
-  { -- statusLine
-    -- TODO: replace with heirline nvim
-    "nvim-lualine/lualine.nvim",
-    event = { "BufReadPost", "BufNewFile" },
-    -- event = 'VeryLazy',
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    opts = require("plugins.configs.lualine"),
-  },
-
+  -- { -- nice ui for input & selects
+  --   "stevearc/dressing.nvim",
+  --   event = "VeryLazy",
+  --   init = function()
+  --     ---@diagnostic disable-next-line: duplicate-set-field
+  --     vim.ui.select = function(...)
+  --       require("lazy").load({ plugins = { "dressing.nvim" } })
+  --       return vim.ui.select(...)
+  --     end
+  --     ---@diagnostic disable-next-line: duplicate-set-field
+  --     vim.ui.input = function(...)
+  --       require("lazy").load({ plugins = { "dressing.nvim" } })
+  --       return vim.ui.input(...)
+  --     end
+  --   end,
+  -- },
+  -- {
+  --   "rcarriga/nvim-notify",
+  --   event = "VeryLazy",
+  --   opts = {
+  --     background_colour = "#EFF1EB",
+  --     on_open = function(win)
+  --       vim.api.nvim_win_set_config(win, { zindex = 1000 })
+  --     end,
+  --   },
+  --   config = function(_, opts)
+  --     local notify = require("notify")
+  --     notify.setup(opts)
+  --     vim.notify = notify
+  --   end,
+  -- },
+  -- {
+  --   "folke/noice.nvim",
+  --   event = "VeryLazy",
+  --   opts = require("plugins.configs.noice"),
+  --   dependencies = {
+  --     -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+  --     "MunifTanjim/nui.nvim",
+  --     -- OPTIONAL:
+  --     --   `nvim-notify` is only needed, if you want to use the notification view.
+  --     --   If not available, we use `mini` as the fallback
+  --     "rcarriga/nvim-notify",
+  --   },
+  -- },
+  -- { -- statusLine
+  --   -- TODO: replace with heirline nvim
+  --   "nvim-lualine/lualine.nvim",
+  --   event = { "BufReadPost", "BufNewFile" },
+  --   -- event = 'VeryLazy',
+  --   dependencies = { "nvim-tree/nvim-web-devicons" },
+  --   opts = require("plugins.configs.lualine"),
+  -- },
+  { "nvim-mini/mini.statusline", version = false },
   { -- better keyboard mouvements
     "smoka7/hop.nvim",
     lazy = true,
@@ -126,13 +128,13 @@ return {
     version = "v2.x",
     config = true,
   },
-  { -- better folding
-    "kevinhwang91/nvim-ufo",
-    lazy = true,
-    event = { "BufReadPost", "BufNewFile" },
-    dependencies = { "kevinhwang91/promise-async" },
-    config = true,
-  },
+  -- { -- better folding
+  --   "kevinhwang91/nvim-ufo",
+  --   lazy = true,
+  --   event = { "BufReadPost", "BufNewFile" },
+  --   dependencies = { "kevinhwang91/promise-async" },
+  --   config = true,
+  -- },
   { -- show the code context
     "nvim-treesitter/nvim-treesitter-context",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
@@ -190,24 +192,24 @@ return {
       vim.fn["mkdp#util#install"]()
     end,
   },
-  { "shortcuts/no-neck-pain.nvim", version = "*" },
-  {
-    "folke/twilight.nvim",
-    -- opts = {
-    -- 	context = 5,
-    -- 	dimming = {
-    -- 		alpha = 0.55, -- amount of dimming
-    -- 		-- we try to get the foreground from the highlight groups or fallback color
-    -- 		-- color = { "Normal", "#ffffff" },
-    -- 		-- term_bg = "#000000", -- if guibg=NONE, this will be used to calculate text color
-    -- 		-- inactive = false, -- when true, other windows will be fully dimmed (unless they contain the same buffer)
-    -- 	},
-    -- },
-    -- configs = true,
-    -- configs = function(_, opts)
-    -- 	require().setup(opts)
-    -- end,
-  },
+  -- { "shortcuts/no-neck-pain.nvim", version = "*" },
+  -- {
+  --   "folke/twilight.nvim",
+  --   -- opts = {
+  --   -- 	context = 5,
+  --   -- 	dimming = {
+  --   -- 		alpha = 0.55, -- amount of dimming
+  --   -- 		-- we try to get the foreground from the highlight groups or fallback color
+  --   -- 		-- color = { "Normal", "#ffffff" },
+  --   -- 		-- term_bg = "#000000", -- if guibg=NONE, this will be used to calculate text color
+  --   -- 		-- inactive = false, -- when true, other windows will be fully dimmed (unless they contain the same buffer)
+  --   -- 	},
+  --   -- },
+  --   -- configs = true,
+  --   -- configs = function(_, opts)
+  --   -- 	require().setup(opts)
+  --   -- end,
+  -- },
   {
     "MagicDuck/grug-far.nvim",
     cmd = { "GrugFar" },
@@ -224,12 +226,12 @@ return {
     opts = { -- set to setup table
     },
   },
-  {
-    "zk-org/zk-nvim",
-    config = function()
-      require("zk").setup({})
-    end,
-  },
+  -- {
+  --   "zk-org/zk-nvim",
+  --   config = function()
+  --     require("zk").setup({})
+  --   end,
+  -- },
   -- {
   --   "nvim-neorg/neorg",
   --   lazy = false, -- Disable lazy loading as some `lazy.nvim` distributions set `lazy = true` by default
@@ -263,30 +265,30 @@ return {
       completions = { lsp = { enabled = true } },
     },
   },
-  {
-    "obsidian-nvim/obsidian.nvim",
-    version = "*", -- recommended, use latest release instead of latest commit
-    ft = "markdown",
-    -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
-    -- event = {
-    --   -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
-    --   -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/*.md"
-    --   -- refer to `:h file-pattern` for more examples
-    --   "BufReadPre ~/notes/**/*.md",
-    --   "BufNewFile ~/notes/**/*.md",
-    -- },
-    ---@module 'obsidian'
-    ---@type obsidian.config
-    opts = {
-      workspaces = {
-        {
-          name = "my zettel",
-          path = "~/notes/",
-        },
-      },
-      templates = { folder = "templates" },
-    },
-  },
+  -- {
+  --   "obsidian-nvim/obsidian.nvim",
+  --   version = "*", -- recommended, use latest release instead of latest commit
+  --   ft = "markdown",
+  --   -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
+  --   -- event = {
+  --   --   -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
+  --   --   -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/*.md"
+  --   --   -- refer to `:h file-pattern` for more examples
+  --   --   "BufReadPre ~/notes/**/*.md",
+  --   --   "BufNewFile ~/notes/**/*.md",
+  --   -- },
+  --   ---@module 'obsidian'
+  --   ---@type obsidian.config
+  --   opts = {
+  --     workspaces = {
+  --       {
+  --         name = "my zettel",
+  --         path = "~/notes/",
+  --       },
+  --     },
+  --     templates = { folder = "templates" },
+  --   },
+  -- },
 }
 -- {
 --   "nvim-telescope/telescope-file-browser.nvim",
