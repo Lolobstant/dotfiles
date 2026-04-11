@@ -134,6 +134,7 @@ return function()
     jsonls = {},
     graphql = {},
     biome = {},
+    eslint = {},
     lua_ls = {
       -- cmd = {...},
       -- filetypes = { ...},
@@ -189,6 +190,15 @@ return function()
         lspconfig[server_name].setup(server)
       end,
     },
+  })
+  lspconfig.eslint.setup({
+    capabilities = capabilities,
+    on_attach = function(_, bufnr)
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        buffer = bufnr,
+        command = "EslintFixAll",
+      })
+    end,
   })
 
   -- vim.api.nvim_create_autocmd("User", {

@@ -99,7 +99,16 @@ local options = {
   },
   t = {},
 }
-
+-- Sync nvm PATH avec nvim (pour Mason et tous les child processes)
+local nvm_dir = vim.fn.expand("~/.nvm/versions/node")
+if vim.fn.isdirectory(nvm_dir) == 1 then
+  local versions = vim.fn.glob(nvm_dir .. "/*/bin", false, true)
+  if #versions > 0 then
+    table.sort(versions)
+    -- prend la plus haute version installée
+    vim.env.PATH = versions[#versions] .. ":" .. vim.env.PATH
+  end
+end
 for scope, table in pairs(options) do
   for setting, value in pairs(table) do
     vim[scope][setting] = value
@@ -111,6 +120,53 @@ vim.opt.shortmess:append({ s = true, I = true }) -- disable startup message
 vim.opt.backspace:append({ "nostop" }) -- Don't stop backspace at insert
 vim.opt.whichwrap:append("bs<>[]hl") -- which "horizontal" keys are allowed to travel to prev/next line
 vim.opt.listchars:append("tab:-->, space: ,trail:·,nbsp =␣")
+
+require("vim._core.ui2").enable({
+  enable = true,
+  msg = {
+    targets = {
+      [""] = "msg",
+      empty = "cmd",
+      bufwrite = "msg",
+      confirm = "cmd",
+      emsg = "pager",
+      echo = "msg",
+      echomsg = "msg",
+      echoerr = "pager",
+      completion = "cmd",
+      list_cmd = "pager",
+      lua_error = "pager",
+      lua_print = "msg",
+      progress = "pager",
+      rpc_error = "pager",
+      quickfix = "msg",
+      search_cmd = "cmd",
+      search_count = "cmd",
+      shell_cmd = "pager",
+      shell_err = "pager",
+      shell_out = "pager",
+      shell_ret = "msg",
+      undo = "msg",
+      verbose = "pager",
+      wildlist = "cmd",
+      wmsg = "msg",
+      typed_cmd = "cmd",
+    },
+    cmd = {
+      height = 0.5,
+    },
+    dialog = {
+      height = 0.5,
+    },
+    msg = {
+      height = 0.3,
+      timeout = 5000,
+    },
+    pager = {
+      height = 0.5,
+    },
+  },
+})
 
 if vim.fn.has("nvim-0.9") == 1 then
   vim.opt.diffopt:append("linematch:60") -- enable linematch diff algorithm

@@ -18,6 +18,9 @@
 local actions = require("telescope.actions")
 return {
   defaults = {
+    preview = {
+      treesitter = false,
+    },
     path_display = { "smart" },
     file_ignore_patterns = { "node_modules" },
     file_sorter = require("telescope.sorters").get_fuzzy_file,

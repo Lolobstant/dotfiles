@@ -28,6 +28,8 @@ return function()
       "lua_ls",
       "biome",
       "bashls",
+      "prettierd",
+      "eslint-lsp",
     },
   })
 end
