@@ -53,8 +53,8 @@ local function applyMapping(table)
           --   keymapOpts[k] = v
           -- end
           wk.add({
-            { keymap, cmd, desc = opts.desc, noremap = false },
-          }, { mode })
+            { keymap, cmd, desc = opts.desc, noremap = false, mode = mode },
+          })
         else
           vim.keymap.set(mode, keymap, cmd, opts)
         end
