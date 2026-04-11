@@ -44,7 +44,20 @@ return {
       vim.api.nvim_create_autocmd("FileType", {
         group = vim.api.nvim_create_augroup("ts_highlight", { clear = true }),
         callback = function()
-          pcall(vim.treesitter.start)
+          local ft = vim.bo.filetype
+          local lang = vim.treesitter.language.get_lang(ft)
+          if not lang then
+            return
+          end
+
+          -- Parser dispo → on start direct
+          local ok = pcall(vim.treesitter.start)
+          if not ok then
+            -- Pas dispo → on installe, puis on re-essaie après install
+            require("nvim-treesitter").install({ lang }, function()
+              pcall(vim.treesitter.start)
+            end)
+          end
         end,
       })
     end,
