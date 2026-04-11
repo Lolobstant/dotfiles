@@ -120,6 +120,17 @@ for scope, table in pairs(options) do
   end
 end
 
+local function apply_hl_overrides()
+  vim.api.nvim_set_hl(0, "Constant", { fg = "#ff5858" })
+end
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+  pattern = "*",
+  callback = apply_hl_overrides,
+})
+-- Pour le thème déjà chargé au démarrage
+vim.schedule(apply_hl_overrides)
+
 vim.opt.viewoptions:remove("curdir") -- disable saving current directory with views
 vim.opt.shortmess:append({ s = true, I = true }) -- disable startup message
 vim.opt.backspace:append({ "nostop" }) -- Don't stop backspace at insert

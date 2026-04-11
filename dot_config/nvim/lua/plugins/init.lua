@@ -47,15 +47,15 @@ return {
     event = { "BufReadPre" },
     opts = require("plugins.configs.hlchunk"),
   },
-  -- { -- statusLine
-  --   -- TODO: replace with heirline nvim
-  --   "nvim-lualine/lualine.nvim",
-  --   event = { "BufReadPost", "BufNewFile" },
-  --   -- event = 'VeryLazy',
-  --   dependencies = { "nvim-tree/nvim-web-devicons" },
-  --   opts = require("plugins.configs.lualine"),
-  -- },
-  { "nvim-mini/mini.statusline", version = false },
+  { -- statusLine
+    -- TODO: replace with heirline nvim
+    "nvim-lualine/lualine.nvim",
+    event = { "BufReadPost", "BufNewFile" },
+    -- event = 'VeryLazy',
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = require("plugins.configs.lualine"),
+  },
+  -- { "nvim-mini/mini.statusline", version = false },
   { -- better keyboard mouvements
     "smoka7/hop.nvim",
     lazy = true,
@@ -77,13 +77,13 @@ return {
     version = false,
     opts = require("plugins.configs.mini-files"),
   },
-  { -- home screen
-    "goolord/alpha-nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    opts = function()
-      return require("plugins.configs.alpha")
-    end,
-  },
+  -- { -- home screen
+  --   "goolord/alpha-nvim",
+  --   dependencies = { "nvim-tree/nvim-web-devicons" },
+  --   opts = function()
+  --     return require("plugins.configs.alpha")
+  --   end,
+  -- },
   {
     "akinsho/toggleterm.nvim",
     version = "*",

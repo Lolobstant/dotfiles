@@ -29,10 +29,24 @@
 -- return {
 --
 -- };
+-- Couleurs par mode (style NvChad)
+local mode_colors = {
+  n = "#81a1c1", -- bleu    (normal)
+  i = "#a3be8c", -- vert    (insert)
+  v = "#b48ead", -- violet  (visual)
+  V = "#b48ead",
+  c = "#ebcb8b", -- jaune   (command)
+  R = "#bf616a", -- rouge   (replace)
+}
+
+local function mode_color()
+  return { bg = mode_colors[vim.fn.mode():sub(1, 1)] or "#81a1c1", fg = "#2e3440", gui = "bold" }
+end
+
 return {
   options = {
     icons_enabled = true,
-    -- theme = "base16",
+    theme = "auto",
     -- component_separators = { left = "", right = "" },
     component_separators = { left = "∕", right = "⢸" },
     -- section_separators = { left = "", right = "" },
@@ -51,7 +65,7 @@ return {
     },
   },
   sections = {
-    lualine_a = { { "mode", icon = "" } },
+    lualine_a = { { "mode", icon = "", padding = { left = 1, right = 1 }, color = mode_color } },
     lualine_b = { "branch", "diff", "diagnostics" },
     lualine_c = { "filename" },
     lualine_x = { "encoding", "fileformat", "filetype", "lsp_status" },

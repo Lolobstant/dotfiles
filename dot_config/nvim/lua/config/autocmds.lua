@@ -36,16 +36,6 @@ if is_available("mini.files") then
   })
 end
 
-autocmd("ColorScheme", {
-  group = "AutoCommands",
-  pattern = "*",
-  callback = function()
-    -- Force le background
-    vim.opt.background = "light"
-    -- Tes overrides de highlight
-    vim.api.nvim_set_hl(0, "Constant", { fg = "#ff5858" })
-  end,
-})
 -- autocmd("FileType", {
 --   pattern = "cmd",
 --   callback = function()
