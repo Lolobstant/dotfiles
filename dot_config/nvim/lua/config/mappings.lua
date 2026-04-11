@@ -267,10 +267,10 @@ if is_available("telescope.nvim") then
   M.n["<leader>sk"] = { builtin.keymaps, "[S]earch [K]eymaps" }
 
   --INFO: LSP:
-  M.n["gd"] = { builtin.lsp_definitions, "LSP: [G]oto [D]efinition" }
-  M.n["gD"] = { vim.lsp.buf.declaration, "LSP: [G]oto [D]eclaration" }
-  M.n["gr"] = { builtin.lsp_references, "LSP: [G]oto [R]eferences" }
-  M.n["gI"] = { builtin.lsp_implementations, "LSP: [G]oto [I]mplementation" }
+  -- M.n["gd"] = { builtin.lsp_definitions, "LSP: [G]oto [D]efinition" }
+  -- M.n["gD"] = { vim.lsp.buf.declaration, "LSP: [G]oto [D]eclaration" }
+  -- M.n["gr"] = { builtin.lsp_references, "LSP: [G]oto [R]eferences" }
+  -- M.n["gI"] = { builtin.lsp_implementations, "LSP: [G]oto [I]mplementation" }
   M.n["<leader>lD"] = { builtin.lsp_type_definitions, "LSP: Type [D]efinition" }
   M.n["<leader>lds"] = { builtin.lsp_document_symbols, "LSP: [D]ocument [S]ymbols" }
   M.n["<leader>lws"] = { builtin.lsp_dynamic_workspace_symbols, "LSP: [W]orkspace [S]ymbols" }
@@ -494,12 +494,39 @@ M.n["<leader>pu"] = { lazy.update, "[P]lugins [U]pdate" }
 M.n["[d"] = { vim.diagnostic.goto_prev, "Go to previous diagnostic message" }
 M.n["]d"] = { vim.diagnostic.goto_next, "Go to next diagnostic message" }
 M.n["<leader>dm"] = {
-  function()
-    vim.diagnostic.open_float()
-  end,
+  vim.diagnostic.open_float,
   "[D]iagnostics [M]essage",
 }
-M.n["<leader>dl"] = { vim.diagnostic.setloclist, "[D]iagnostics [L]ist" }
+M.n["<leader>dq"] = { vim.diagnostic.setloclist, "[D]iagnostics [Q]uick List" }
+
+--[INFO:] DAP
+
+if is_available("nvim-dap") then
+  local dap = require("dap")
+  -- Navigation debug
+  M.n["<leader>dc"] = { dap.continue, "DAP: Continue / Start" }
+  M.n["<leader>dn"] = { dap.step_over, "DAP: Next (step over)" }
+  M.n["<leader>di"] = { dap.step_into, "DAP: Into (step into)" }
+  M.n["<leader>do"] = { dap.step_out, "DAP: Out (step out)" }
+  M.n["<leader>dx"] = { dap.terminate, "DAP: Terminate" }
+
+  -- Breakpoints
+  M.n["<leader>db"] = { dap.toggle_breakpoint, "DAP: Toggle Breakpoint" }
+  M.n["<leader>dB"] = {
+    function()
+      dap.set_breakpoint(vim.fn.input("Condition: "))
+    end,
+    "DABP: Breakpoint conditionnel",
+  }
+  M.n["<leader>dl"] = { dap.clear_breakpoints, "DAP: Clear all breakpoints" }
+end
+-- UI
+if is_available("nvim-dap-ui") then
+  local dapui = require("dapui")
+  M.n["<leader>du"] = { dapui.toggle, "DAP: Toggle UI" }
+  M.n["<leader>de"] = { dapui.eval, "DAP: Eval expression" }
+  M.v["<leader>de"] = { dapui.eval, "DAP: Eval selection" }
+end
 
 -- INFO: LSP
 -- M.n["gd"] = { vim.lsp.buf.definition, "[G]o to [D]efinition" }

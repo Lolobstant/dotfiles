@@ -46,7 +46,7 @@ local options = {
     splitbelow = true, -- force all horizontal splits to go below current window
     splitright = true, -- force all vertical splits to go to the right of current window
     swapfile = true, -- creates a swapfile
-    directory = ".swap",
+    directory = vim.fn.stdpath("state") .. "/swap",
     termguicolors = true, -- set term gui colors (most terminals support this)
     timeoutlen = 300, -- time to wait for a mapped sequence to complete (in milliseconds)
     undofile = true, -- enable persistent undo
@@ -81,7 +81,7 @@ local options = {
     foldenable = true, -- enable fold for nvim-ufo
     foldlevel = 99, -- set high foldlevel for nvim-ufo
     foldlevelstart = 99, -- start with all code unfolded
-    foldcolumn = nil, --vim.fn.has("nvim-0.9") == 1 and "1" or nil, -- show foldcolumn (depth of fold) in nvim 0.9
+    -- foldcolumn = nil, --vim.fn.has("nvim-0.9") == 1 and "1" or nil, -- show foldcolumn (depth of fold) in nvim 0.9
     -- foldmethod = "syntax",
 
     -- Status line
@@ -96,6 +96,10 @@ local options = {
     maplocalleader = " ",
     highlighturl_enabled = true, -- highlight URLs by default
     autoformat_enabled = true, -- enable or disable auto formatting at start (lsp.formatting.format_on_save must be enabled)
+    loaded_perl_provider = 0,
+    loaded_ruby_provider = 0,
+    loaded_python3_provider = 0,
+    loaded_node_provider = 0,
   },
   t = {},
 }
@@ -106,7 +110,8 @@ if vim.fn.isdirectory(nvm_dir) == 1 then
   if #versions > 0 then
     table.sort(versions)
     -- prend la plus haute version installée
-    vim.env.PATH = versions[#versions] .. ":" .. vim.env.PATH
+
+    vim.env.PATH = "/opt/homebrew/bin:" .. versions[#versions] .. ":" .. vim.env.PATH
   end
 end
 for scope, table in pairs(options) do
@@ -119,58 +124,56 @@ vim.opt.viewoptions:remove("curdir") -- disable saving current directory with vi
 vim.opt.shortmess:append({ s = true, I = true }) -- disable startup message
 vim.opt.backspace:append({ "nostop" }) -- Don't stop backspace at insert
 vim.opt.whichwrap:append("bs<>[]hl") -- which "horizontal" keys are allowed to travel to prev/next line
-vim.opt.listchars:append("tab:-->, space: ,trail:·,nbsp =␣")
+vim.opt.listchars:append({ tab = "-->", trail = "·", nbsp = "␣" })
 
-require("vim._core.ui2").enable({
-  enable = true,
-  msg = {
-    targets = {
-      [""] = "msg",
-      empty = "cmd",
-      bufwrite = "msg",
-      confirm = "cmd",
-      emsg = "pager",
-      echo = "msg",
-      echomsg = "msg",
-      echoerr = "pager",
-      completion = "cmd",
-      list_cmd = "pager",
-      lua_error = "pager",
-      lua_print = "msg",
-      progress = "pager",
-      rpc_error = "pager",
-      quickfix = "msg",
-      search_cmd = "cmd",
-      search_count = "cmd",
-      shell_cmd = "pager",
-      shell_err = "pager",
-      shell_out = "pager",
-      shell_ret = "msg",
-      undo = "msg",
-      verbose = "pager",
-      wildlist = "cmd",
-      wmsg = "msg",
-      typed_cmd = "cmd",
-    },
-    cmd = {
-      height = 0.5,
-    },
-    dialog = {
-      height = 0.5,
-    },
-    msg = {
-      height = 0.3,
-      timeout = 5000,
-    },
-    pager = {
-      height = 0.5,
-    },
-  },
-})
+-- require("vim._core.ui2").enable({
+--   enable = true,
+--   msg = {
+--     targets = {
+--       [""] = "msg",
+--       empty = "cmd",
+--       bufwrite = "msg",
+--       confirm = "cmd",
+--       emsg = "pager",
+--       echo = "msg",
+--       echomsg = "msg",
+--       echoerr = "pager",
+--       completion = "cmd",
+--       list_cmd = "pager",
+--       lua_error = "pager",
+--       lua_print = "msg",
+--       progress = "pager",
+--       rpc_error = "pager",
+--       quickfix = "msg",
+--       search_cmd = "cmd",
+--       search_count = "cmd",
+--       shell_cmd = "pager",
+--       shell_err = "pager",
+--       shell_out = "pager",
+--       shell_ret = "msg",
+--       undo = "msg",
+--       verbose = "pager",
+--       wildlist = "cmd",
+--       wmsg = "msg",
+--       typed_cmd = "cmd",
+--     },
+--     cmd = {
+--       height = 0.5,
+--     },
+--     dialog = {
+--       height = 0.5,
+--     },
+--     msg = {
+--       height = 0.3,
+--       timeout = 5000,
+--     },
+--     pager = {
+--       height = 0.5,
+--     },
+--   },
+-- })
 
-if vim.fn.has("nvim-0.9") == 1 then
-  vim.opt.diffopt:append("linematch:60") -- enable linematch diff algorithm
-end
+vim.opt.diffopt:append("linematch:60")
 
 local alpha = function()
   return string.format("%x", math.floor(255 * (vim.g.transparency or 0.8)))

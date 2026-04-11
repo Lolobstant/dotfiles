@@ -34,20 +34,7 @@ return {
     cmd = { "TodoTrouble", "TodoTelescope" },
     event = { "BufReadPost", "BufNewFile" },
     opts = require("plugins.configs.todo-comments"),
-    config = true,
   },
-
-  -- { -- "gc" to comment visual regions/lines
-  --   "numToStr/Comment.nvim",
-  --   event = { "BufReadPre", "BufNewFile" },
-  --   dependencies = { "JoosepAlviste/nvim-ts-context-commentstring" },
-  --   config = function()
-  --     require("Comment").setup({
-  --       pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
-  --       -- or vim.bo.commentstring,
-  --     })
-  --   end,
-  -- },
   {
     "nvim-mini/mini.pairs",
     version = false,
@@ -55,63 +42,11 @@ return {
     event = { "BufReadPre", "BufNewFile" },
   },
   { "nvim-mini/mini.surround", version = false, config = true },
-  -- {
-  --   "kylechui/nvim-surround",
-  --   version = "*", -- Use for stability; omit to use `main` branch for the latest features
-  --   event = { "BufReadPre", "BufNewFile" },
-  --   config = function()
-  --     require("nvim-surround").setup()
-  --   end,
-  -- },
   {
     "shellRaining/hlchunk.nvim",
     event = { "BufReadPre" },
     opts = require("plugins.configs.hlchunk"),
   },
-  -- { -- nice ui for input & selects
-  --   "stevearc/dressing.nvim",
-  --   event = "VeryLazy",
-  --   init = function()
-  --     ---@diagnostic disable-next-line: duplicate-set-field
-  --     vim.ui.select = function(...)
-  --       require("lazy").load({ plugins = { "dressing.nvim" } })
-  --       return vim.ui.select(...)
-  --     end
-  --     ---@diagnostic disable-next-line: duplicate-set-field
-  --     vim.ui.input = function(...)
-  --       require("lazy").load({ plugins = { "dressing.nvim" } })
-  --       return vim.ui.input(...)
-  --     end
-  --   end,
-  -- },
-  -- {
-  --   "rcarriga/nvim-notify",
-  --   event = "VeryLazy",
-  --   opts = {
-  --     background_colour = "#EFF1EB",
-  --     on_open = function(win)
-  --       vim.api.nvim_win_set_config(win, { zindex = 1000 })
-  --     end,
-  --   },
-  --   config = function(_, opts)
-  --     local notify = require("notify")
-  --     notify.setup(opts)
-  --     vim.notify = notify
-  --   end,
-  -- },
-  -- {
-  --   "folke/noice.nvim",
-  --   event = "VeryLazy",
-  --   opts = require("plugins.configs.noice"),
-  --   dependencies = {
-  --     -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-  --     "MunifTanjim/nui.nvim",
-  --     -- OPTIONAL:
-  --     --   `nvim-notify` is only needed, if you want to use the notification view.
-  --     --   If not available, we use `mini` as the fallback
-  --     "rcarriga/nvim-notify",
-  --   },
-  -- },
   -- { -- statusLine
   --   -- TODO: replace with heirline nvim
   --   "nvim-lualine/lualine.nvim",
@@ -128,13 +63,6 @@ return {
     version = "v2.x",
     config = true,
   },
-  -- { -- better folding
-  --   "kevinhwang91/nvim-ufo",
-  --   lazy = true,
-  --   event = { "BufReadPost", "BufNewFile" },
-  --   dependencies = { "kevinhwang91/promise-async" },
-  --   config = true,
-  -- },
   { -- show the code context
     "nvim-treesitter/nvim-treesitter-context",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
@@ -180,7 +108,7 @@ return {
     end,
     dependencies = {
       { "nvim-lua/plenary.nvim" },
-      { "nvim-telescope/telescope.nvim", tag = "0.1.4" },
+      { "nvim-telescope/telescope.nvim" },
       { "Shatur/neovim-session-manager" },
     },
   },
@@ -214,7 +142,8 @@ return {
     "MagicDuck/grug-far.nvim",
     cmd = { "GrugFar" },
     config = true,
-  }, -- { 'edluffy/hologram.nvim',      opts = { auto_display = true } }
+  },
+  -- { 'edluffy/hologram.nvim',      opts = { auto_display = true } }
   -- {
   -- 	"nvim-zh/colorful-winsep.nvim",
   -- 	config = true,
@@ -226,34 +155,6 @@ return {
     opts = { -- set to setup table
     },
   },
-  -- {
-  --   "zk-org/zk-nvim",
-  --   config = function()
-  --     require("zk").setup({})
-  --   end,
-  -- },
-  -- {
-  --   "nvim-neorg/neorg",
-  --   lazy = false, -- Disable lazy loading as some `lazy.nvim` distributions set `lazy = true` by default
-  --   version = "*", -- Pin Neorg to the latest stable release
-  --   config = {
-  --     load = {
-  --       ["core.defaults"] = {},
-  --       ["core.dirman"] = {
-  --         config = {
-  --           workspaces = {
-  --             notes = "~/.config/notes",
-  --           },
-  --         },
-  --       },
-  --       ["core.concealer"] = {
-  --         config = {
-  --           icon_preset = "varied",
-  --         },
-  --       },
-  --     },
-  --   },
-  -- },
   {
     "MeanderingProgrammer/render-markdown.nvim",
     -- dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.nvim" }, -- if you use the mini.nvim suite
@@ -262,6 +163,7 @@ return {
     ---@module 'render-markdown'
     ---@type render.md.UserConfig
     opts = {
+      latex = { enabled = false },
       completions = { lsp = { enabled = true } },
     },
   },
@@ -290,46 +192,3 @@ return {
   --   },
   -- },
 }
--- {
---   "nvim-telescope/telescope-file-browser.nvim",
---   dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" }
--- }
---
--- {
---   'echasnovski/mini.indentscope',
---   version = false,
---   opts = {
---     draw = {
---       delay = 50,
---     },
---     symbol = "▏",
---   },
---   configs = function(_, opts) require('mini.indentscope').setup(opts) end
--- },
--- {
---   "lukas-reineke/indent-blankline.nvim",
---   opts = {
---     pace_char_blankline = " ",
---     show_current_context_start = true,
---     show_trailing_blankline_indent = false,
---     use_treesitter = true,
---     char = "▏",
---     -- context_char = "▏",
---     show_current_context = true,
---
---   }
--- },
--- {
---   "folke/twilight.nvim",
---   opts = {
---     context = [ 5,
---     dimming = {
---       alpha = 0.55, -- amount of dimming
---       -- we try to get the foreground from the highlight groups or fallback color
---       -- color = { "Normal", "#ffffff" },
---       -- term_bg = "#000000", -- if guibg=NONE, this will be used to calculate text color
---       -- inactive = false, -- when true, other windows will be fully dimmed (unless they contain the same buffer)
---     },
---   },
---   configs = function(_, opts) require().setup(opts) end
--- },

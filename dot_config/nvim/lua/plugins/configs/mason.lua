@@ -30,6 +30,7 @@ return function()
       "bashls",
       "prettierd",
       "eslint-lsp",
+      "js-debug-adapter",
     },
   })
 end
