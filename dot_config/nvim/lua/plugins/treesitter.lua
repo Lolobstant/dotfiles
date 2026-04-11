@@ -1,67 +1,68 @@
+-- lua/plugins/treesitter.lua
 return {
-  -- Highlight, edit, and navigate code
-  "nvim-treesitter/nvim-treesitter",
-  branch = "main",
-  dependencies = {
-    "nvim-treesitter/nvim-treesitter-textobjects",
+  {
+    "nvim-treesitter/nvim-treesitter",
+    branch = "main",
+    lazy = false,
+    build = ":TSUpdate",
+    config = function()
+      require("nvim-treesitter").setup({
+        -- Parsers toujours installés
+        ensure_installed = {
+          "lua",
+          "luadoc",
+          "tsx",
+          "typescript",
+          "javascript",
+          "jsdoc",
+          "json",
+          "css",
+          "scss",
+          "html",
+          "graphql",
+          "markdown",
+          "markdown_inline",
+          "yaml",
+          "toml",
+          "dockerfile",
+          "gitcommit",
+          "gitignore",
+          "python",
+          "bash",
+          "regex",
+          "comment",
+          "vim",
+          "vimdoc",
+          "diff",
+          "c",
+        },
+        -- Auto-install le parser quand tu ouvres un fichier sans parser dispo
+        auto_install = true,
+      })
+
+      -- Active la coloration tree-sitter native nvim (builtin, pas besoin de plugin)
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("ts_highlight", { clear = true }),
+        callback = function()
+          pcall(vim.treesitter.start)
+        end,
+      })
+    end,
+  },
+
+  -- Autotag : gère son propre setup, pas besoin de le configurer via treesitter
+  {
     "windwp/nvim-ts-autotag",
-    -- "JoosepAlviste/nvim-ts-context-commentstring",
+    event = { "BufReadPost", "BufNewFile" },
+    config = true,
   },
-  event = { "BufReadPost", "BufNewFile" },
-  cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
-  build = ":TSUpdate",
-  opts = {
-    ensure_installed = {
-      "lua",
-      "tsx",
-      "typescript",
-      "graphql",
-      "json",
-      "scss",
-      "vimdoc",
-      "vim",
-      "comment",
-      "css",
-      "diff",
-      "dockerfile",
-      "gitcommit",
-      "gitignore",
-      "html",
-      "c",
-      "lua",
-      "luadoc",
-      "jsdoc",
-      "markdown",
-      "nix",
-      "python",
-      "regex",
-      "toml",
-      "yaml",
-      "xml",
-    },
-    -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
-    auto_install = true,
-    highlight = { enable = true, additional_vim_regex_highlighting = true, use_languagetree = true },
-    indent = { enable = true },
-    incremental_selection = { enable = true, keymaps = { node_incremental = "v", node_decremental = "V" } },
-    autotag = { enable = true },
-    ts_context_commentstring = { enable = true, enable_autocmd = false },
+
+  -- Textobjects : branche main aussi pour compatibilité 0.12
+  {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    branch = "main",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    -- config ici si tu veux des keymaps textobjects,
+    -- sinon lazy = true et pas de config = ça charge juste les modules
   },
-  config = function(_, opts)
-    local ts = require("nvim-treesitter")
-
-    -- local configs = require("nvim-treesitter.configs")
-    ts.setup({})
-
-    local alreadyInstalled = ts.get_installed()
-    local parsersToInstall = vim
-      .iter(opts.ensure_installed)
-      :filter(function(parser)
-        return not vim.tbl_contains(alreadyInstalled, parser)
-      end)
-      :totable()
-    if #parsersToInstall > 0 then
-      ts.install(parsersToInstall)
-    end
-  end,
 }
