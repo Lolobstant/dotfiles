@@ -1,11 +1,5 @@
 cask_args appdir: "~/Applications"
 
-# Tap homebrew
-# tap "homebrew/cask"
-tap "homebrew/bundle"
-tap "homebrew/cask-fonts"
-## tap "jesseduffield/lazygit/lazygit"
-
 # cask (graphical interface)
 cask "iina"
 cask "rectangle"
@@ -19,12 +13,11 @@ cask "whatsapp"
 cask "ngrok/ngrok/ngrok"
 cask "neovide-app"
 cask "bruno"
-# cask "kitty"
 cask "ghostty"
 # cask "anki"
 cask "orion"
 cask "netnewswire"
-cask "freetube"
+# cask "freetube"
 cask "handbrake-app"
 cask "brave-browser"
 # cask "gimp"
@@ -38,7 +31,7 @@ cask "qmk-toolbox"
 cask "mactex"
 # cask "thunderbird"
 # cask "mailspring"
-cask "actual"
+cask "actual" # opensource YNAB
 
 ## Fonts
 cask "font-fira-code-nerd-font"
@@ -51,6 +44,7 @@ brew "bat"
 brew "stripe/stripe-cli/stripe"
 brew "eza"
 brew "neovim"
+brew "tree-sitter-cli"
 brew "ripgrep"
 brew "fd"
 brew "tokei"
@@ -77,6 +71,7 @@ brew "pandoc"
 brew "container"
 brew "ncdu"
 brew "crane"
+brew "dos2unix"
 
 #mas (mac app store)
 # mas "type fu"
