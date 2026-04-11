@@ -5,6 +5,7 @@
   export HOMEBREW_NO_INSECURE_REDIRECT=1
   export HOMEBREW_CASK_OPTS=--require-sha
   export HOMEBREW_GITHUB_API_TOKEN={{ keyring "homebrew_api" .email }}
+  export PATH="/opt/homebrew/bin:$PATH"
 {{ end }}
 
 # pnpm
