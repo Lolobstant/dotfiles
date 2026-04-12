@@ -52,6 +52,11 @@ return {
   },
   {
     "cvigilv/patana.nvim", --[[ lazy = true  ]]
+    config = function()
+      require("patana").setup(opts)
+      vim.cmd.colorscheme("patana") -- ← ajoute ça
+      vim.api.nvim_set_hl(0, "Constant", { fg = "#ff5858" })
+    end,
   },
   {
     "andreasvc/vim-256noir", --[[ lazy = true  ]]
