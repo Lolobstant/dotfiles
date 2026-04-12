@@ -34,17 +34,6 @@ return {
         diffview = true,
       },
     },
-    config = function(_, opts)
-      require("neogit").setup(opts)
-      -- hl.setup() lit make_palette() qui dépend du colorscheme courant.
-      -- Double schedule = on est garantis APRÈS tous les ColorScheme events pending
-      -- (patana UIEnter, huez auto-apply, etc.)
-      vim.schedule(function()
-        vim.schedule(function()
-          require("neogit.lib.hl").setup(require("neogit.config").values)
-        end)
-      end)
-    end,
   },
 
   {
