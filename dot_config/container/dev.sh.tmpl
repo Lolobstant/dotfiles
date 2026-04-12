@@ -9,6 +9,19 @@ SOCKET_DIR="/tmp/nvim-sockets"
 SOCKET_NAME="nvim-${PROJECT}.sock"
 SOCKET="$SOCKET_DIR/$SOCKET_NAME"
 
+# Cleanup à la sortie (erreur ou normale)
+cleanup() {
+  local exit_code=$?
+  if [ $exit_code -ne 0 ]; then
+    echo "❌ Erreur (code $exit_code) — nettoyage..."
+  else
+    echo "🛑 Fermeture du container..."
+  fi
+  container stop "dev-${PROJECT}" 2>/dev/null || true
+  rm -f "$SOCKET" 2>/dev/null || true
+  exit $exit_code
+}
+trap cleanup EXIT
 
 # Répertoire partagé pour les sockets Unix
 mkdir -p "$SOCKET_DIR"
@@ -65,8 +78,3 @@ fi
 
 echo "✅ Socket prêt — lancement Neovide"
 neovide --server "$SOCKET"
-
-# Quand Neovide se ferme, arrêter le container
-echo "🛑 Fermeture du container..."
-container stop "dev-${PROJECT}" 2>/dev/null || true
-# wait $CONTAINER_PID 2>/dev/null || true
