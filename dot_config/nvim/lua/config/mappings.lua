@@ -22,7 +22,7 @@ if is_available("which-key.nvim") then
   wk.add({
     { "<leader>b", group = "Buffers", icon = "󰓩" },
     { "<leader>c", group = "Code" },
-    { "<leader>d", group = "Diagnostics", icon = "󰓙" },
+    { "<leader>d", group = "DAP/Diag", icon = "󰓙" },
     { "<leader>g", group = "Git", icon = "" },
     { "<leader>gw", group = "Worktree", icon = "" },
     { "<leader>l", group = "LSP", icon = "󱧤" },
@@ -345,6 +345,14 @@ if is_available("telescope.nvim") then
     M.n["<leader>su"] = { "<cmd>Telescope undo<cr>", "[S]earch [U]ndo" }
   end
 end
+--
+-- INFO: diagnostics
+M.n["[d"] = { vim.diagnostic.get_prev, "Go to previous diagnostic message" }
+M.n["]d"] = { vim.diagnostic.get_next, "Go to next diagnostic message" }
+M.n["<leader>dm"] = {
+  vim.diagnostic.open_float,
+  "[D]iagnostics [M]essage",
+}
 
 -- INFO: Explorer
 if is_available("mini.files") then
@@ -490,15 +498,6 @@ M.n["<leader>ps"] = { lazy.sync, "[P]lugins [S]ync" }
 M.n["<leader>pc"] = { lazy.check, "[P]lugins [C]heck Updates" }
 M.n["<leader>pu"] = { lazy.update, "[P]lugins [U]pdate" }
 
--- INFO: diagnostics
-M.n["[d"] = { vim.diagnostic.goto_prev, "Go to previous diagnostic message" }
-M.n["]d"] = { vim.diagnostic.goto_next, "Go to next diagnostic message" }
-M.n["<leader>dm"] = {
-  vim.diagnostic.open_float,
-  "[D]iagnostics [M]essage",
-}
-M.n["<leader>dq"] = { vim.diagnostic.setloclist, "[D]iagnostics [Q]uick List" }
-
 --[INFO:] DAP
 
 if is_available("nvim-dap") then
@@ -516,7 +515,7 @@ if is_available("nvim-dap") then
     function()
       dap.set_breakpoint(vim.fn.input("Condition: "))
     end,
-    "DABP: Breakpoint conditionnel",
+    "DAP: Breakpoint conditionnel",
   }
   M.n["<leader>dl"] = { dap.clear_breakpoints, "DAP: Clear all breakpoints" }
 end
