@@ -124,7 +124,7 @@ end
 --   vim.api.nvim_set_hl(0, "Constant", { fg = "#ff5858" })
 -- end
 local function apply_hl_overrides()
-  vim.cmd.colorscheme("patana")
+  -- vim.cmd.colorscheme("patana")
   vim.api.nvim_set_hl(0, "Constant", { fg = "#ff5858" })
   -- Re-init neogit si chargé (ses highlights sont cleared par ColorScheme)
   -- vim.schedule(function()
