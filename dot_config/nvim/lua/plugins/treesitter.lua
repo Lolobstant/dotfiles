@@ -23,7 +23,7 @@ return {
         "yaml",
         "toml",
         "dockerfile",
-        "gitcommit",
+        -- "gitcommit",
         "gitignore",
         "python",
         "bash",
