@@ -48,6 +48,8 @@ container run --rm --detach \
  "${EXTRA_ENV[@]}" \
   -v "$(pwd):/app" \
   -v "$SOCKET_DIR:$SOCKET_DIR" \
+  -v "nvim-data:/home/dev/.local/share/nvim" \
+  -v "nvim-cache:/home/dev/.cache/nvim" \
   --publish-socket "${SOCKET}:/tmp/nvim.sock" \
   -w /app \
   "$IMAGE" \
@@ -55,7 +57,7 @@ container run --rm --detach \
 
 # Attendre que la socket soit créée (max 30s)
 echo "⏳ Attente du socket nvim..."
-TIMEOUT=120
+TIMEOUT=300
 ELAPSED=0
 until container exec "dev-${PROJECT}" \
   nvim --server /tmp/nvim.sock --remote-expr '"ready"' 2>/dev/null | grep -q "ready"; do
