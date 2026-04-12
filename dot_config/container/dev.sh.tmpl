@@ -61,9 +61,9 @@ until container exec "dev-${PROJECT}" \
   nvim --server /tmp/nvim.sock --remote-expr '"ready"' 2>/dev/null | grep -q "ready"; do
   sleep 1
   ELAPSED=$((ELAPSED + 1))
+  [ $((ELAPSED % 10)) -eq 0 ] && echo "   ... ${ELAPSED}s / entrypoint en cours"
   if [ "$ELAPSED" -ge "$TIMEOUT" ]; then
     echo "❌ Timeout — nvim n'a pas répondu"
-    container stop "dev-${PROJECT}" 2>/dev/null || true
     # kill "$CONTAINER_PID" 2>/dev/null || true
     exit 1
   fi
