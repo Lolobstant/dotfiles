@@ -38,6 +38,11 @@ RUN curl -fsSL -o /tmp/nvim.tar.gz \
   && ln -s /opt/nvim-linux-arm64/bin/nvim /usr/local/bin/nvim \
   && rm /tmp/nvim.tar.gz
 
+# Pré-compiler les parsers treesitter courants
+RUN nvim --headless \
+    +"TSInstallSync javascript typescript tsx lua python json html css" \
+    +qall 2>&1 || true
+
 # -----------------------------------------------------------------------------
 # chezmoi v2.70.0 — .deb ARM64, sha256 + cosign vérifié
 #
