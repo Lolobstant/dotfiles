@@ -26,7 +26,7 @@ return {
   {
     "mrjones2014/smart-splits.nvim",
     event = "VeryLazy",
-    build = "./kitty/install-kittens.bash",
+    -- build = "./kitty/install-kittens.bash",
     opts = { ignored_filetypes = { "nofile", "quickfix", "qf", "prompt" }, ignored_buftypes = { "nofile" } },
   },
   { -- nice display for TODO|INFO|WARN|... comments

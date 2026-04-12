@@ -54,17 +54,17 @@ return {
     "cvigilv/patana.nvim", --[[ lazy = true  ]]
     priority = 1000,
     lazy = false,
-    config = function()
-      local function apply()
-        vim.cmd.colorscheme("patana")
-        vim.api.nvim_set_hl(0, "Constant", { fg = "#ff5858" })
-      end
-      apply()
-      vim.api.nvim_create_autocmd("UIEnter", {
-        once = true,
-        callback = apply,
-      })
-    end,
+    -- config = function()
+    --   local function apply()
+    --     vim.cmd.colorscheme("patana")
+    --     vim.api.nvim_set_hl(0, "Constant", { fg = "#ff5858" })
+    --   end
+    --   apply()
+    --   vim.api.nvim_create_autocmd("UIEnter", {
+    --     once = true,
+    --     callback = apply,
+    --   })
+    -- end,
   },
   {
     "andreasvc/vim-256noir", --[[ lazy = true  ]]

@@ -74,10 +74,10 @@ if is_available("smart-splits.nvim") then
   M.n["<C-k>"] = { ss.move_cursor_up, "Move to above split" }
   M.n["<C-l>"] = { ss.move_cursor_right, "Move to right split" }
 
-  M.n["<M-left>"] = { ss.resize_left, "Resize split left" }
-  M.n["<M-down>"] = { ss.resize_down, "Resize split down" }
-  M.n["<M-up>"] = { ss.resize_up, "Resize split up" }
-  M.n["<M-right>"] = { ss.resize_right, "Resize split right" }
+  M.n["<C-S-left>"] = { ss.resize_left, "Resize split left" }
+  M.n["<C-S-down>"] = { ss.resize_down, "Resize split down" }
+  M.n["<C-S-up>"] = { ss.resize_up, "Resize split up" }
+  M.n["<C-S-right>"] = { ss.resize_right, "Resize split right" }
 
   -- INFO: swap splits
   M.n["<C-tab>"] = { ss.swap_buf_right, "Move split right" }
@@ -90,10 +90,10 @@ else
   M.n["<C-k>"] = { "<C-w>k", "Move to UP split" }
 
   -- INFO: Resize splits
-  M.n["<M-up>"] = { "<cmd>resize -2<cr>", "Resize Split Up" }
-  M.n["<M-down>"] = { "<cmd>resize +2<cr>", "Resize Split Down" }
-  M.n["<M-left>"] = { "<cmd>vertical resize -2<cr>", "Resize Split Left" }
-  M.n["<M-right>"] = { "<cmd>vertical resize +2<cr>", "Resize Split Right" }
+  M.n["<C-S-up>"] = { "<cmd>resize -2<cr>", "Resize Split Up" }
+  M.n["<C-S-down>"] = { "<cmd>resize +2<cr>", "Resize Split Down" }
+  M.n["<C-S-left>"] = { "<cmd>vertical resize -2<cr>", "Resize Split Left" }
+  M.n["<C-S-right>"] = { "<cmd>vertical resize +2<cr>", "Resize Split Right" }
 end
 M.n["<leader>|"] = { "<cmd>vsplit<cr>", "Split verticaly" }
 M.n["<leader>-"] = { "<cmd>split<cr>", "Split horizontaly" }
@@ -525,6 +525,30 @@ if is_available("nvim-dap-ui") then
   M.n["<leader>du"] = { dapui.toggle, "DAP: Toggle UI" }
   M.n["<leader>de"] = { dapui.eval, "DAP: Eval expression" }
   M.v["<leader>de"] = { dapui.eval, "DAP: Eval selection" }
+end
+
+-- INFO: Snacks
+if is_available("snacks.nvim") then
+  M.n["<leader>unc"] = {
+    function()
+      Snacks.notifier.hide()
+    end,
+    "[U]I [N]otifications [C]lear",
+  }
+  M.n["<leader>sn"] = {
+    function()
+      Snacks.notifier.show_history()
+    end,
+    "[S]earch [N]otifications",
+  }
+end
+
+-- INFO: Trouble
+if is_available("trouble.nvim") then
+  M.n["<leader>dd"] = { "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", "Trouble: Document Diagnostics" }
+  M.n["<leader>dW"] = { "<cmd>Trouble diagnostics toggle<cr>", "Trouble: Workspace Diagnostics" }
+  M.n["<leader>dQ"] = { "<cmd>Trouble qflist toggle<cr>", "Trouble: Quickfix List" }
+  M.n["<leader>dt"] = { "<cmd>Trouble todo toggle<cr>", "Trouble: Todo List" }
 end
 
 -- INFO: LSP

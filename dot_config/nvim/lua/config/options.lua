@@ -120,8 +120,18 @@ for scope, table in pairs(options) do
   end
 end
 
+-- local function apply_hl_overrides()
+--   vim.api.nvim_set_hl(0, "Constant", { fg = "#ff5858" })
+-- end
 local function apply_hl_overrides()
+  vim.cmd.colorscheme("patana")
   vim.api.nvim_set_hl(0, "Constant", { fg = "#ff5858" })
+  -- Re-init neogit si chargé (ses highlights sont cleared par ColorScheme)
+  -- vim.schedule(function()
+  --   if package.loaded["neogit"] then
+  --     pcall(require("neogit.lib.hl").setup)
+  --   end
+  -- end)
 end
 
 vim.api.nvim_create_autocmd("ColorScheme", {
