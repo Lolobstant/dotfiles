@@ -53,6 +53,7 @@ return {
   {
     "cvigilv/patana.nvim", --[[ lazy = true  ]]
     priority = 1000,
+    lazy = false,
     config = function()
       vim.cmd.colorscheme("patana") -- ← ajoute ça
       vim.api.nvim_set_hl(0, "Constant", { fg = "#ff5858" })
@@ -71,7 +72,7 @@ return {
     -- If you don't want to install lush, make sure to set g:zenbones_compat = 1
     -- In Vim, compat mode is turned on as Lush only works in Neovim.
     dependencies = "rktjmp/lush.nvim",
-    lazy = false,
+    lazy = true,
     -- you can set set configuration options here
     -- config = function()
     --     vim.g.zenbones_darken_comments = 45
