@@ -55,8 +55,15 @@ return {
     priority = 1000,
     lazy = false,
     config = function()
-      vim.cmd.colorscheme("patana") -- ← ajoute ça
-      vim.api.nvim_set_hl(0, "Constant", { fg = "#ff5858" })
+      local function apply()
+        vim.cmd.colorscheme("patana")
+        vim.api.nvim_set_hl(0, "Constant", { fg = "#ff5858" })
+      end
+      apply()
+      vim.api.nvim_create_autocmd("UIEnter", {
+        once = true,
+        callback = apply,
+      })
     end,
   },
   {
