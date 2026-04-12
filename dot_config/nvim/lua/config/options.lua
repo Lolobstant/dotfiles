@@ -126,12 +126,12 @@ end
 local function apply_hl_overrides()
   -- vim.cmd.colorscheme("patana")
   vim.api.nvim_set_hl(0, "Constant", { fg = "#ff5858" })
-  -- Re-init neogit si chargé (ses highlights sont cleared par ColorScheme)
-  -- vim.schedule(function()
-  --   if package.loaded["neogit"] then
-  --     pcall(require("neogit.lib.hl").setup)
-  --   end
-  -- end)
+  -- Neogit lit les couleurs du colorscheme dans make_palette().
+  -- On force son re-init APRÈS que tous les ColorScheme listeners ont tourné,
+  -- garantissant que patana a bien tout appliqué avant que neogit lise les couleurs.
+  if package.loaded["neogit"] then
+    require("neogit.lib.hl").setup(require("neogit.config").values)
+  end
 end
 
 vim.api.nvim_create_autocmd("ColorScheme", {
