@@ -124,18 +124,7 @@ end
 --   vim.api.nvim_set_hl(0, "Constant", { fg = "#ff5858" })
 -- end
 local function apply_hl_overrides()
-  -- vim.cmd.colorscheme("patana")
   vim.api.nvim_set_hl(0, "Constant", { fg = "#ff5858" })
-  -- neogit.hl.setup utilise default=true → skip les groupes "cleared" après colorscheme
-  -- On force la définition directement, sans default=true, après tous les listeners
-  -- vim.api.nvim_set_hl(0, "NeogitDiffAdd", { link = "DiffAdd" })
-  -- vim.api.nvim_set_hl(0, "NeogitDiffDelete", { link = "DiffDelete" })
-  -- vim.api.nvim_set_hl(0, "NeogitDiffAddHighlight", { link = "DiffAdd" })
-  -- vim.api.nvim_set_hl(0, "NeogitDiffDeleteHighlight", { link = "DiffDelete" })
-  -- vim.api.nvim_set_hl(0, "NeogitDiffContext", { link = "Normal" })
-  -- vim.api.nvim_set_hl(0, "NeogitDiffContextHighlight", { link = "CursorLine" })
-  -- vim.api.nvim_set_hl(0, "NeogitHunkHeader", { link = "Folded" })
-  -- vim.api.nvim_set_hl(0, "NeogitHunkHeaderHighlight", { link = "Search" })
 end
 
 vim.api.nvim_create_autocmd("ColorScheme", {
