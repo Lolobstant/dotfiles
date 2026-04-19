@@ -67,7 +67,6 @@ if [ ! -d $ZINIT_HOME ]; then
     rm -rf "$ZINIT_HOME"
     return 1
   fi
-fi
 elif [ "$(git -C "$ZINIT_HOME" describe --tags 2>/dev/null)" != "$ZINIT_TAG" ]; then
   # Mauvaise version détectée (downgrade ou tag drifté) → refuser de charger
   echo "⚠️  zinit: version inattendue, attendu $ZINIT_TAG" >&2
