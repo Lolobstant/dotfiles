@@ -46,11 +46,18 @@ defaults write com.apple.screensaver askForPasswordDelay -int 0
 # Voir quelles apps ont accès au micro, caméra, localisation
 # Réglages → Confidentialité & Sécurité → (Micro / Caméra / Localisation)
 # Via CLI : tcc (Transparency Consent and Control)
-tccutil reset All
+#tccutil reset All
 
 # AirDrop — Contacts uniquement (pas "Tout le monde")
 defaults write com.apple.NetworkBrowser DisableAirDrop -bool false
 defaults write com.apple.sharingd AirDropComeBack -bool false
+
+
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
+
+# désactive le remote login & remote management
+sudo systemsetup -setremotelogin off
 
 echo ""
 echo "✅ Bootstrap terminé."
@@ -58,22 +65,27 @@ echo "⚠️  Étapes manuelles restantes : voir MANUAL_STEPS.md"
 
 
 
-  ## use dnscrypt-proxy config with quad9 & start service
-  # DNSCRYPT_CONFIG=~/.config/homebrew/dnscrypt-proxy.toml
-  # if test -f "$DNSCRYPT_CONFIG"; then
-  #   echo 'dnscrypt config exist'
-  #   mv "$DNSCRYPT_CONFIG" "$HOMEBREW_PREFIX/etc/dnscrypt-proxy.toml"
-  # else
-  #   echo "couldn not find dnscrypt-proxy config file, fallback to default"
-  # fi
+## use dnscrypt-proxy config with quad9 & start service
+DNSCRYPT_CONFIG=~/.config/homebrew/dnscrypt-proxy.toml
+if test -f "$DNSCRYPT_CONFIG"; then
+  echo 'dnscrypt config exist'
+  mv "$DNSCRYPT_CONFIG" "$HOMEBREW_PREFIX/etc/dnscrypt-proxy.toml"
+else
+  echo "couldn not find dnscrypt-proxy config file, fallback to default"
+fi
 
-  # if ! pgrep -x dnscrypt-proxy &> /dev/null; then
-  #   brew services start dnscrypt-proxy
-  # else
-  #   echo 'dnscrypt already started'
-  #   echo "$(brew services info dnscrypt-proxy)"
-  # fi
+if ! pgrep -x dnscrypt-proxy &> /dev/null; then
+  brew services start dnscrypt-proxy
+else
+  echo 'dnscrypt already started'
+  echo "$(brew services info dnscrypt-proxy)"
+fi
 
-  # networksetup -setdnsservers Wi-Fi 127.0.0.1
-  ## end dnscrypt-proxy config
+networksetup -setdnsservers Wi-Fi 127.0.0.1
+## end dnscrypt-proxy config
+
+# Configurer pour tous les services réseau d'un coup
+# for svc in $(networksetup -listallnetworkservices | tail -n +2); do
+#   networksetup -setdnsservers "$svc" 127.0.0.1
+# done
 
