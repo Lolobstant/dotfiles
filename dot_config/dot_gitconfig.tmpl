@@ -1,0 +1,13 @@
+[core]
+  excludesfile = ~/.config/.gitignore_global
+
+# Générer une clé SSH dédiée au signing (différente de la clé auth)
+ssh-keygen -t ed25519 -C "git-signing" -f ~/.ssh/git_signing_key
+
+# gitconfig
+git config --global gpg.format ssh
+git config --global user.signingkey ~/.ssh/git_signing_key.pub
+git config --global commit.gpgsign true
+git config --global tag.gpgsign true
+
+# Ajouter la clé publique sur GitHub : Settings → SSH → New signing key
