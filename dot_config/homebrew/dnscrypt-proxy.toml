@@ -832,10 +832,8 @@ fragments_blocked = ['cisco', 'cisco-ipv6', 'cisco-familyshield', 'cisco-familys
 #   - DNS relays: https://github.com/DNSCrypt/dnscrypt-resolvers/blob/master/v3/relays.md
 #   - ODoH relays: https://github.com/DNSCrypt/dnscrypt-resolvers/blob/master/v3/odoh-relays.md
  routes = [
-  { server_name='quad9-dnscrypt-ip4-filter-pri',
-    via=['anon-techsaviours.org', 'anon-cs-de', 'anon-cs-berlin'] },
-  { server_name='quad9-dnscrypt-ip4-filter-alt',
-    via=['anon-scaleway-ams', 'anon-cs-dus1', 'anon-cs-dus2'] },
+  { server_name='quad9-dnscrypt-ip4-filter-pri', via=['anon-techsaviours.org', 'anon-cs-de', 'anon-cs-berlin'] },
+  { server_name='quad9-dnscrypt-ip4-filter-alt', via=['anon-scaleway-ams', 'anon-cs-dus1', 'anon-cs-dus2'] },
 ]
  # routes = [
  #    { server_name='dnswarden-uncensor-dc', via=['anon-techsaviours.org', 'anon-cs-de', 'anon-cs-berlin', 'anon-cs-dus1', 'anon-cs-dus2', 'anon-cs-dus4'] },
