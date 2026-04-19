@@ -73,6 +73,7 @@ brew "ncdu"
 brew "crane"
 brew "dos2unix"
 brew "gitleaks"
+brew "fzf"
 
 #mas (mac app store)
 # mas "type fu"

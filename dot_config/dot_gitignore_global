@@ -3,6 +3,7 @@
 .env.*
 !.env.example
 !.env.tpl
+!.env.enc
 *.pem
 *.key
 *_rsa
