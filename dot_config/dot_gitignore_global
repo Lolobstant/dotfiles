@@ -1,0 +1,17 @@
+# Secrets
+.env
+.env.*
+!.env.example
+!.env.tpl
+*.pem
+*.key
+*_rsa
+*_ecdsa
+*_ed25519
+.infisical.json
+.swap
+*.log
+
+# Outils locaux
+.DS_Store
+*.local
