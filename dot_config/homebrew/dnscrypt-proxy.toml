@@ -32,7 +32,6 @@
  server_names = [
    'quad9-dnscrypt-ip4-filter-pri', 
    'quad9-dnscrypt-ip4-filter-alt',
-   'cloudflare'
  ]
 # server_names = [
 #   'dnswarden-uncensor-dc',
