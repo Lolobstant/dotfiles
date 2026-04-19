@@ -69,7 +69,7 @@ echo "⚠️  Étapes manuelles restantes : voir MANUAL_STEPS.md"
 DNSCRYPT_CONFIG=~/.config/homebrew/dnscrypt-proxy.toml
 if test -f "$DNSCRYPT_CONFIG"; then
   echo 'dnscrypt config exist'
-  mv "$DNSCRYPT_CONFIG" "$HOMEBREW_PREFIX/etc/dnscrypt-proxy.toml"
+  cp "$DNSCRYPT_CONFIG" "$HOMEBREW_PREFIX/etc/dnscrypt-proxy.toml"
 else
   echo "couldn not find dnscrypt-proxy config file, fallback to default"
 fi
