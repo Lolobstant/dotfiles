@@ -1,6 +1,7 @@
-<!-- ~/Library/LaunchAgents/com.user.dnscrypt-setdns.plist -->
+<!-- ~/.config/launchAgents/com.user.dnscrypt-setdns.plist -->
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "...">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
   <key>Label</key>
@@ -11,10 +12,12 @@
     <string>-c</string>
     <string>for svc in $(networksetup -listallnetworkservices | tail -n +2); do networksetup -setdnsservers "$svc" 127.0.0.1; done</string>
   </array>
+  <!-- Se déclenche à chaque changement de config réseau -->
   <key>WatchPaths</key>
   <array>
     <string>/Library/Preferences/SystemConfiguration</string>
   </array>
+  <!-- Et au démarrage de session -->
   <key>RunAtLoad</key>
   <true/>
 </dict>

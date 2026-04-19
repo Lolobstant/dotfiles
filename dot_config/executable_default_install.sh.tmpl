@@ -76,16 +76,24 @@ fi
 
 if ! pgrep -x dnscrypt-proxy &> /dev/null; then
   brew services start dnscrypt-proxy
+  # Configurer pour tous les services réseau d'un coup
+  for svc in $(networksetup -listallnetworkservices | tail -n +2); do
+    networksetup -setdnsservers "$svc" 127.0.0.1
+  done
+
 else
   echo 'dnscrypt already started'
   echo "$(brew services info dnscrypt-proxy)"
 fi
 
-networksetup -setdnsservers Wi-Fi 127.0.0.1
+# ─── LaunchAgent — DNS persistant au changement de réseau ─────────────────────
+PLIST_SRC="$HOME/.config/launchagents/com.user.dnscrypt-setdns.plist"
+PLIST_DST="$HOME/Library/LaunchAgents/com.user.dnscrypt-setdns.plist"
+
+if [ -f "$PLIST_SRC" ]; then
+  cp "$PLIST_SRC" "$PLIST_DST"
+  launchctl load "$PLIST_DST"
+fi
+
+# networksetup -setdnsservers Wi-Fi 127.0.0.1
 ## end dnscrypt-proxy config
-
-# Configurer pour tous les services réseau d'un coup
-# for svc in $(networksetup -listallnetworkservices | tail -n +2); do
-#   networksetup -setdnsservers "$svc" 127.0.0.1
-# done
-
