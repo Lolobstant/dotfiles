@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -euo pipefail
 
 command_exists() {
@@ -22,7 +22,7 @@ if ! command_exists chezmoi; then
 fi
 
 if command_exists chezmoi; then
-  chezmoi init --apply "https://github.com:{{ .github.username }}/dotfiles.git"
+  chezmoi init --apply "https://github.com/{{ .github.username }}/dotfiles.git"
 fi
 
 # 3. Packages brew (chezmoi a déjà déployé le Brewfile)
