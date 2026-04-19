@@ -50,4 +50,8 @@ if command_exists chezmoi; then
   chezmoi init --apply git@github.com:{{ .github.username }}/dotfiles.git
 fi
 
+if command_exists  git; then
+  git config --global core.excludesfile ~/.gitignore_global
+fi
+
 
