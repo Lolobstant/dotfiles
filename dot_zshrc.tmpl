@@ -51,29 +51,68 @@ load-nvmrc
 #Zinit
 ## set the directory we want to store zinit and plugins
 export ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+ZINIT_COMMIT="5c0c0454deeb9eac95e08ef214b5d7ba6859db14"  # SHA immutable du commit de v3.14.0
+ZINIT_TAG="v3.14.0"
+
 if [ ! -d $ZINIT_HOME ]; then 
   mkdir -p "$(dirname $ZINIT_HOME)"
-  git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+  git clone --branch "$ZINIT_TAG" --depth 1 https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+  # Vérification du commit SHA — protection contre un tag déplacé
+  actual_commit=$(git -C "$ZINIT_HOME" rev-parse HEAD)
+  if [ "$actual_commit" != "$ZINIT_COMMIT" ]; then
+    echo "❌ zinit: commit SHA inattendu !" >&2
+    echo "   attendu : $ZINIT_COMMIT" >&2
+    echo "   obtenu  : $actual_commit" >&2
+    echo "   → Possible compromission du tag $ZINIT_TAG" >&2
+    rm -rf "$ZINIT_HOME"
+    return 1
+  fi
+fi
+elif [ "$(git -C "$ZINIT_HOME" describe --tags 2>/dev/null)" != "$ZINIT_TAG" ]; then
+  # Mauvaise version détectée (downgrade ou tag drifté) → refuser de charger
+  echo "⚠️  zinit: version inattendue, attendu $ZINIT_TAG" >&2
+  echo "   → Rerun: rm -rf $ZINIT_HOME && source ~/.zshrc" >&2
+  return 1
 fi
 ## load/source zinit
 source "${ZINIT_HOME}/zinit.zsh"
 
-##plugins
+# ─── Plugins ──────────────────────────────────────────────────────────────────
+# Ordre strict :
+#   1. zsh-completions  → doit alimenter fpath AVANT compinit
+#   2. compinit
+#   3. fzf-tab          → doit s'enregistrer APRÈS compinit
+#   4. autosuggestions  → après compinit
+#   5. syntax-highlight → TOUJOURS en dernier (hook sur ZLE)
 
-#
-###zsh plugins
-zinit light zsh-users/zsh-syntax-highlighting
+
+# 1. Completions — blockf empêche le plugin de modifier fpath tout seul,
+#    zinit le gère proprement via creinstall
+zinit ice ver"0.36.0" blockf atpull"zinit creinstall -q ."
 zinit light zsh-users/zsh-completions
-zinit light zsh-users/zsh-autosuggestions
+
+# 2. compinit (avec cache — -C skip la vérif si le cache est frais)
+autoload -U compinit
+compinit -C
+zinit cdreplay -q
+
+# 3. fzf-tab — doit être chargé après compinit, avant syntax-highlighting
+zinit ice ver"v1.3.0"
 zinit light Aloxaf/fzf-tab
+
+# 4. Autosuggestions
+zinit ice ver"v0.7.1" atload"_zsh_autosuggest_start"
+zinit light zsh-users/zsh-autosuggestions
+
+
+# 5. Syntax highlighting — TOUJOURS EN DERNIER
+#    S'il est chargé avant fzf-tab, les completions sont cassées
+zinit ice ver"0.8.0"
+zinit light zsh-users/zsh-syntax-highlighting
 
 ###zsh plugins from oh-my-zsh
 zinit snippet OMZP::git
 zinit snippet OMZP::eza
-
-### load completions
-autoload -U compinit && compinit
-zinit cdreplay -q
 
 # jj completion — seulement si installé
 command -v jj &>/dev/null && source <(jj util completion zsh)
