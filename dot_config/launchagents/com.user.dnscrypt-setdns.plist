@@ -1,0 +1,21 @@
+<!-- ~/Library/LaunchAgents/com.user.dnscrypt-setdns.plist -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "...">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.user.dnscrypt-setdns</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-c</string>
+    <string>for svc in $(networksetup -listallnetworkservices | tail -n +2); do networksetup -setdnsservers "$svc" 127.0.0.1; done</string>
+  </array>
+  <key>WatchPaths</key>
+  <array>
+    <string>/Library/Preferences/SystemConfiguration</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+</dict>
+</plist>

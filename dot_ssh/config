@@ -1,0 +1,6 @@
+Host *
+  AddKeysToAgent yes
+  UseKeychain yes   # macOS Keychain — pas de passphrase à retaper
+  IdentityFile ~/.ssh/id_ed25519_github
+
+Include ~/.ssh/confi.d/*
