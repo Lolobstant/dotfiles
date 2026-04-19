@@ -39,8 +39,18 @@ fi
 
 # font smoothing:
 defaults write -g AppleFontSmoothing -int 0
+# Écran verrouillé dès la mise en veille
 defaults write com.apple.screensaver askForPassword -int 1
 defaults write com.apple.screensaver askForPasswordDelay -int 0
+
+# Voir quelles apps ont accès au micro, caméra, localisation
+# Réglages → Confidentialité & Sécurité → (Micro / Caméra / Localisation)
+# Via CLI : tcc (Transparency Consent and Control)
+tccutil reset All
+
+# AirDrop — Contacts uniquement (pas "Tout le monde")
+defaults write com.apple.NetworkBrowser DisableAirDrop -bool false
+defaults write com.apple.sharingd AirDropComeBack -bool false
 
 echo ""
 echo "✅ Bootstrap terminé."
