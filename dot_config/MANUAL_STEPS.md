@@ -14,7 +14,6 @@ age-keygen | security add-generic-password -a age -s identity -w "$(cat)"
 ## 2. Git credentials
 
 \```bash
-gh auth login # ou config manuelle
 git config --global user.name "Laurent"
 git config --global user.email "<email>"
 \```
