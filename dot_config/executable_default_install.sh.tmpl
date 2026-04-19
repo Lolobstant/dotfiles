@@ -74,12 +74,12 @@ else
   echo "couldn not find dnscrypt-proxy config file, fallback to default"
 fi
 
-if ! pgrep -x dnscrypt-proxy &> /dev/null; then
-  brew services start dnscrypt-proxy
+if command_exists dnscrypt-proxy; then
+  brew services restart dnscrypt-proxy
   # Configurer pour tous les services réseau d'un coup
-  for svc in $(networksetup -listallnetworkservices | tail -n +2); do
-    networksetup -setdnsservers "$svc" 127.0.0.1
-  done
+  # for svc in $(networksetup -listallnetworkservices | tail -n +2); do
+  #   networksetup -setdnsservers "$svc" 127.0.0.1
+  # done
 
 else
   echo 'dnscrypt already started'
@@ -94,6 +94,20 @@ if [ -f "$PLIST_SRC" ]; then
   cp "$PLIST_SRC" "$PLIST_DST"
   launchctl load "$PLIST_DST"
 fi
+
+# ─── pf redirect 53 → 5300 ───────────────────────────────────────────────────
+sudo cp "$HOME/.config/pf/dnscrypt.conf" /etc/pf-dnscrypt.conf
+sudo pfctl -f /etc/pf-dnscrypt.conf -e 2>/dev/null || true
+
+DAEMON_SRC="$HOME/.config/launchdaemons/com.user.pf-dnscrypt.plist"
+DAEMON_DST="/Library/LaunchDaemons/com.user.pf-dnscrypt.plist"
+sudo cp "$DAEMON_SRC" "$DAEMON_DST"
+sudo launchctl load "$DAEMON_DST"
+
+# ─── DNS → 127.0.0.1 (pf redirige vers 5300) ─────────────────────────────────
+for svc in $(networksetup -listallnetworkservices | tail -n +2); do
+  networksetup -setdnsservers "$svc" 127.0.0.1
+done
 
 # networksetup -setdnsservers Wi-Fi 127.0.0.1
 ## end dnscrypt-proxy config
