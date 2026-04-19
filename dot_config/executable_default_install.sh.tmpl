@@ -1,29 +1,50 @@
 #!/bin/sh
+set -euo pipefail
 
 command_exists() {
   [ -x "$(command -v $1)" ]
 }
 
-
-# if ! command_exists omz; then
-#   echo "installing ohmyzsh"
-#   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-# fi
 # install homebrew if not exists
 if ! command_exists brew; then
   echo "installing homebrew"
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" 
-# else
-#   echo "brew exists"
+  # Apple Silicon — ajouter brew au PATH pour la suite du script
+  eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-# run homebrew
-if command_exists brew; then
-  brew analytics off
-  brew bundle
+brew analytics off
+
+
+# 2. chezmoi + dotfiles (HTTPS pour le bootstrap — pas besoin de SSH key)
+if ! command_exists chezmoi; then
+  brew install chezmoi
+fi
+
+if command_exists chezmoi; then
+  chezmoi init --apply "https://github.com:{{ .github.username }}/dotfiles.git"
+fi
+
+# 3. Packages brew (chezmoi a déjà déployé le Brewfile)
+BREWFILE="${HOMEBREW_BUNDLE_FILE:-$HOME/.config/homebrew/config.homebrew}"
+if [ -f "$BREWFILE" ]; then
+  brew bundle install --no-upgrade --file="$BREWFILE"
+else
+  echo "⚠️  Brewfile introuvable : $BREWFILE" >&2
+fi
+
+if command_exists  git; then
+  git config --global core.excludesfile ~/.gitignore_global
+fi
 
 # font smoothing:
 defaults write -g AppleFontSmoothing -int 0
+
+echo ""
+echo "✅ Bootstrap terminé."
+echo "⚠️  Étapes manuelles restantes : voir MANUAL_STEPS.md"
+
+
 
   ## use dnscrypt-proxy config with quad9 & start service
   # DNSCRYPT_CONFIG=~/.config/homebrew/dnscrypt-proxy.toml
@@ -43,15 +64,4 @@ defaults write -g AppleFontSmoothing -int 0
 
   # networksetup -setdnsservers Wi-Fi 127.0.0.1
   ## end dnscrypt-proxy config
-
-fi
-
-if command_exists chezmoi; then
-  chezmoi init --apply git@github.com:{{ .github.username }}/dotfiles.git
-fi
-
-if command_exists  git; then
-  git config --global core.excludesfile ~/.gitignore_global
-fi
-
 
