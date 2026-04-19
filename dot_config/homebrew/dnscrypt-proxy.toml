@@ -39,7 +39,7 @@
 ## To listen to all IPv4 addresses, use `listen_addresses = ['0.0.0.0:53']`
 ## To listen to all IPv4+IPv6 addresses, use `listen_addresses = ['[::]:53']`
 
-listen_addresses = ['[::]:5300']
+listen_addresses = ['127.0.0.1:5300']
 
 
 ## Maximum number of simultaneous client connections to accept
@@ -82,7 +82,7 @@ require_dnssec = true
 require_nolog = true
 
 # Server must not enforce its own blocklist (for parental control, ads blocking...)
-require_nofilter = true
+require_nofilter = false
 
 # Server names to avoid even if they match all criteria
 disabled_server_names = []
@@ -471,7 +471,7 @@ cache_neg_max_ttl = 600
 ## Path to the query log file (absolute, or relative to the same directory as the config file)
 ## Can be set to /dev/stdout in order to log to the standard output.
 
-file = '/var/log/dnscrypt-proxy/query.log'
+file = '/tmp/dnscrypt-proxy/query.log'
 
 
 ## Query log format (currently supported: tsv and ltsv)
@@ -497,7 +497,7 @@ format = 'tsv'
 
 ## Path to the query log file (absolute, or relative to the same directory as the config file)
 
- file = '/var/log/dnscrypt-proxy/nx.log'
+ file = '/tmp/dnscrypt-proxy/nx.log'
 
 
 ## Query log format (currently supported: tsv and ltsv)
@@ -738,7 +738,11 @@ format = 'tsv'
   #   cache_file = 'parental-control.md'
   #   minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
 
-
+  server_names = [
+    'dnswarden-uncensor-dc',
+    'dnscrypt-de-blahdns-ipv4',
+    'cs-de'
+  ]
 
 #########################################
 #        Servers with known bugs        #
