@@ -90,6 +90,7 @@ HISTSIZE=5000
 HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
+HISTIGNORE="*TOKEN*:*SECRET*:*PASSWORD*:*API_KEY*:*PRIVATE*:*export *=*"
 setopt appendhistory
 setopt sharehistory
 #### do not save command starting with a space to history
