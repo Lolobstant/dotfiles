@@ -37,3 +37,7 @@ brew bundle check --file=~/.config/homebrew/config.homebrew
 zinit self-update
 chezmoi status # doit être vide
 \```
+
+# loader les clefs ssh
+
+ssh-add --apple-use-keychain ~/.ssh/id_ed25519
