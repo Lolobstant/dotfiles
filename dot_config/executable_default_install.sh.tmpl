@@ -67,6 +67,7 @@ echo "⚠️  Étapes manuelles restantes : voir MANUAL_STEPS.md"
 
 ## use dnscrypt-proxy config with quad9 & start service
 DNSCRYPT_CONFIG=~/.config/homebrew/dnscrypt-proxy.toml
+mkdir -p /tmp/dnscrypt-proxy
 if test -f "$DNSCRYPT_CONFIG"; then
   echo 'dnscrypt config exist'
   cp "$DNSCRYPT_CONFIG" "$HOMEBREW_PREFIX/etc/dnscrypt-proxy.toml"
