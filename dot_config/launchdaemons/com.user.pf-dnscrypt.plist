@@ -9,7 +9,7 @@
   <key>ProgramArguments</key>
   <array>
     <string>/sbin/pfctl</string>
-    <string>-f</string>
+    <string>-ef</string>
     <string>/etc/pf-dnscrypt.conf</string>
   </array>
   <key>RunAtLoad</key>

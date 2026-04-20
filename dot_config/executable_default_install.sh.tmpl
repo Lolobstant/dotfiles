@@ -110,5 +110,6 @@ for svc in $(networksetup -listallnetworkservices | tail -n +2); do
   networksetup -setdnsservers "$svc" 127.0.0.1
 done
 
+brew services info dnscrypt-proxy | grep -q running || brew services restart dnscrypt-proxy
 # networksetup -setdnsservers Wi-Fi 127.0.0.1
 ## end dnscrypt-proxy config
