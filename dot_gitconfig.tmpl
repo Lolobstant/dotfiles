@@ -64,11 +64,11 @@
 # Contexte pro — override pour les repos startup
 # Crée ~/.gitconfig_pro avec le bon email/signingkey
 # puis : git config --local include.path ~/.gitconfig_pro dans le repo
-[includeIf "gitdir:~/Projects/pro/"]
+[includeIf "gitdir:~/Dev/mangas.io/"]
     path = ~/.config/.gitconfig_pro
 
-[includeIf "gitdir:~/work/"]
-    path = ~/.config/.gitconfig_pro
+#[includeIf "gitdir:~/work/"]
+#    path = ~/.config/.gitconfig_perso
 
 # Affichage
 [color]
