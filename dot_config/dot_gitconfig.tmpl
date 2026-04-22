@@ -1,0 +1,88 @@
+[user]
+    name  = {{ .name }}
+    email = {{ .email }}
+    signingkey = {{ keyring "gpg_signing_key" .email }}
+
+[commit]
+    gpgsign = true
+
+[tag]
+    gpgsign = true
+
+[gpg]
+    program = /opt/homebrew/bin/gpg
+    format = ssh
+
+[core]
+    hooksPath  = ~/.config/.githooks
+    autocrlf   = input
+    whitespace = trailing-space,space-before-tab
+    excludesfile = ~/.config/.gitignore_global
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = true
+
+[push]
+    autoSetupRemote = true
+    followTags = true
+
+[rebase]
+    autoStash = true
+
+[fetch]
+    prune = true
+
+[diff]
+    algorithm = histogram
+
+[merge]
+    conflictstyle = zdiff3
+
+# Sécurité — refuser les paquets ayant des protocoles dangereux
+[protocol]
+    allow = never
+
+[protocol "https"]
+    allow = always
+
+[protocol "ssh"]
+    allow = always
+
+[protocol "file"]
+    allow = always
+
+# Contexte pro — override pour les repos startup
+# Crée ~/.gitconfig_pro avec le bon email/signingkey
+# puis : git config --local include.path ~/.gitconfig_pro dans le repo
+[includeIf "gitdir:~/Projects/pro/"]
+    path = ~/.config/.gitconfig_pro
+
+[includeIf "gitdir:~/work/"]
+    path = ~/.config/.gitconfig_pro
+
+# Affichage
+[color]
+    ui = auto
+
+[log]
+    date = iso
+
+[alias]
+    lg = log --oneline --graph --decorate --all
+    st = status -sb
+    # Vérifier les signatures des derniers commits
+    verify-last = log --show-signature -5 --oneline
+    # Liste des remotes avec leurs URLs
+    remotes = remote -v
+
+
+# Générer une clé SSH dédiée au signing (différente de la clé auth)
+; ssh-keygen -t ed25519 -C "git-signing" -f ~/.ssh/git_signing_key
+;
+; # gitconfig
+; git config --global gpg.format ssh
+
+# Ajouter la clé publique sur GitHub : Settings → SSH → New signing key
