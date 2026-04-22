@@ -1,13 +1,50 @@
+# Fichiers système
 .swap
 *.swp
-node_modules
-.env
-.env-*
 .DS_Store
-.log
+*.log
 **/.swap
 **/node_modules
-**/.env
-**/.env-*
 **/.DS_Store
 **/.log
+
+# Secrets — ne JAMAIS versionner
+.env
+.env-*
+.env.*
+**/.env
+**/.env-*
+
+# Clés SSH et certificats
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+id_rsa
+id_ed25519
+id_ecdsa
+id_dsa
+*_rsa
+*_ed25519
+
+# Credentials
+.aws/credentials
+.netrc
+.npmrc-*
+*token*
+*secret*
+*password*
+
+# Bases de données locales
+*.db
+*.sqlite
+*.sqlite3
+
+# Build artifacts
+*.pyc
+__pycache__
+.cache
+dist/
+build/
+
