@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# ~/.githooks/pre-push — hook global, audit dépendances avant push
+# Réseau OK ici — pas de pre-commit pour les audits lents
+
+# ─── npm audit ────────────────────────────────────────────────────────────────
+if [ -f "package.json" ] && command -v npm &>/dev/null; then
+    echo "→ npm audit (high+critical)..."
+    result=$(npm audit --audit-level=high --json 2>/dev/null)
+    vuln_count=$(echo "$result" | jq -r '
+        [.vulnerabilities | to_entries[]
+         | select(.value.severity == "high" or .value.severity == "critical")]
+        | length' 2>/dev/null || echo "0")
+
+    if [ "$vuln_count" -gt 0 ]; then
+        echo ""
+        echo "╔══════════════════════════════════════════════════════╗"
+        echo "║  npm audit: $vuln_count vulnérabilité(s) high/critical"
+        echo "╚══════════════════════════════════════════════════════╝"
+        echo "$result" | jq -r '
+            .vulnerabilities | to_entries[]
+            | select(.value.severity == "high" or .value.severity == "critical")
+            | "  [\(.value.severity | ascii_upcase)] \(.key)"' 2>/dev/null
+        echo ""
+        echo "→ Corriger :   npm audit fix"
+        echo "→ Forcer push : git push --no-verify  (si risque accepté)"
+        exit 1
+    fi
+    echo "   ✓ Aucune vulnérabilité high/critical"
+fi
+
+# ─── pip-audit / uv audit ─────────────────────────────────────────────────────
+if [ -f "requirements.txt" ] || [ -f "pyproject.toml" ]; then
+    if command -v pip-audit &>/dev/null; then
+        echo "→ pip-audit..."
+        if ! pip-audit --desc --progress-spinner=off -q 2>/dev/null; then
+            echo ""
+            echo "╔══════════════════════════════════════════════════════╗"
+            echo "║  pip-audit: vulnérabilités détectées                 ║"
+            echo "╚══════════════════════════════════════════════════════╝"
+            echo "→ Corriger :   pip-audit --fix"
+            exit 1
+        fi
+        echo "   ✓ Aucune vulnérabilité Python"
+    fi
+fi

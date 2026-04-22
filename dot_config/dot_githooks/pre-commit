@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# ~/.githooks/pre-commit — hook global, s'applique à tous les repos
+# Installé via : git config --global core.hooksPath ~/.githooks
+
+# ─── Gitleaks — détection secrets ────────────────────────────────────────────
+if command -v gitleaks &>/dev/null; then
+    gitleaks detect --staged --no-banner -q
+    exit_code=$?
+    if [ $exit_code -ne 0 ]; then
+        echo ""
+        echo "╔══════════════════════════════════════════════════════╗"
+        echo "║  gitleaks: secret potentiel détecté dans le staged   ║"
+        echo "╚══════════════════════════════════════════════════════╝"
+        echo ""
+        echo "→ Détails :    gitleaks detect --staged -v"
+        echo "→ Faux positif certain : git commit --no-verify"
+        echo "→ Pour ignorer un fichier : ajouter à .gitleaksignore"
+        echo ""
+        exit 1
+    fi
+else
+    echo "⚠️  gitleaks non installé — hook ignoré (brew install gitleaks)"
+fi
+
+# ─── Détection clés SSH/privées ──────────────────────────────────────────────
+# Backup rapide si gitleaks manqué — vérifie les patterns évidents
+staged_files=$(git diff --cached --name-only)
+for f in $staged_files; do
+    if [[ "$f" =~ (id_rsa|id_ed25519|id_ecdsa|\.pem|\.key|\.pfx|\.p12)$ ]]; then
+        echo "❌ Fichier de clé potentiel stagé : $f"
+        echo "   Retirer du stage : git restore --staged $f"
+        exit 1
+    fi
+done

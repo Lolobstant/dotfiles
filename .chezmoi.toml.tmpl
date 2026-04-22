@@ -20,7 +20,7 @@
 
 {{- $gpgKey := env "CHEZMOI_GPG_KEY" -}}
 {{- if not $gpgKey -}}
-  {{- $gpgKey := promptStringOnce . "gpg_signing_key" "GPG signing key fingerprint (laisser vide pour ignorer)" -}}
+  {{- $gpgKey = promptString  "gpg_signing_key"  -}}
 {{- end -}}
 
 [edit]

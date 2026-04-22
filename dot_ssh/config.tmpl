@@ -1,0 +1,46 @@
+# ~/.ssh/config — généré par chezmoi, ne pas éditer directement
+# ─────────────────────────────────────────────────────────────────────────────
+# Contexte actuel : un seul compte GitHub pour perso + pro
+# Séparation des identités gérée par gitconfig (includeIf "gitdir:...")
+# Quand tu créeras un compte pro séparé :
+#   1. Générer : ssh-keygen -t ed25519 -C "pro@startup.com" -f ~/.ssh/id_ed25519_github_pro
+#   2. Changer IdentityFile de github-pro ci-dessous
+#   3. Ajouter la nouvelle clé publique au compte GitHub pro
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Include en premier — les hôtes spécifiques priment sur Host *
+Include ~/.ssh/config.d/*
+
+# ─── GitHub — contexte perso ──────────────────────────────────────────────────
+# Remotes : git@github-perso:Lolobstant/repo.git
+Host github-perso
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519_github_perso
+  AddKeysToAgent yes
+{{ if eq .chezmoi.os "darwin" -}}
+  UseKeychain yes
+{{ end -}}
+
+# ─── GitHub — contexte pro ────────────────────────────────────────────────────
+# Remotes : git@github-pro:org/repo.git
+# Même clé pour l'instant (même compte GitHub)
+# → changer IdentityFile quand compte pro séparé
+Host github-pro
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519_github_perso
+  AddKeysToAgent yes
+{{ if eq .chezmoi.os "darwin" -}}
+  UseKeychain yes
+{{ end -}}
+
+# ─── Fallback global ─────────────────────────────────────────────────────────
+Host *
+  AddKeysToAgent yes
+{{ if eq .chezmoi.os "darwin" -}}
+  UseKeychain yes
+{{ end -}}
+  ServerAliveInterval 60
+  ServerAliveCountMax 3
+
