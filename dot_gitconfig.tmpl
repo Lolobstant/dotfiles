@@ -18,7 +18,7 @@
 
 [gpg]
     program = /opt/homebrew/bin/gpg
-    format = ssh
+    format = openpgp
 
 [core]
     hooksPath  = ~/.config/.githooks
@@ -67,8 +67,8 @@
 [includeIf "gitdir:~/Dev/mangas.io/"]
     path = ~/.config/.gitconfig_pro
 
-#[includeIf "gitdir:~/work/"]
-#    path = ~/.config/.gitconfig_perso
+[includeIf "gitdir:~/work/"]
+    path = ~/.config/.gitconfig_perso
 
 # Affichage
 [color]
