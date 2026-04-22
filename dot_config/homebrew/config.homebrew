@@ -1,6 +1,98 @@
+# ~/.config/homebrew/config.homebrew
+# Référencé via HOMEBREW_BUNDLE_FILE dans .zshrc
+# Idempotent : brew bundle install --no-upgrade
+
 cask_args appdir: "~/Applications"
 
-# cask (graphical interface)
+# ─── Sécurité & chiffrement ───────────────────────────────────────────────────
+brew "gnupg"          # GPG — signing commits + chiffrement
+brew "pinentry-mac"   # entrée PIN GPG via macOS Keychain
+brew "age"            # chiffrement fichiers léger (secrets projets)
+brew "sops"           # secrets chiffrés par projet (intègre age/gpg)
+
+# ─── Git & VCS ────────────────────────────────────────────────────────────────
+brew "git"
+brew "gh"             # GitHub CLI — PR, issues, auth
+brew "jj"             # Jujutsu
+brew "gitleaks"       # détection secrets — hook global pre-commit
+# brew "lazygit"        # TUI git
+
+# ─── Shell & navigation ───────────────────────────────────────────────────────
+brew "fzf"
+brew "zoxide"
+brew "eza"
+brew "bat"
+brew "fd"
+brew "ripgrep"
+brew "oh-my-posh"
+brew "tree"
+brew "rename"
+brew "convmv"
+brew "dos2unix"
+brew "rsync"
+brew "ncdu"
+
+# ─── Dev — Node ───────────────────────────────────────────────────────────────
+# fnm remplace NVM : même interface .nvmrc, démarrage 40x plus rapide (Rust)
+brew "fnm"
+
+# ─── Dev — Python ─────────────────────────────────────────────────────────────
+brew "uv"             # package manager Python (remplace pip + venv)
+brew "pip-audit"      # audit CVE dépendances Python
+
+# ─── Dev — outils ─────────────────────────────────────────────────────────────
+brew "direnv"         # variables d'env par répertoire (.envrc)
+brew "jq"             # JSON CLI
+brew "yq"             # YAML CLI
+brew "pandoc"
+brew "tokei"
+brew "tealdeer"
+brew "wget"
+brew "crane"          # manipulation images OCI (Apple Container)
+
+# ─── IA / LLM — NATIF HOST ────────────────────────────────────────────────────
+# Ollama DOIT tourner nativement (pas en container) pour accéder au GPU Metal/MLX
+# brew "ollama"
+
+# ─── Containers ───────────────────────────────────────────────────────────────
+brew "container"      # Apple Container CLI (macOS 26+ complet, macOS 15 limité)
+
+# ─── Réseau ───────────────────────────────────────────────────────────────────
+brew "dnscrypt-proxy" # DNS chiffré (DoH/DoT)
+
+# ─── Éditeurs ─────────────────────────────────────────────────────────────────
+brew "neovim"
+brew "tree-sitter-cli"
+
+# ─── Divers ───────────────────────────────────────────────────────────────────
+brew "zk"
+brew "chezmoi"
+brew "libgit2"
+brew "haskell-stack"
+brew "cocoapods"
+brew "qmk/qmk/qmk"
+brew "neofetch"
+
+# ─── APIs tiers (taps) ────────────────────────────────────────────────────────
+# ⚠ Les taps tiers ne sont PAS couverts par --require-sha de la même façon
+# Vérifier avant install : brew info <formule> | grep sha256
+brew "stripe/stripe-cli/stripe"
+
+# ─── Scan CVE Homebrew ────────────────────────────────────────────────────────
+# brew-vulns n'est pas encore dans homebrew-core (avril 2026)
+# Installer manuellement après setup : gem install brew-vulns
+
+# ─── Fonts ────────────────────────────────────────────────────────────────────
+cask "font-fira-code-nerd-font"
+cask "font-hack-nerd-font"
+cask "font-maple-mono"
+
+# ─── Apps GUI ─────────────────────────────────────────────────────────────────
+# HOMEBREW_CASK_OPTS=--require-sha défini dans .zshrc
+# Casks marqués ⚠ = taps tiers, vérifier sha256 : brew info <cask> | grep sha256
+
+cask "ghostty"
+cask "neovide-app"        # ⚠ tap tiers
 cask "iina"
 cask "rectangle"
 cask "transmission"
@@ -10,70 +102,29 @@ cask "soundsource"
 cask "raycast"
 cask "element"
 cask "whatsapp"
-cask "ngrok/ngrok/ngrok"
-cask "neovide-app"
+cask "ngrok/ngrok/ngrok"  # ⚠ tap tiers
 cask "bruno"
-cask "ghostty"
-# cask "anki"
-cask "orion"
 cask "netnewswire"
-# cask "freetube"
 cask "handbrake-app"
 cask "brave-browser"
-# cask "gimp"
-cask "staruml"
 cask "signal"
 cask "obsidian"
 cask "zotero"
 cask "qmk-toolbox"
+cask "mactex"
+cask "actual"
+
+# Désactivés
+# cask "anki"
+# cask "freetube"
+# cask "gimp"
 # cask "motrix"
 # cask "basictex"
-cask "mactex"
 # cask "thunderbird"
 # cask "mailspring"
-cask "actual" # opensource YNAB
+# cask "orion"
+# cask "staruml"
 
-## Fonts
-cask "font-fira-code-nerd-font"
-cask "font-hack-nerd-font"
-cask "font-maple-mono"
-
-# brew (cli)
-# brew "mas"
-brew "bat"
-brew "stripe/stripe-cli/stripe"
-brew "eza"
-brew "neovim"
-brew "tree-sitter-cli"
-brew "ripgrep"
-brew "fd"
-brew "tokei"
-brew "tealdeer"
-brew "cocoapods"
-# brew "starship"
-brew "oh-my-posh"
-brew "tree"
-brew "dnscrypt-proxy"
-brew "neofetch"
-brew "lazygit"
-brew "wget"
-brew "rename"
-brew "convmv"
-brew "chezmoi"
-brew "libgit2"
-brew "haskell-stack"
-brew "zk"
-brew "zoxide"
-brew "jj"
-brew "qmk/qmk/qmk"
-brew "rsync"
-brew "pandoc"
-brew "container"
-brew "ncdu"
-brew "crane"
-brew "dos2unix"
-brew "gitleaks"
-brew "fzf"
-
-#mas (mac app store)
-# mas "type fu"
+# ─── Mac App Store ────────────────────────────────────────────────────────────
+# brew "mas"  # décommenter pour activer les installs MAS
+# mas "type fu", id: XXXXX

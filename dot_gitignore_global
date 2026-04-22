@@ -1,18 +1,49 @@
-# Secrets
+# Fichiers système
+.swap
+*.swp
+.DS_Store
+*.log
+**/.swap
+**/node_modules
+**/.DS_Store
+**/.log
+
+# Secrets — ne JAMAIS versionner
 .env
+.env-*
 .env.*
-!.env.example
-!.env.tpl
-!.env.enc
+**/.env
+**/.env-*
+
+# Clés SSH et certificats
 *.pem
 *.key
+*.p12
+*.pfx
+*.crt
+id_rsa
+id_ed25519
+id_ecdsa
+id_dsa
 *_rsa
-*_ecdsa
 *_ed25519
-.infisical.json
-.swap
-*.log
 
-# Outils locaux
-.DS_Store
-*.local
+# Credentials
+.aws/credentials
+.netrc
+.npmrc-*
+*token*
+*secret*
+*password*
+
+# Bases de données locales
+*.db
+*.sqlite
+*.sqlite3
+
+# Build artifacts
+*.pyc
+__pycache__
+.cache
+dist/
+build/
