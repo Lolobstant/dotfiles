@@ -4,7 +4,7 @@
 
 # ─── Gitleaks — détection secrets ────────────────────────────────────────────
 if command -v gitleaks &>/dev/null; then
-    gitleaks detect --staged --no-banner -q
+    gitleaks protect --staged --no-banner -v
     exit_code=$?
     if [ $exit_code -ne 0 ]; then
         echo ""
@@ -12,7 +12,7 @@ if command -v gitleaks &>/dev/null; then
         echo "║  gitleaks: secret potentiel détecté dans le staged   ║"
         echo "╚══════════════════════════════════════════════════════╝"
         echo ""
-        echo "→ Détails :    gitleaks detect --staged -v"
+        echo "→ Détails :    gitleaks protect --staged --no-banner -v"
         echo "→ Faux positif certain : git commit --no-verify"
         echo "→ Pour ignorer un fichier : ajouter à .gitleaksignore"
         echo ""
