@@ -8,9 +8,9 @@
   <string>com.user.pf-dnscrypt</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/sbin/pfctl</string>
-    <string>-ef</string>
-    <string>/etc/pf-dnscrypt.conf</string>
+    <string>/bin/bash</string>
+    <string>-c</string>
+    <string>grep -qF 'rdr-anchor "com.user.dnscrypt"' /etc/pf.conf || printf '\nrdr-anchor "com.user.dnscrypt"\n' >> /etc/pf.conf; /sbin/pfctl -a 'com.user.dnscrypt' -N -f /etc/pf-dnscrypt.conf; /sbin/pfctl -e 2&gt;/dev/null || true</string>
   </array>
   <key>RunAtLoad</key>
   <true/>
