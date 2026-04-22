@@ -1,0 +1,115 @@
+#!/bin/bash
+set -euo pipefail
+
+command_exists() {
+  [ -x "$(command -v $1)" ]
+}
+
+# install homebrew if not exists
+if ! command_exists brew; then
+  echo "installing homebrew"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" 
+  # Apple Silicon — ajouter brew au PATH pour la suite du script
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+brew analytics off
+
+
+# 2. chezmoi + dotfiles (HTTPS pour le bootstrap — pas besoin de SSH key)
+if ! command_exists chezmoi; then
+  brew install chezmoi
+fi
+
+if command_exists chezmoi; then
+  chezmoi init --apply "https://github.com/Lolobstant/dotfiles.git"
+fi
+
+# 3. Packages brew (chezmoi a déjà déployé le Brewfile)
+BREWFILE="${HOMEBREW_BUNDLE_FILE:-$HOME/.config/homebrew/config.homebrew}"
+if [ -f "$BREWFILE" ]; then
+  brew bundle install --no-upgrade --file="$BREWFILE"
+else
+  echo "⚠️  Brewfile introuvable : $BREWFILE" >&2
+fi
+
+if command_exists  git; then
+  git config --global core.excludesfile ~/.config/.gitignore_global
+fi
+
+# font smoothing:
+defaults write -g AppleFontSmoothing -int 0
+# Écran verrouillé dès la mise en veille
+defaults write com.apple.screensaver askForPassword -int 1
+defaults write com.apple.screensaver askForPasswordDelay -int 0
+
+# Voir quelles apps ont accès au micro, caméra, localisation
+# Réglages → Confidentialité & Sécurité → (Micro / Caméra / Localisation)
+# Via CLI : tcc (Transparency Consent and Control)
+#tccutil reset All
+
+# AirDrop — Contacts uniquement (pas "Tout le monde")
+defaults write com.apple.NetworkBrowser DisableAirDrop -bool false
+defaults write com.apple.sharingd AirDropComeBack -bool false
+
+
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
+
+# désactive le remote login & remote management
+sudo systemsetup -setremotelogin off
+
+echo ""
+echo "✅ Bootstrap terminé."
+echo "⚠️  Étapes manuelles restantes : voir MANUAL_STEPS.md"
+
+
+
+## use dnscrypt-proxy config with quad9 & start service
+DNSCRYPT_CONFIG=~/.config/homebrew/dnscrypt-proxy.toml
+mkdir -p /tmp/dnscrypt-proxy
+if test -f "$DNSCRYPT_CONFIG"; then
+  echo 'dnscrypt config exist'
+  cp "$DNSCRYPT_CONFIG" "$HOMEBREW_PREFIX/etc/dnscrypt-proxy.toml"
+else
+  echo "couldn not find dnscrypt-proxy config file, fallback to default"
+fi
+
+if command_exists dnscrypt-proxy; then
+  brew services restart dnscrypt-proxy
+  # Configurer pour tous les services réseau d'un coup
+  # for svc in $(networksetup -listallnetworkservices | tail -n +2); do
+  #   networksetup -setdnsservers "$svc" 127.0.0.1
+  # done
+
+else
+  echo 'dnscrypt already started'
+  echo "$(brew services info dnscrypt-proxy)"
+fi
+
+# ─── LaunchAgent — DNS persistant au changement de réseau ─────────────────────
+PLIST_SRC="$HOME/.config/launchagents/com.user.dnscrypt-setdns.plist"
+PLIST_DST="$HOME/Library/LaunchAgents/com.user.dnscrypt-setdns.plist"
+
+if [ -f "$PLIST_SRC" ]; then
+  cp "$PLIST_SRC" "$PLIST_DST"
+  launchctl load "$PLIST_DST"
+fi
+
+# ─── pf redirect 53 → 5300 ───────────────────────────────────────────────────
+sudo cp "$HOME/.config/pf/dnscrypt.conf" /etc/pf-dnscrypt.conf
+sudo pfctl -f /etc/pf-dnscrypt.conf -e 2>/dev/null || true
+
+DAEMON_SRC="$HOME/.config/launchdaemons/com.user.pf-dnscrypt.plist"
+DAEMON_DST="/Library/LaunchDaemons/com.user.pf-dnscrypt.plist"
+sudo cp "$DAEMON_SRC" "$DAEMON_DST"
+sudo launchctl load "$DAEMON_DST"
+
+# ─── DNS → 127.0.0.1 (pf redirige vers 5300) ─────────────────────────────────
+for svc in $(networksetup -listallnetworkservices | tail -n +2); do
+  networksetup -setdnsservers "$svc" 127.0.0.1
+done
+
+brew services info dnscrypt-proxy | grep -q running || brew services restart dnscrypt-proxy
+# networksetup -setdnsservers Wi-Fi 127.0.0.1
+## end dnscrypt-proxy config
