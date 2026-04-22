@@ -106,9 +106,13 @@ sudo cp "$DAEMON_SRC" "$DAEMON_DST"
 sudo launchctl load "$DAEMON_DST"
 
 # ─── DNS → 127.0.0.1 (pf redirige vers 5300) ─────────────────────────────────
-for svc in $(networksetup -listallnetworkservices | tail -n +2); do
-  networksetup -setdnsservers "$svc" 127.0.0.1
-done
+# ignore les services désactivés (préfixés par *)
+# et vérifie que le service est actif avant de le modifier
+while IFS= read -r svc; do
+  [[ "$svc" == \** ]] && continue      # service désactivé
+  [[ "$svc" == "USB"* ]] && continue   # pas une interface réseau
+  networksetup -setdnsservers "$svc" 127.0.0.1 2>/dev/null || true
+done < <(networksetup -listallnetworkservices | tail -n +2)
 
 brew services info dnscrypt-proxy | grep -q running || brew services restart dnscrypt-proxy
 # networksetup -setdnsservers Wi-Fi 127.0.0.1
