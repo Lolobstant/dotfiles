@@ -1,115 +1,354 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# ─────────────────────────────────────────────────────────────────────────────
+# default_install.sh — bootstrap idempotent macOS 26
+# Usage : ./default_install.sh [--verify-only] [--skip-brew] [--skip-dns]
+#
+# Idempotent : sûr à relancer, vérifie avant d'agir.
+# Chezmoi template — utilise {{ .github.username }}, {{ .email }}, {{ .name }}
+# ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
-command_exists() {
-  [ -x "$(command -v $1)" ]
-}
-
-# install homebrew if not exists
-if ! command_exists brew; then
-  echo "installing homebrew"
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" 
-  # Apple Silicon — ajouter brew au PATH pour la suite du script
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
-
-brew analytics off
-
-
-# 2. chezmoi + dotfiles (HTTPS pour le bootstrap — pas besoin de SSH key)
-if ! command_exists chezmoi; then
-  brew install chezmoi
-fi
-
-if command_exists chezmoi; then
-  chezmoi init --apply "https://github.com/{{ .github.username }}/dotfiles.git"
-fi
-
-# 3. Packages brew (chezmoi a déjà déployé le Brewfile)
-BREWFILE="${HOMEBREW_BUNDLE_FILE:-$HOME/.config/homebrew/config.homebrew}"
-if [ -f "$BREWFILE" ]; then
-  brew bundle install --no-upgrade --file="$BREWFILE"
-else
-  echo "⚠️  Brewfile introuvable : $BREWFILE" >&2
-fi
-
-if command_exists  git; then
-  git config --global core.excludesfile ~/.config/.gitignore_global
-fi
-
-# font smoothing:
-defaults write -g AppleFontSmoothing -int 0
-# Écran verrouillé dès la mise en veille
-defaults write com.apple.screensaver askForPassword -int 1
-defaults write com.apple.screensaver askForPasswordDelay -int 0
-
-# Voir quelles apps ont accès au micro, caméra, localisation
-# Réglages → Confidentialité & Sécurité → (Micro / Caméra / Localisation)
-# Via CLI : tcc (Transparency Consent and Control)
-#tccutil reset All
-
-# AirDrop — Contacts uniquement (pas "Tout le monde")
-defaults write com.apple.NetworkBrowser DisableAirDrop -bool false
-defaults write com.apple.sharingd AirDropComeBack -bool false
-
-
-sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
-sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
-
-# désactive le remote login & remote management
-sudo systemsetup -setremotelogin off
-
-echo ""
-echo "✅ Bootstrap terminé."
-echo "⚠️  Étapes manuelles restantes : voir MANUAL_STEPS.md"
-
-
-
-## use dnscrypt-proxy config with quad9 & start service
-DNSCRYPT_CONFIG=~/.config/homebrew/dnscrypt-proxy.toml
-mkdir -p /tmp/dnscrypt-proxy
-if test -f "$DNSCRYPT_CONFIG"; then
-  echo 'dnscrypt config exist'
-  cp "$DNSCRYPT_CONFIG" "$HOMEBREW_PREFIX/etc/dnscrypt-proxy.toml"
-else
-  echo "couldn not find dnscrypt-proxy config file, fallback to default"
-fi
-
-if command_exists dnscrypt-proxy; then
-  brew services restart dnscrypt-proxy
-  # Configurer pour tous les services réseau d'un coup
-  # for svc in $(networksetup -listallnetworkservices | tail -n +2); do
-  #   networksetup -setdnsservers "$svc" 127.0.0.1
-  # done
-
-else
-  echo 'dnscrypt already started'
-  echo "$(brew services info dnscrypt-proxy)"
-fi
-
-# ─── LaunchAgent — DNS persistant au changement de réseau ─────────────────────
-PLIST_SRC="$HOME/.config/launchagents/com.user.dnscrypt-setdns.plist"
-PLIST_DST="$HOME/Library/LaunchAgents/com.user.dnscrypt-setdns.plist"
-
-if [ -f "$PLIST_SRC" ]; then
-  cp "$PLIST_SRC" "$PLIST_DST"
-  launchctl load "$PLIST_DST"
-fi
-
-# ─── pf redirect 53 → 5300 ───────────────────────────────────────────────────
-sudo cp "$HOME/.config/pf/dnscrypt.conf" /etc/pf-dnscrypt.conf
-sudo pfctl -f /etc/pf-dnscrypt.conf -e 2>/dev/null || true
-
-DAEMON_SRC="$HOME/.config/launchdaemons/com.user.pf-dnscrypt.plist"
-DAEMON_DST="/Library/LaunchDaemons/com.user.pf-dnscrypt.plist"
-sudo cp "$DAEMON_SRC" "$DAEMON_DST"
-sudo launchctl load "$DAEMON_DST"
-
-# ─── DNS → 127.0.0.1 (pf redirige vers 5300) ─────────────────────────────────
-for svc in $(networksetup -listallnetworkservices | tail -n +2); do
-  networksetup -setdnsservers "$svc" 127.0.0.1
+# ─── Args ─────────────────────────────────────────────────────────────────────
+VERIFY_ONLY=false
+SKIP_BREW=false
+SKIP_DNS=false
+for arg in "$@"; do
+  case $arg in
+    --verify-only) VERIFY_ONLY=true ;;
+    --skip-brew)   SKIP_BREW=true ;;
+    --skip-dns)    SKIP_DNS=true ;;
+  esac
 done
 
-brew services info dnscrypt-proxy | grep -q running || brew services restart dnscrypt-proxy
-# networksetup -setdnsservers Wi-Fi 127.0.0.1
-## end dnscrypt-proxy config
+# ─── Helpers ──────────────────────────────────────────────────────────────────
+RED='\033[0;31m'; YELLOW='\033[1;33m'; GREEN='\033[0;32m'
+BLUE='\033[0;34m'; BOLD='\033[1m'; RESET='\033[0m'
+
+ERRORS=(); WARNINGS=()
+
+log()   { echo -e "${BLUE}▶${RESET} $*"; }
+ok()    { echo -e "${GREEN}✓${RESET} $*"; }
+warn()  { echo -e "${YELLOW}⚠${RESET}  $*"; WARNINGS+=("$*"); }
+err()   { echo -e "${RED}✗${RESET} $*" >&2; ERRORS+=("$*"); }
+step()  { echo -e "\n${BOLD}── $* ──${RESET}"; }
+
+cmd_exists() { command -v "$1" &>/dev/null; }
+
+# Charger brew dans le PATH si besoin (script lancé hors shell interactif)
+[[ -f /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# ─── Phase 0 : Vérifications système ─────────────────────────────────────────
+step "Vérifications système"
+
+[[ "$(uname -s)" == "Darwin" ]] || { err "macOS requis"; exit 1; }
+[[ "$(uname -m)" == "arm64"  ]] || warn "Apple Silicon requis pour Apple Container + Ollama MLX"
+
+os_ver=$(sw_vers -productVersion)
+ok "macOS $os_ver ($(uname -m))"
+
+# ─── Phase 1 : Homebrew ───────────────────────────────────────────────────────
+step "Homebrew"
+
+if ! cmd_exists brew; then
+  if $VERIFY_ONLY; then
+    err "Homebrew non installé"
+  else
+    log "Installation Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  fi
+fi
+
+if cmd_exists brew; then
+  brew analytics off
+  ok "Homebrew $(brew --version | head -1 | awk '{print $2}') — analytics off"
+fi
+
+# ─── Phase 2 : chezmoi + dotfiles ────────────────────────────────────────────
+step "chezmoi — dotfiles"
+
+if ! cmd_exists chezmoi; then
+  $VERIFY_ONLY && err "chezmoi non installé" || brew install chezmoi
+fi
+
+if cmd_exists chezmoi && ! $VERIFY_ONLY; then
+  chezmoi_source=$(chezmoi source-path 2>/dev/null || echo "")
+  if [[ -z "$chezmoi_source" || ! -d "$chezmoi_source" ]]; then
+    log "Initialisation chezmoi depuis GitHub..."
+    # HTTPS pour le bootstrap — pas de SSH key nécessaire
+    chezmoi init --apply "https://github.com/{{ .github.username }}/dotfiles.git"
+  else
+    log "chezmoi apply (dotfiles déjà initialisés)..."
+    chezmoi apply --no-tty 2>/dev/null || chezmoi apply
+  fi
+  ok "chezmoi apply"
+fi
+
+# ─── Phase 3 : Brewfile ───────────────────────────────────────────────────────
+step "Packages Homebrew"
+
+BREWFILE="${HOMEBREW_BUNDLE_FILE:-$HOME/.config/homebrew/config.homebrew}"
+
+if [[ ! -f "$BREWFILE" ]]; then
+  err "Brewfile introuvable : $BREWFILE"
+elif ! $SKIP_BREW; then
+  if $VERIFY_ONLY; then
+    brew bundle check --file="$BREWFILE" --quiet 2>/dev/null \
+      && ok "Tous les packages Brewfile présents" \
+      || warn "Certains packages Brewfile manquent"
+  else
+    log "brew bundle install --no-upgrade..."
+    brew bundle install --no-upgrade --file="$BREWFILE" --quiet
+    ok "Brewfile appliqué"
+  fi
+fi
+
+# ─── Phase 4 : macOS defaults & durcissement ─────────────────────────────────
+step "macOS defaults & sécurité"
+
+_defaults_write() {
+  local domain=$1 key=$2 type=$3 val=$4
+  current=$(defaults read "$domain" "$key" 2>/dev/null || echo "__unset__")
+  if [[ "$current" != "$val" ]]; then
+    $VERIFY_ONLY \
+      && warn "defaults $domain $key = $current (attendu : $val)" \
+      || { defaults write "$domain" "$key" "$type" "$val"; ok "$key = $val"; }
+  else
+    ok "$key = $val"
+  fi
+}
+
+# Police — anticrénelage
+_defaults_write "-g"                              AppleFontSmoothing    -int  0
+# Écran verrouillé dès la mise en veille
+_defaults_write com.apple.screensaver            askForPassword        -int  1
+_defaults_write com.apple.screensaver            askForPasswordDelay   -int  0
+# AirDrop — Contacts seulement (pas "Tout le monde")
+_defaults_write com.apple.NetworkBrowser         DisableAirDrop        -bool false
+_defaults_write com.apple.sharingd               AirDropComeBack       -bool false
+
+# ─── Phase 5 : Firewall & accès distants ──────────────────────────────────────
+step "Firewall & accès distants"
+
+# Firewall applicatif + mode furtif
+fw_on=$(/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate 2>/dev/null)
+if echo "$fw_on" | grep -q "enabled"; then
+  ok "Firewall applicatif actif"
+else
+  $VERIFY_ONLY \
+    && err "Firewall désactivé" \
+    || { sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on; ok "Firewall activé"; }
+fi
+
+stealth=$(/usr/libexec/ApplicationFirewall/socketfilterfw --getstealthmode 2>/dev/null)
+if echo "$stealth" | grep -q "enabled"; then
+  ok "Mode furtif actif"
+else
+  $VERIFY_ONLY \
+    && warn "Mode furtif désactivé" \
+    || { sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on; ok "Mode furtif activé"; }
+fi
+
+# Remote login (SSH entrant) — désactivé
+# systemsetup -setremotelogin déprécié macOS 13+, on utilise launchctl
+if sudo launchctl list com.openssh.sshd &>/dev/null 2>&1; then
+  $VERIFY_ONLY \
+    && warn "SSH entrant actif (com.openssh.sshd)" \
+    || { sudo launchctl disable system/com.openssh.sshd 2>/dev/null || true; ok "SSH entrant désactivé"; }
+else
+  ok "SSH entrant désactivé"
+fi
+
+# FileVault
+fv=$(fdesetup status 2>/dev/null | head -1)
+if echo "$fv" | grep -q "On"; then
+  ok "FileVault activé"
+else
+  err "FileVault DÉSACTIVÉ — CRITIQUE. Paramètres → Confidentialité → FileVault"
+fi
+
+# SIP
+sip=$(csrutil status 2>/dev/null)
+echo "$sip" | grep -q "enabled" && ok "SIP activé" || warn "SIP : $sip"
+
+# ─── Phase 6 : DNS — dnscrypt-proxy ──────────────────────────────────────────
+step "DNS chiffré (dnscrypt-proxy)"
+
+if $SKIP_DNS; then
+  log "DNS ignoré (--skip-dns)"
+elif ! cmd_exists dnscrypt-proxy; then
+  warn "dnscrypt-proxy non installé (dans Brewfile ?)"
+else
+  DNSCRYPT_CONFIG="$HOME/.config/homebrew/dnscrypt-proxy.toml"
+  mkdir -p /tmp/dnscrypt-proxy
+
+  if [[ -f "$DNSCRYPT_CONFIG" ]]; then
+    if ! $VERIFY_ONLY; then
+      cp "$DNSCRYPT_CONFIG" "$HOMEBREW_PREFIX/etc/dnscrypt-proxy.toml"
+      ok "Config dnscrypt copiée"
+    fi
+  else
+    warn "Config dnscrypt introuvable : $DNSCRYPT_CONFIG — fallback config par défaut"
+  fi
+
+  # Service
+  if brew services info dnscrypt-proxy 2>/dev/null | grep -q "running: true"; then
+    ok "dnscrypt-proxy en cours d'exécution"
+    $VERIFY_ONLY || brew services restart dnscrypt-proxy
+  else
+    $VERIFY_ONLY \
+      && warn "dnscrypt-proxy non démarré" \
+      || { brew services start dnscrypt-proxy; ok "dnscrypt-proxy démarré"; }
+  fi
+
+  # LaunchAgent DNS persistant au changement réseau
+  PLIST_SRC="$HOME/.config/launchagents/com.user.dnscrypt-setdns.plist"
+  PLIST_DST="$HOME/Library/LaunchAgents/com.user.dnscrypt-setdns.plist"
+  if [[ -f "$PLIST_SRC" ]] && ! $VERIFY_ONLY; then
+    cp "$PLIST_SRC" "$PLIST_DST"
+    # launchctl bootstrap (macOS 13+) avec fallback launchctl load
+    launchctl bootstrap "gui/$(id -u)" "$PLIST_DST" 2>/dev/null \
+      || launchctl load "$PLIST_DST" 2>/dev/null \
+      || warn "LaunchAgent DNS : impossible de charger (déjà chargé ?)"
+    ok "LaunchAgent DNS persistant chargé"
+  fi
+
+  # pf — redirect 53 → 5300
+  PF_CONF="$HOME/.config/pf/dnscrypt.conf"
+  DAEMON_SRC="$HOME/.config/launchdaemons/com.user.pf-dnscrypt.plist"
+  DAEMON_DST="/Library/LaunchDaemons/com.user.pf-dnscrypt.plist"
+
+  if [[ -f "$PF_CONF" ]] && ! $VERIFY_ONLY; then
+    sudo cp "$PF_CONF" /etc/pf-dnscrypt.conf
+    sudo pfctl -f /etc/pf-dnscrypt.conf -e 2>/dev/null || true
+
+    if [[ -f "$DAEMON_SRC" ]]; then
+      sudo cp "$DAEMON_SRC" "$DAEMON_DST"
+      sudo launchctl bootstrap system "$DAEMON_DST" 2>/dev/null \
+        || sudo launchctl load "$DAEMON_DST" 2>/dev/null \
+        || warn "LaunchDaemon pf : impossible de charger (déjà chargé ?)"
+      ok "pf redirect 53→5300 chargé"
+    fi
+  fi
+
+  # DNS → 127.0.0.1 sur toutes les interfaces
+  if ! $VERIFY_ONLY; then
+    while IFS= read -r svc; do
+      [[ "$svc" == "An asterisk"* ]] && continue
+      networksetup -setdnsservers "$svc" 127.0.0.1 2>/dev/null || true
+    done < <(networksetup -listallnetworkservices | tail -n +2)
+    ok "DNS → 127.0.0.1 sur toutes les interfaces"
+  fi
+fi
+
+# ─── Phase 7 : Git — config globale & hooks ───────────────────────────────────
+step "Git — hooks globaux & config"
+
+if cmd_exists git; then
+  # core.hooksPath → ~/.githooks
+  HOOKS_DIR="$HOME/.config/.githooks"
+  if [[ -d "$HOOKS_DIR" ]]; then
+    chmod +x "$HOOKS_DIR"/* 2>/dev/null || true
+    current_hooks=$(git config --global core.hooksPath 2>/dev/null || echo "")
+    if [[ "$current_hooks" != "$HOOKS_DIR" ]]; then
+      $VERIFY_ONLY \
+        && warn "core.hooksPath non configuré" \
+        || { git config --global core.hooksPath "$HOOKS_DIR"; ok "core.hooksPath → $HOOKS_DIR"; }
+    else
+      ok "core.hooksPath → $HOOKS_DIR"
+    fi
+  else
+    err "~/.githooks introuvable (chezmoi apply a-t-il tourné ?)"
+  fi
+
+  # excludesfile global
+  GITIGNORE="$HOME/.config/.gitignore_global"
+  if [[ -f "$GITIGNORE" ]]; then
+    git config --global core.excludesfile "$GITIGNORE"
+    ok "core.excludesfile → $GITIGNORE"
+  fi
+
+  # GPG signing
+  gpgsign=$(git config --global commit.gpgsign 2>/dev/null || echo "")
+  signing_key=$(git config --global user.signingkey 2>/dev/null || echo "")
+  if [[ "$gpgsign" == "true" && -n "$signing_key" ]]; then
+    ok "Commits signés GPG : $signing_key"
+  else
+    warn "GPG signing non configuré — commits non signés"
+    warn "  → gpg --gen-key, puis ajouter la clé dans chezmoi keyring"
+  fi
+
+  # defaultBranch
+  db=$(git config --global init.defaultBranch 2>/dev/null || echo "")
+  [[ "$db" == "main" ]] \
+    && ok "init.defaultBranch = main" \
+    || { git config --global init.defaultBranch main; ok "init.defaultBranch → main"; }
+fi
+
+# ─── Phase 8 : Sécurité outils dev ───────────────────────────────────────────
+step "Sécurité outils dev"
+
+# npm — ignore-scripts
+NPMRC="$HOME/.config/.npmrc"
+if grep -q "ignore-scripts=true" "$NPMRC" 2>/dev/null; then
+  ok "npm ignore-scripts=true"
+else
+  $VERIFY_ONLY \
+    && warn "npm ignore-scripts non configuré (~/.npmrc)" \
+    || { echo "ignore-scripts=true" >> "$NPMRC"; ok "npm ignore-scripts=true ajouté"; }
+fi
+
+# Claude Code sandbox
+CLAUDE_SETTINGS="$HOME/.config/claude/settings.json"
+if grep -q "denyRead" "$CLAUDE_SETTINGS" 2>/dev/null; then
+  ok "Claude Code sandbox avec denyRead configuré"
+else
+  warn "Claude Code sandbox sans denyRead — risque exfiltration ~/.ssh"
+fi
+
+# Ollama — bind localhost only
+if cmd_exists ollama; then
+  ollama_host=$(launchctl asuser "$(id -u)" launchctl getenv OLLAMA_HOST 2>/dev/null || echo "")
+  if [[ "$ollama_host" == *"0.0.0.0"* ]]; then
+    warn "Ollama bind sur 0.0.0.0 — réduire à 127.0.0.1 via OLLAMA_HOST"
+  else
+    ok "Ollama : $(ollama --version 2>/dev/null | head -1)"
+  fi
+fi
+
+# Apple Container
+if cmd_exists container; then
+  ok "Apple Container : $(container --version 2>/dev/null | head -1)"
+else
+  warn "Apple Container non installé — télécharger depuis github.com/apple/container"
+fi
+
+# fnm (NVM replacement)
+if cmd_exists fnm; then
+  ok "fnm $(fnm --version)"
+elif cmd_exists nvm; then
+  warn "NVM actif — migration disponible : brew install fnm"
+fi
+
+# ─── Rapport final ────────────────────────────────────────────────────────────
+echo ""
+echo -e "${BOLD}══════════════════════════════════════════════════${RESET}"
+echo -e "${BOLD}  Bootstrap$(${VERIFY_ONLY} && echo ' — vérification seule')${RESET}"
+echo -e "${BOLD}══════════════════════════════════════════════════${RESET}"
+
+if [[ ${#ERRORS[@]} -eq 0 && ${#WARNINGS[@]} -eq 0 ]]; then
+  echo -e "\n${GREEN}${BOLD}✓ Tout est en ordre.${RESET}\n"
+else
+  [[ ${#ERRORS[@]} -gt 0 ]] && {
+    echo -e "\n${RED}${BOLD}Erreurs (${#ERRORS[@]}) :${RESET}"
+    for e in "${ERRORS[@]}"; do echo -e "  ${RED}✗${RESET} $e"; done
+  }
+  [[ ${#WARNINGS[@]} -gt 0 ]] && {
+    echo -e "\n${YELLOW}${BOLD}Avertissements (${#WARNINGS[@]}) :${RESET}"
+    for w in "${WARNINGS[@]}"; do echo -e "  ${YELLOW}⚠${RESET}  $w"; done
+  }
+fi
+
+echo -e "\n${BOLD}Étapes manuelles restantes :${RESET} voir MANUAL_STEPS.md\n"
+
+[[ ${#ERRORS[@]} -gt 0 ]] && exit 1 || exit 0

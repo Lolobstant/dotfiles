@@ -3,6 +3,7 @@
   export HOMEBREW_BUNDLE_FILE="$HOME/.config/homebrew/config.homebrew"
   export HOMEBREW_NO_ANALYTICS=1
   export HOMEBREW_NO_INSECURE_REDIRECT=1
+  export HOMEBREW_NO_CLEANUP_ON_FAIL=1   # évite de supprimer des packages en cas d'échec partiel
   export HOMEBREW_CASK_OPTS=--require-sha
   export HOMEBREW_GITHUB_API_TOKEN={{ keyring "homebrew_api" .email }}
   export PATH="/opt/homebrew/bin:$PATH"
@@ -18,9 +19,15 @@ export PATH="$PNPM_HOME:$PATH"
 # pnpm end
 
 # NVM
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# ─── fnm — Node version manager ───────────────────────────────────────────────
+if command -v fnm &>/dev/null; then
+  eval "$(fnm env --use-on-cd --shell zsh --version-file-strategy=recursive)"
+fi
+# ─── fnm end ──────────────────────────────────────────────────────────────────
+
 #JJ
 export JJ_EDITOR="nvim"
 
@@ -173,6 +180,9 @@ alias urldecode="perl -pe 's/\%(\w\w)/chr hex $1/ge'"
 {{ if eq .chezmoi.os "darwin" }}
   launchctl setenv NEOVIDE_FRAME buttonless
 {{ end }}
+
+# direnv — charge .envrc par répertoire (secrets, env vars projet)
+command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
 
 ###shell integrations
 if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
