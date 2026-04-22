@@ -1,21 +1,34 @@
 {{- $email := env "CHEZMOI_EMAIL" -}}
-{{- if not $email -}}{{- $email = promptString "email" -}}{{- end -}}
+{{- if not $email -}}
+  {{- $email = promptString "email" -}}
+{{- end -}}
 
 {{- $name := env "CHEZMOI_NAME" -}}
-{{- if not $name -}}{{- $name = promptString "name" -}}{{- end -}}
-
+{{- if not $name -}}
+  {{- $name = promptString "name" -}}
+{{- end -}}
 
 {{- $github_username := env "CHEZMOI_GITHUB_USERNAME" -}}
-{{- if not $github_username -}}{{- $github_username = promptString "github_username" -}}{{- end -}}
+{{- if not $github_username -}}
+  {{- $github_username = promptString "github_username" -}}
+{{- end -}}
 
 {{- $infisical_token := env "CHEZMOI_INFISICAL_TOKEN" -}}
-{{- if not $infisical_token -}}{{- $infisical_token = promptString "infisical_token" -}}{{- end -}}
+{{- if not $infisical_token -}}
+  {{- $infisical_token = promptString "infisical_token" -}}
+{{- end -}}
+
+{{- $gpgKey := env "CHEZMOI_GPG_KEY" -}}
+{{- if not $gpgKey -}}
+  {{- $gpgKey := promptStringOnce . "gpg_signing_key" "GPG signing key fingerprint (laisser vide pour ignorer)" -}}
+{{- end -}}
 
 [edit]
   command = "nvim"
 [data]
   email = {{ $email | quote }}
   name = {{ $name | quote }}
+  gpg_signing_key = {{ $gpgKey | quote }}
 [data.github]
   username = {{ $github_username | quote }}
 [data.infisical]

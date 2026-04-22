@@ -1,7 +1,14 @@
+{{- $gpgKey := "" -}}
+{{- if hasKey . "gpg_signing_key" -}}
+{{-   $gpgKey = .gpg_signing_key -}}
+{{- end -}}
+
 [user]
     name  = {{ .name }}
     email = {{ .email }}
-    signingkey = {{ keyring "gpg_signing_key" .email }}
+  {{- if $gpgKey }}
+    signingkey = {{ $gpgKey }}
+  {{- end }}
 
 [commit]
     gpgsign = true
