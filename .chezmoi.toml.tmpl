@@ -1,6 +1,10 @@
 {{- $email := env "CHEZMOI_EMAIL" -}}
 {{- if not $email -}}{{- $email = promptString "email" -}}{{- end -}}
 
+{{- $name := env "CHEZMOI_NAME" -}}
+{{- if not $name -}}{{- $name = promptString "name" -}}{{- end -}}
+
+
 {{- $github_username := env "CHEZMOI_GITHUB_USERNAME" -}}
 {{- if not $github_username -}}{{- $github_username = promptString "github_username" -}}{{- end -}}
 
@@ -11,6 +15,7 @@
   command = "nvim"
 [data]
   email = {{ $email | quote }}
+  name = {{ $name | quote }}
 [data.github]
   username = {{ $github_username | quote }}
 [data.infisical]
