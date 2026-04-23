@@ -127,33 +127,40 @@ _defaults_write com.apple.screensaver            askForPasswordDelay   -int  0
 _defaults_write com.apple.NetworkBrowser         DisableAirDrop        -bool false
 _defaults_write com.apple.sharingd               AirDropComeBack       -bool false
 # ── Compte et login ────────────────────────────────────────────────────────
-# Désactiver le login automatique
-sudo defaults write /Library/Preferences/com.apple.loginwindow \
+
+# Login auto
+_defaults_write "/Library/Preferences/com.apple.loginwindow" \
   autoLoginUser -bool false
 
-# Désactiver le compte Guest
-sudo sysadminctl -guestAccount off
+# Compte Guest
+if ! sudo sysadminctl -guestAccount status 2>&1 | grep -q "off"; then
+  $VERIFY_ONLY \
+    && warn "Compte Guest actif" \
+    || { sudo sysadminctl -guestAccount off; ok "Compte Guest désactivé"; }
+else
+  ok "Compte Guest désactivé"
+fi
 
-# ── Télémétrie et diagnostics ──────────────────────────────────────────────
-# Désactiver l'envoi automatique des rapports de crash à Apple
-sudo defaults write /Library/Application\ Support/CrashReporter/DiagnosticMessagesHistory.plist \
+# Télémétrie crash reporter
+_defaults_write \
+  "/Library/Application Support/CrashReporter/DiagnosticMessagesHistory.plist" \
   AutoSubmit -bool false
 
-# Désactiver les analytics macOS
-_defaults_write com.apple.assistant.support "Application Usage Data" -bool false
+# Suggestions Spotlight
+_defaults_write "com.apple.lookup.shared" \
+  LookupSuggestionsDisabled -bool true
 
-# ── Safari — fingerprinting protection ────────────────────────────────────
-# Activer la protection avancée sur toute la navigation (pas seulement privée)
-_defaults_write com.apple.Safari "WBSPrivacyProxyAvailabilityTrackingEnabled" -bool true
+# Terminal — secure keyboard entry
+_defaults_write "-app Terminal" \
+  SecureKeyboardEntry -bool true
 
-# ── Spotlight ─────────────────────────────────────────────────────────────
-# Désactiver les suggestions Spotlight qui partent vers Apple
-_defaults_write com.apple.lookup.shared LookupSuggestionsDisabled -bool true
-
-# ── Terminal — saisie sécurisée ───────────────────────────────────────────
-# Empêche les autres apps de lire ce que tu tapes dans le terminal
-# (à activer aussi dans Terminal.app → Secure Keyboard Entry)
-_defaults_write -app Terminal SecureKeyboardEntry -bool true
+# Safari fingerprinting (nécessite Safari fermé)
+osascript -e 'quit app "Safari"' 2>/dev/null || true
+defaults write \
+  ~/Library/Containers/com.apple.Safari/Data/Library/Preferences/com.apple.Safari \
+  "WBSPrivacyProxyAvailabilityTrackingEnabled" -bool true \
+  && ok "Safari fingerprinting protection activé" \
+  || warn "Safari fingerprinting — relancer avec Safari fermé"
 
 # ─── Phase 5 : Firewall & accès distants ──────────────────────────────────────
 step "Firewall & accès distants"
