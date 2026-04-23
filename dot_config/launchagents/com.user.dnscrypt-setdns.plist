@@ -7,9 +7,9 @@
   <string>com.user.dnscrypt-setdns</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/bin/bash</string>
-    <string>-c</string>
-    <string>while IFS= read -r svc; do case "$svc" in "An asterisk"*|"USB "*|"iPhone "*|"Thunderbolt "*) continue ;; esac; networksetup -setdnsservers "$svc" 127.0.0.1 2>/dev/null || true; done &lt; &lt;(networksetup -listallnetworkservices | tail -n +2)</string>
+    <string>/usr/bin/env</string>
+    <string>bash</string>
+    <string>{{ .chezmoi.homeDir }}/.config/scripts/setdns.sh</string>
   </array>
   <key>WatchPaths</key>
   <array>
