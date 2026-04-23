@@ -172,74 +172,74 @@ sip=$(csrutil status 2>/dev/null)
 echo "$sip" | grep -q "enabled" && ok "SIP activé" || warn "SIP : $sip"
 
 # ─── Phase 6 : DNS — dnscrypt-proxy ──────────────────────────────────────────
-step "DNS chiffré (dnscrypt-proxy)"
-
-if $SKIP_DNS; then
-  log "DNS ignoré (--skip-dns)"
-elif ! cmd_exists dnscrypt-proxy; then
-  warn "dnscrypt-proxy non installé (dans Brewfile ?)"
-else
-  DNSCRYPT_CONFIG="$HOME/.config/homebrew/dnscrypt-proxy.toml"
-  mkdir -p /tmp/dnscrypt-proxy
-
-  if [[ -f "$DNSCRYPT_CONFIG" ]]; then
-    if ! $VERIFY_ONLY; then
-      cp "$DNSCRYPT_CONFIG" "$HOMEBREW_PREFIX/etc/dnscrypt-proxy.toml"
-      ok "Config dnscrypt copiée"
-    fi
-  else
-    warn "Config dnscrypt introuvable : $DNSCRYPT_CONFIG — fallback config par défaut"
-  fi
-
-  # Service
-  if brew services info dnscrypt-proxy 2>/dev/null | grep -q "running: true"; then
-    ok "dnscrypt-proxy en cours d'exécution"
-    $VERIFY_ONLY || brew services restart dnscrypt-proxy
-  else
-    $VERIFY_ONLY \
-      && warn "dnscrypt-proxy non démarré" \
-      || { brew services start dnscrypt-proxy; ok "dnscrypt-proxy démarré"; }
-  fi
-
-  # LaunchAgent DNS persistant au changement réseau
-  PLIST_SRC="$HOME/.config/launchagents/com.user.dnscrypt-setdns.plist"
-  PLIST_DST="$HOME/Library/LaunchAgents/com.user.dnscrypt-setdns.plist"
-  if [[ -f "$PLIST_SRC" ]] && ! $VERIFY_ONLY; then
-    cp "$PLIST_SRC" "$PLIST_DST"
-    # launchctl bootstrap (macOS 13+) avec fallback launchctl load
-    launchctl bootstrap "gui/$(id -u)" "$PLIST_DST" 2>/dev/null \
-      || launchctl load "$PLIST_DST" 2>/dev/null \
-      || warn "LaunchAgent DNS : impossible de charger (déjà chargé ?)"
-    ok "LaunchAgent DNS persistant chargé"
-  fi
-
-  # pf — redirect 53 → 5300
-  PF_CONF="$HOME/.config/pf/dnscrypt.conf"
-  DAEMON_SRC="$HOME/.config/launchdaemons/com.user.pf-dnscrypt.plist"
-  DAEMON_DST="/Library/LaunchDaemons/com.user.pf-dnscrypt.plist"
-
-  if [[ -f "$PF_CONF" ]] && ! $VERIFY_ONLY; then
-    sudo cp "$PF_CONF" /etc/pf-dnscrypt.conf
-    sudo pfctl -f /etc/pf-dnscrypt.conf -e 2>/dev/null || true
-
-    if [[ -f "$DAEMON_SRC" ]]; then
-      sudo cp "$DAEMON_SRC" "$DAEMON_DST"
-      sudo launchctl bootstrap system "$DAEMON_DST" 2>/dev/null \
-        || sudo launchctl load "$DAEMON_DST" 2>/dev/null \
-        || warn "LaunchDaemon pf : impossible de charger (déjà chargé ?)"
-      ok "pf redirect 53→5300 chargé"
-    fi
-  fi
-
-  # DNS → 127.0.0.1 sur toutes les interfaces
-  if ! $VERIFY_ONLY; then
-    while IFS= read -r svc; do
-      [[ "$svc" == "An asterisk"* ]] && continue
-      networksetup -setdnsservers "$svc" 127.0.0.1 2>/dev/null || true
-    done < <(networksetup -listallnetworkservices | tail -n +2)
-    ok "DNS → 127.0.0.1 sur toutes les interfaces"
-  fi
-fi
+# step "DNS chiffré (dnscrypt-proxy)"
+#
+# if $SKIP_DNS; then
+#   log "DNS ignoré (--skip-dns)"
+# elif ! cmd_exists dnscrypt-proxy; then
+#   warn "dnscrypt-proxy non installé (dans Brewfile ?)"
+# else
+#   DNSCRYPT_CONFIG="$HOME/.config/homebrew/dnscrypt-proxy.toml"
+#   mkdir -p /tmp/dnscrypt-proxy
+#
+#   if [[ -f "$DNSCRYPT_CONFIG" ]]; then
+#     if ! $VERIFY_ONLY; then
+#       cp "$DNSCRYPT_CONFIG" "$HOMEBREW_PREFIX/etc/dnscrypt-proxy.toml"
+#       ok "Config dnscrypt copiée"
+#     fi
+#   else
+#     warn "Config dnscrypt introuvable : $DNSCRYPT_CONFIG — fallback config par défaut"
+#   fi
+#
+#   # Service
+#   if brew services info dnscrypt-proxy 2>/dev/null | grep -q "running: true"; then
+#     ok "dnscrypt-proxy en cours d'exécution"
+#     $VERIFY_ONLY || brew services restart dnscrypt-proxy
+#   else
+#     $VERIFY_ONLY \
+#       && warn "dnscrypt-proxy non démarré" \
+#       || { brew services start dnscrypt-proxy; ok "dnscrypt-proxy démarré"; }
+#   fi
+#
+#   # LaunchAgent DNS persistant au changement réseau
+#   PLIST_SRC="$HOME/.config/launchagents/com.user.dnscrypt-setdns.plist"
+#   PLIST_DST="$HOME/Library/LaunchAgents/com.user.dnscrypt-setdns.plist"
+#   if [[ -f "$PLIST_SRC" ]] && ! $VERIFY_ONLY; then
+#     cp "$PLIST_SRC" "$PLIST_DST"
+#     # launchctl bootstrap (macOS 13+) avec fallback launchctl load
+#     launchctl bootstrap "gui/$(id -u)" "$PLIST_DST" 2>/dev/null \
+#       || launchctl load "$PLIST_DST" 2>/dev/null \
+#       || warn "LaunchAgent DNS : impossible de charger (déjà chargé ?)"
+#     ok "LaunchAgent DNS persistant chargé"
+#   fi
+#
+#   # pf — redirect 53 → 5300
+#   PF_CONF="$HOME/.config/pf/dnscrypt.conf"
+#   DAEMON_SRC="$HOME/.config/launchdaemons/com.user.pf-dnscrypt.plist"
+#   DAEMON_DST="/Library/LaunchDaemons/com.user.pf-dnscrypt.plist"
+#
+#   if [[ -f "$PF_CONF" ]] && ! $VERIFY_ONLY; then
+#     sudo cp "$PF_CONF" /etc/pf-dnscrypt.conf
+#     sudo pfctl -f /etc/pf-dnscrypt.conf -e 2>/dev/null || true
+#
+#     if [[ -f "$DAEMON_SRC" ]]; then
+#       sudo cp "$DAEMON_SRC" "$DAEMON_DST"
+#       sudo launchctl bootstrap system "$DAEMON_DST" 2>/dev/null \
+#         || sudo launchctl load "$DAEMON_DST" 2>/dev/null \
+#         || warn "LaunchDaemon pf : impossible de charger (déjà chargé ?)"
+#       ok "pf redirect 53→5300 chargé"
+#     fi
+#   fi
+#
+#   # DNS → 127.0.0.1 sur toutes les interfaces
+#   if ! $VERIFY_ONLY; then
+#     while IFS= read -r svc; do
+#       [[ "$svc" == "An asterisk"* ]] && continue
+#       networksetup -setdnsservers "$svc" 127.0.0.1 2>/dev/null || true
+#     done < <(networksetup -listallnetworkservices | tail -n +2)
+#     ok "DNS → 127.0.0.1 sur toutes les interfaces"
+#   fi
+# fi
 
 # ─── Phase 7 : Git — config globale & hooks ───────────────────────────────────
 step "Git — hooks globaux & config"
