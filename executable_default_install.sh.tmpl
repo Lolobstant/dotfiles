@@ -103,6 +103,30 @@ elif ! $SKIP_BREW; then
   fi
 fi
 
+step "Little Snitch"
+
+LS_LICENSE="{{ .ls_license }}"
+
+if [[ -z "$LS_LICENSE" ]]; then
+  warn "Clé Little Snitch non configurée (chezmoi edit-config)"
+elif ! command -v littlesnitch &>/dev/null; then
+  warn "Little Snitch non installé — cask little-snitch dans Brewfile"
+else
+  # Activer l'accès CLI requis au préalable
+  if littlesnitch list-preferences 2>/dev/null | grep -q "allowCommandLineAccess = true"; then
+    # Injecter la licence
+    littlesnitch write-preference LicenseKey "$LS_LICENSE" 2>/dev/null \
+      && ok "Little Snitch : licence enregistrée" \
+      || warn "Injection licence échouée — entrer manuellement dans Little Snitch"
+  else
+    warn "Activer 'Allow access via Terminal' dans Little Snitch → Préférences → Sécurité"
+    warn "Puis relancer : ./default_install.sh"
+  fi
+
+  warn "MANUEL requis (une seule fois) : approuver la Network Extension"
+  warn "  Réglages → Général → Login Items & Extensions → Network Extensions → Little Snitch"
+fi
+
 # ─── Phase 4 : macOS defaults & durcissement ─────────────────────────────────
 step "macOS defaults & sécurité"
 

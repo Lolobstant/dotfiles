@@ -23,6 +23,8 @@
   {{- $gpgKey = promptString  "gpg_signing_key"  -}}
 {{- end -}}
 
+{{- $lsLicense := or (env "CHEZMOI_LS_LICENSE") (promptStringOnce . "ls_license" "Little Snitch license key (laisser vide pour ignorer)") -}}
+
 [edit]
   command = "nvim"
 [data]
