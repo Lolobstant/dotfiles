@@ -1,0 +1,29 @@
+{
+  "sandbox": {
+    "filesystem": {
+      "denyRead": ["/Users", "/home"],
+      "allowRead": ["."],
+      "allowWrite": ["."]
+    },
+    "network": {
+      "allowManagedDomainsOnly": false,
+      "allowedDomains": [
+        "api.anthropic.com",
+        "statsig.anthropic.com",
+        "registry.npmjs.org",
+        "github.com",
+        "api.github.com",
+        "objects.githubusercontent.com",
+        "pypi.org",
+        "files.pythonhosted.org",
+        "crates.io",
+        "static.crates.io",
+        "index.crates.io"
+      ]
+    }
+  },
+  "permissions": {
+    "allow": [],
+    "deny": []
+  }
+}
