@@ -375,6 +375,14 @@ if cmd_exists ollama; then
   fi
 fi
 
+# Open-webui dans le host
+if ! /usr/bin/grep -q "open-webui.local" /etc/hosts; then
+  echo "127.0.0.1  open-webui.local" | sudo tee -a /etc/hosts
+  ok "open-webui.local → /etc/hosts"
+else
+  ok "open-webui.local déjà dans /etc/hosts"
+fi
+
 # Apple Container
 if cmd_exists container; then
   ok "Apple Container : $(container --version 2>/dev/null | head -1)"
