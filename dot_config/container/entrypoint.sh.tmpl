@@ -7,8 +7,11 @@ if [ -n "${DOTFILES_REPO:-}" ]; then
     echo "⚡ Bootstrap dotfiles depuis ${DOTFILES_REPO}"
       chezmoi init --apply \
         --promptString "email={{ .email }}" \
+        --promptString "name={{ .name }}" \
         --promptString "github_username={{ .github.username }}" \
         --promptString "infisical_token={{ .infisical.token }}" \
+        --promptString "ls_license={{ .ls_license }}" \
+        --promptString "gpg_signing_key={{ .gpg_signing_key }}" \
         "${DOTFILES_REPO}"
   else
     echo "⚡ Dotfiles déjà initialisés, skip"
