@@ -22,4 +22,22 @@ if [ -d "$HOME/.config/nvim" ]; then
   echo "✅ Plugins OK"
 fi
 
+# Claude Code — vérifier que le token est monté si disponible
+if [ -d "$HOME/.claude" ] && [ -n "$(ls -A "$HOME/.claude" 2>/dev/null)" ]; then
+  echo "✅ Claude Code : token présent ($(claude --version 2>/dev/null || echo 'version inconnue'))"
+else
+  echo "ℹ️  Claude Code disponible — 'claude login' pour s'authentifier si besoin"
+fi
+
+# Node version par projet — lit .nvmrc ou .node-version
+if [ -f "/app/.nvmrc" ] || [ -f "/app/.node-version" ]; then
+  NODE_VERSION=$(cat /app/.nvmrc 2>/dev/null || cat /app/.node-version 2>/dev/null | tr -d '\n')
+  echo "⚡ Node version demandée : $NODE_VERSION"
+  n install "$NODE_VERSION" 2>/dev/null \
+    && n use "$NODE_VERSION" \
+    && echo "✅ Node $(node --version)" \
+    || echo "⚠️  Node $NODE_VERSION indisponible — $(node --version) actif"
+fi
+
+
 exec "$@"

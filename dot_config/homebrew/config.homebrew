@@ -58,7 +58,7 @@ brew "crane"          # manipulation images OCI (Apple Container)
 brew "container"      # Apple Container CLI (macOS 26+ complet, macOS 15 limité)
 
 # ─── Réseau ───────────────────────────────────────────────────────────────────
-brew "dnscrypt-proxy" # DNS chiffré (DoH/DoT)
+# brew "dnscrypt-proxy" # DNS chiffré (DoH/DoT)
 
 # ─── Éditeurs ─────────────────────────────────────────────────────────────────
 brew "neovim"
@@ -72,6 +72,7 @@ brew "haskell-stack"
 brew "cocoapods"
 brew "qmk/qmk/qmk"
 brew "neofetch"
+brew "languagetool"
 
 # ─── APIs tiers (taps) ────────────────────────────────────────────────────────
 # ⚠ Les taps tiers ne sont PAS couverts par --require-sha de la même façon
