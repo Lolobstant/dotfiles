@@ -119,6 +119,16 @@ return {
     build = function()
       vim.fn["mkdp#util#install"]()
     end,
+    init = function()
+      -- vim.g.mkdp_browser = "open" -- macOS open command
+      vim.g.mkdp_browser = ""
+      vim.g.mkdp_browserfunc = "OpenMarkdownPreview"
+      vim.cmd([[
+      function! OpenMarkdownPreview(url)
+        call jobstart(['open', a:url])
+      endfunction
+    ]])
+    end,
   },
   -- { "shortcuts/no-neck-pain.nvim", version = "*" },
   -- {
