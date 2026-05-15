@@ -45,7 +45,11 @@ container run --rm --detach \
   -e CHEZMOI_EMAIL="{{ .email }}" \
   -e CHEZMOI_GITHUB_USERNAME="{{ .github.username }}" \
   -e CHEZMOI_INFISICAL_TOKEN="${INFISICAL_TOKEN:-to-be-configured}" \
+  -e CHEZMOI_NAME="{{ .name }}" \
+  -e CHEZMOI_GPG_KEY="{{ .gpg_signing_key }}" \
+  -e CHEZMOI_LS_LICENSE="{{ .ls_license }}" \
  "${EXTRA_ENV[@]}" \
+  --mount type=bind,source=$HOME/.local/share/claude-auth,target=/home/dev/.claude \
   -v "$(pwd):/app" \
   -v "$SOCKET_DIR:$SOCKET_DIR" \
   -v "nvim-data:/home/dev/.local/share/nvim" \
