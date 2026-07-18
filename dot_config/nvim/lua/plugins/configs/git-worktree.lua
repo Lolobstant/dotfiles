@@ -29,7 +29,7 @@ return function()
       -- print(utils.dump(os.getenv('PATH')))
       Job:new({
         command = "npm",
-        args = { "i" },
+        args = { "ci", "--ignore-scripts" },
         cwd = base .. "/" .. path,
         on_exit = function(_, value)
           -- print('[ npm_install ]' .. utils.dump(j))
@@ -67,10 +67,23 @@ return function()
         on_stdout = function(_, bare_path)
           vim.notify("bare path = " .. bare_path .. " meta: " .. utils.dump(meta))
           copy_dotenv(bare_path, meta.path)
-          npm_install(bare_path, meta.path)
+          -- mise install d'abord, npm ci ensuite
+          Job:new({
+            command = "mise",
+            args = { "install" },
+            cwd = bare_path .. "/" .. meta.path,
+            on_exit = function()
+              npm_install(bare_path, meta.path)
+            end,
+          }):start()
         end,
       }):start()
     elseif op == Worktree.Operations.Switch then
+      Job:new({
+        command = "mise",
+        args = { "install" },
+        cwd = vim.fn.getcwd(),
+      }):start()
       -- if utils.is_available('toggleterm.nvim') then
       -- print('worktree switch', meta.path)
       local terminals = vim.fn.filter(vim.api.nvim_list_chans(), function(_, chan)
