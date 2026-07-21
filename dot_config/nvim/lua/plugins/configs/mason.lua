@@ -1,14 +1,5 @@
 return function()
-  -- import mason
-  local mason = require("mason")
-
-  -- import mason-lspconfig
-  -- local mason_lspconfig = require("mason-lspconfig")
-
-  local mason_tool_installer = require("mason-tool-installer")
-
-  -- enable mason and configure icons
-  mason.setup({
+  require("mason").setup({
     ui = {
       icons = {
         package_installed = "✓",
@@ -17,19 +8,21 @@ return function()
       },
     },
   })
-
-  mason_tool_installer.setup({
-    auto_update = true,
+  -- LSP servers come from the image. Mason manages only the DAP adapter
+  -- because js-debug-adapter is not a simple npm global (Mason unpacks it correctly).
+  require("mason-tool-installer").setup({
+    auto_update = false,
     ensure_installed = {
-      "stylua", -- Used to format Lua code
-      "typescript-language-server",
-      "jsonls",
-      "graphql",
-      "lua_ls",
+      -- LSP servers (à migrer dans l'image au fil du temps)
+      "vtsls",
+      "lua-language-server",
+      "bash-language-server",
+      "graphql-language-service-cli",
+      -- Formatters
       "biome",
-      "bashls",
       "prettierd",
-      "eslint-lsp",
+      "stylua",
+      -- DAP
       "js-debug-adapter",
     },
   })

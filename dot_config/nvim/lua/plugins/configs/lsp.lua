@@ -1,11 +1,8 @@
 return function()
-  -- Capabilities blink.cmp
   local capabilities = require("blink.cmp").get_lsp_capabilities()
 
-  -- Config globale pour tous les serveurs
   vim.lsp.config("*", { capabilities = capabilities })
 
-  -- Configs spécifiques
   vim.lsp.config("lua_ls", {
     settings = {
       Lua = {
@@ -17,6 +14,40 @@ return function()
     },
   })
 
+  -- vtsls replaces ts_ls — drop-in, works for all TS/JS projects.
+  -- Image requires: npm install -g @vtsls/language-server
+  vim.lsp.config("vtsls", {
+    root_markers = { "pnpm-workspace.yaml", "tsconfig.json", "package.json", ".git" },
+    settings = {
+      typescript = {
+        format = { enable = false }, -- biome or prettierd owns formatting
+        inlayHints = {
+          parameterNames = { enabled = "literals" },
+          parameterTypes = { enabled = true },
+          variableTypes = { enabled = false },
+          propertyDeclarationTypes = { enabled = true },
+          functionLikeReturnTypes = { enabled = true },
+          enumMemberValues = { enabled = true },
+        },
+        updateImportsOnFileMove = { enabled = "always" },
+        suggest = { completeFunctionCalls = true },
+      },
+      javascript = {
+        format = { enable = false },
+      },
+      vtsls = {
+        autoUseWorkspaceTsdk = true,
+        enableMoveToFileCodeAction = true,
+        tsserver = { maxTsServerMemory = 4096 },
+        experimental = {
+          completion = { enableServerSideFuzzyMatch = true },
+        },
+      },
+    },
+  })
+
+  -- eslint: only attaches when .eslintrc* / eslint.config.* is found.
+  -- Format-on-save via eslint LSP for ESLint projects (conform handles biome projects).
   vim.lsp.config("eslint", {
     on_attach = function(_, bufnr)
       vim.api.nvim_create_autocmd("BufWritePre", {
@@ -28,79 +59,62 @@ return function()
     end,
   })
 
-  -- Active les serveurs
+  -- Mason bin en PATH — requis pour que vim.lsp.enable() trouve les serveurs Mason
+  vim.env.PATH = vim.fn.stdpath("data") .. "/mason/bin:" .. vim.env.PATH
+
+  -- Enable all servers — each auto-detects its config file and only attaches when relevant:
+  --   biome: requires biome.json or biome.jsonc
+  --   eslint: requires .eslintrc* or eslint.config.*
+  --   graphql: requires .graphqlrc* or graphql.config.*
+  -- Image requires: npm install -g @vtsls/language-server vscode-langservers-extracted
+  --                 bash-language-server
   vim.lsp.enable({
-    "stylua",
-    "ts_ls",
-    "html",
-    "jsonls",
-    "graphql",
     "lua_ls",
+    "vtsls",
+    "biome",
     "eslint",
-    "cssls",
+    "graphql",
     "bashls",
+    "jsonls",
+    "cssls",
+    "html",
   })
 
-  -- Keymaps + highlights au LspAttach
+  -- Buffer-local go-to keymaps (only active when LSP is attached)
+  -- Global LSP actions (<leader>cr, <leader>ca, <leader>l*) are in config/mappings.lua
   vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
     callback = function(event)
       local client = vim.lsp.get_client_by_id(event.data.client_id)
-      if not client then
-        return
-      end
+      if not client then return end
 
+      local builtin = require("telescope.builtin")
       local map = function(keys, func, desc)
         vim.keymap.set("n", keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
       end
 
-      map("lgd", vim.lsp.buf.definition, "Goto Definition")
-      map("lgD", vim.lsp.buf.declaration, "Goto Declaration")
-      map("<leader>lk", vim.lsp.buf.hover, "Hover Documentation")
-      map("<leader>lD", vim.lsp.buf.type_definition, "Type Definition")
-      map("<leader>cr", vim.lsp.buf.rename, "Rename")
-      map("<leader>ca", vim.lsp.buf.code_action, "Code Action")
+      map("gd", builtin.lsp_definitions, "Go to Definition")
+      map("gD", vim.lsp.buf.declaration, "Go to Declaration")
+      map("gI", builtin.lsp_implementations, "Go to Implementation")
+      map("K", vim.lsp.buf.hover, "Hover Documentation")
 
-      -- INFO: The following autocommand is used to enable inlay hints in your
-      -- code, if the language server you are using supports them
-      -- This may be unwanted, since they displace some of your code
-      -- if client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
       if client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
         map("<leader>lth", function()
           vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
-        end, "[T]oggle Inlay [H]ints")
+        end, "Toggle Inlay Hints")
       end
 
-      --INFO: The following two autocommands are used to highlight references of the
-      -- word under your cursor when your cursor rests there for a little while.
-      --    See `:help CursorHold` for information about when this is executed
-      -- When you move your cursor, the highlights will be cleared (the second autocommand).
-      -- if client.server_capabilities.documentHighlightProvider then
       if client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
         local hl = vim.api.nvim_create_augroup("UserLspHighlight", { clear = false })
         vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-          buffer = event.buf,
-          group = hl,
-          callback = vim.lsp.buf.document_highlight,
+          buffer = event.buf, group = hl, callback = vim.lsp.buf.document_highlight,
         })
         vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-          buffer = event.buf,
-          group = hl,
-          callback = vim.lsp.buf.clear_references,
+          buffer = event.buf, group = hl, callback = vim.lsp.buf.clear_references,
         })
       end
     end,
   })
 
-  -- Diagnostics
-  vim.diagnostic.config({
-    signs = {
-      text = {
-        [vim.diagnostic.severity.ERROR] = " ",
-        [vim.diagnostic.severity.WARN] = " ",
-        [vim.diagnostic.severity.HINT] = "󰠠 ",
-        [vim.diagnostic.severity.INFO] = " ",
-      },
-    },
-  })
+  -- Diagnostic display config (virtual_text, signs, float) is in config/diagnostics.lua
 end

@@ -22,7 +22,8 @@ if is_available("which-key.nvim") then
   wk.add({
     { "<leader>b", group = "Buffers", icon = "󰓩" },
     { "<leader>c", group = "Code" },
-    { "<leader>d", group = "DAP/Diag", icon = "󰓙" },
+    { "<leader>d", group = "Diagnostics", icon = "󰓙" },
+    { "<leader>D", group = "Debug" },
     { "<leader>g", group = "Git", icon = "" },
     { "<leader>gw", group = "Worktree", icon = "" },
     { "<leader>l", group = "LSP", icon = "󱧤" },
@@ -30,7 +31,7 @@ if is_available("which-key.nvim") then
     { "<leader>s", group = "Search" },
     { "<leader>S", group = "Session" },
     { "<leader>t", group = "Terminal", icon = "" },
-    -- ['<leader>f'] = {group ="Files" },
+    { "<leader>T", group = "Tests" },
     { "<leader>u", group = "UI", icon = "󰺾" },
     { "<leader>un", group = "Notifications", icon = "󰎟" },
     { "<leader>w", group = "Window", icon = "" },
@@ -159,18 +160,8 @@ if is_available("telescope.nvim") then
     local gitsigns = require("gitsigns")
     M.n["<leader>gd"] = { gitsigns.diffthis, "[G]it [D]iff This" }
     M.n["<leader>gp"] = { gitsigns.preview_hunk, "[G]it [P]review Hunk" }
-    M.n["<leader>hn"] = {
-      function()
-        gitsigns.nav_hunk("next")
-      end,
-      "[H]unk [N]ext",
-    }
-    M.n["<leader>hp"] = {
-      function()
-        gitsigns.nav_hunk("prev")
-      end,
-      "[H]unk [P]revious",
-    }
+    M.n["]h"] = { function() gitsigns.nav_hunk("next") end, "Next Hunk" }
+    M.n["[h"] = { function() gitsigns.nav_hunk("prev") end, "Prev Hunk" }
   end
 
   if is_available("fugit2.nvim") then
@@ -271,6 +262,7 @@ if is_available("telescope.nvim") then
   -- M.n["gD"] = { vim.lsp.buf.declaration, "LSP: [G]oto [D]eclaration" }
   -- M.n["gr"] = { builtin.lsp_references, "LSP: [G]oto [R]eferences" }
   -- M.n["gI"] = { builtin.lsp_implementations, "LSP: [G]oto [I]mplementation" }
+  M.n["<leader>lr"] = { builtin.lsp_references, "LSP: [R]eferences (telescope)" }
   M.n["<leader>lD"] = { builtin.lsp_type_definitions, "LSP: Type [D]efinition" }
   M.n["<leader>lds"] = { builtin.lsp_document_symbols, "LSP: [D]ocument [S]ymbols" }
   M.n["<leader>lws"] = { builtin.lsp_dynamic_workspace_symbols, "LSP: [W]orkspace [S]ymbols" }
@@ -278,7 +270,6 @@ if is_available("telescope.nvim") then
   -- Execute a code action, usually your cursor needs to be on top of an error
   -- or a suggestion from your LSP for this to activate.
   M.n["<leader>ca"] = { vim.lsp.buf.code_action, "LSP: [C]ode [A]ction" }
-  M.n["<leader>cd"] = { vim.lsp.buf.hover, "LSP: [C]ode hover [D]ocumentation" }
 
   if is_available("huez.nvim") then
     local pickers = require("huez.pickers")
@@ -347,12 +338,9 @@ if is_available("telescope.nvim") then
 end
 --
 -- INFO: diagnostics
-M.n["[d"] = { vim.diagnostic.get_prev, "Go to previous diagnostic message" }
-M.n["]d"] = { vim.diagnostic.get_next, "Go to next diagnostic message" }
-M.n["<leader>dm"] = {
-  vim.diagnostic.open_float,
-  "[D]iagnostics [M]essage",
-}
+M.n["[d"] = { function() vim.diagnostic.jump({ count = -1, float = true }) end, "Prev Diagnostic" }
+M.n["]d"] = { function() vim.diagnostic.jump({ count = 1, float = true }) end, "Next Diagnostic" }
+M.n["<leader>dm"] = { vim.diagnostic.open_float, "Diagnostic Message (float)" }
 
 -- INFO: Explorer
 if is_available("mini.files") then
@@ -393,21 +381,16 @@ end
 M.n["<leader>bn"] = { "<cmd>enew<cr>", "[B]uffer [N]ew" }
 M.n["<leader>bs"] = { "<cmd>w<cr>", "[B]uffer [S]ave" }
 
-if is_available("conform.nvim") then
-  M.n["<leader>bf"] = {
-    function()
-      require("conform").format({ async = true, lsp_fallback = true })
-    end,
-    "[B]uffer [F]ormat",
-  }
-else
-  M.n["<leader>bf"] = {
-    function()
+M.n["<leader>bf"] = {
+  function()
+    if package.loaded["conform"] then
+      require("conform").format({ async = true, lsp_fallback = false })
+    else
       vim.lsp.buf.format({ async = true })
-    end,
-    "[B]uffer [F]ormat",
-  }
-end
+    end
+  end,
+  "[B]uffer [F]ormat",
+}
 
 -- INFO: Windows
 M.n["<leader>wd"] = { "<C-w>c", "[W]indow [D]elete" }
@@ -435,7 +418,6 @@ if is_available("toggleterm.nvim") then
   local opts = { noremap = true, silent = true }
   vim.keymap.set({ "t", "n" }, "<esc>", [[<C-\><C-n>]], opts)
 end
-M.n["<leader>td"] = { "<C-w>c", "[T]erminal [D]elete" }
 
 -- INFO: highlights under cursor
 if vim.fn.has("nvim-0.9.0") == 1 then
@@ -502,29 +484,23 @@ M.n["<leader>pu"] = { lazy.update, "[P]lugins [U]pdate" }
 
 if is_available("nvim-dap") then
   local dap = require("dap")
-  -- Navigation debug
-  M.n["<leader>dc"] = { dap.continue, "DAP: Continue / Start" }
-  M.n["<leader>dn"] = { dap.step_over, "DAP: Next (step over)" }
-  M.n["<leader>di"] = { dap.step_into, "DAP: Into (step into)" }
-  M.n["<leader>do"] = { dap.step_out, "DAP: Out (step out)" }
-  M.n["<leader>dx"] = { dap.terminate, "DAP: Terminate" }
-
-  -- Breakpoints
-  M.n["<leader>db"] = { dap.toggle_breakpoint, "DAP: Toggle Breakpoint" }
-  M.n["<leader>dB"] = {
-    function()
-      dap.set_breakpoint(vim.fn.input("Condition: "))
-    end,
-    "DAP: Breakpoint conditionnel",
+  M.n["<leader>Dc"] = { dap.continue, "Debug: Continue / Start" }
+  M.n["<leader>Dn"] = { dap.step_over, "Debug: Next (step over)" }
+  M.n["<leader>Di"] = { dap.step_into, "Debug: Into (step into)" }
+  M.n["<leader>Do"] = { dap.step_out, "Debug: Out (step out)" }
+  M.n["<leader>Dx"] = { dap.terminate, "Debug: Terminate" }
+  M.n["<leader>Db"] = { dap.toggle_breakpoint, "Debug: Toggle Breakpoint" }
+  M.n["<leader>DB"] = {
+    function() dap.set_breakpoint(vim.fn.input("Condition: ")) end,
+    "Debug: Breakpoint conditionnel",
   }
-  M.n["<leader>dl"] = { dap.clear_breakpoints, "DAP: Clear all breakpoints" }
+  M.n["<leader>Dl"] = { dap.clear_breakpoints, "Debug: Clear all breakpoints" }
 end
--- UI
 if is_available("nvim-dap-ui") then
   local dapui = require("dapui")
-  M.n["<leader>du"] = { dapui.toggle, "DAP: Toggle UI" }
-  M.n["<leader>de"] = { dapui.eval, "DAP: Eval expression" }
-  M.v["<leader>de"] = { dapui.eval, "DAP: Eval selection" }
+  M.n["<leader>Du"] = { dapui.toggle, "Debug: Toggle UI" }
+  M.n["<leader>De"] = { dapui.eval, "Debug: Eval expression" }
+  M.v["<leader>De"] = { dapui.eval, "Debug: Eval selection" }
 end
 
 -- INFO: Snacks

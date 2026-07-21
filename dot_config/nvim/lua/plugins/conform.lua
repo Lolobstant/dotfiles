@@ -7,12 +7,10 @@ return {
 
     format_on_save = function(bufnr)
       local disable_filetypes = { c = true, cpp = true }
-      if disable_filetypes[vim.bo[bufnr].filetype] then
-        return
-      end
+      if disable_filetypes[vim.bo[bufnr].filetype] then return end
       return {
         timeout_ms = 2000,
-        lsp_fallback = true,
+        lsp_fallback = false, -- explicit formatters only; eslint format-on-save is handled by its LSP
       }
     end,
 
@@ -22,25 +20,34 @@ return {
 
     formatters_by_ft = {
       lua = { "stylua" },
-      javascript = { "prettierd", "prettier", "biome" },
-      typescript = { "prettierd", "prettier", "biome" },
-      javascriptreact = { "prettierd", "prettier", "biome" },
-      typescriptreact = { "prettierd", "prettier", "biome" },
-      html = { "prettierd", "prettier" },
-      css = { "prettierd", "prettier" },
-      scss = { "prettierd", "prettier" },
-      json = { "prettierd", "prettier", "biome" },
-      jsonc = { "prettierd", "prettier", "biome" },
-      yaml = { "prettierd", "prettier" },
+      -- biome first: runs only when biome.json exists (see condition below); falls back to prettierd
+      javascript      = { "biome", "prettierd", "prettier" },
+      typescript      = { "biome", "prettierd", "prettier" },
+      javascriptreact = { "biome", "prettierd", "prettier" },
+      typescriptreact = { "biome", "prettierd", "prettier" },
+      json            = { "biome", "prettierd", "prettier" },
+      jsonc           = { "biome", "prettierd" },
+      -- prettierd handles everything biome doesn't cover
+      html     = { "prettierd", "prettier" },
+      css      = { "prettierd", "prettier" },
+      scss     = { "prettierd", "prettier" },
+      graphql  = { "prettierd", "prettier" },
+      yaml     = { "prettierd", "prettier" },
       markdown = { "prettierd", "prettier" },
-      graphql = { "prettierd", "prettier" },
     },
 
     formatters = {
       stylua = {
-        env = {
-          indent_type = "Spaces",
-        },
+        env = { indent_type = "Spaces" },
+      },
+      -- biome only runs when biome.json / biome.jsonc is present in the project tree
+      biome = {
+        condition = function(_, ctx)
+          return vim.fs.find(
+            { "biome.json", "biome.jsonc" },
+            { path = ctx.dirname, upward = true }
+          )[1] ~= nil
+        end,
       },
     },
   },
