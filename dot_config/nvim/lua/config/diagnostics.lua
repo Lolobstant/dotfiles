@@ -4,7 +4,7 @@ vim.diagnostic.config({
   virtual_text = {
     prefix = "●", -- Could be '●', '▎', 'x'
     source = "if_many",
-    severity = vim.diagnostic.severity.ERROR,
+    severity = vim.diagnostic.severity.INFO,
   },
   update_in_insert = false,
   severity_sort = true,

@@ -78,11 +78,13 @@ local options = {
     -- colorcolumn = "80",
     background = "light",
 
-    foldenable = true, -- enable fold for nvim-ufo
-    foldlevel = 99, -- set high foldlevel for nvim-ufo
+    -- Treesitter-based folds (za/zc/zo on any syntax node)
+    foldenable = true,
+    foldmethod = "expr",
+    foldexpr = "v:lua.vim.treesitter.foldexpr()",
+    foldlevel = 99, -- keep everything unfolded by default
     foldlevelstart = 99, -- start with all code unfolded
     -- foldcolumn = nil, --vim.fn.has("nvim-0.9") == 1 and "1" or nil, -- show foldcolumn (depth of fold) in nvim 0.9
-    -- foldmethod = "syntax",
 
     -- Status line
     -- 0 = no status line
@@ -196,7 +198,12 @@ end
 if vim.g.neovide then
   -- Put anything you want to happen only in Neovide here
   -- vim.opt.listchars:append "eol:↴"
-  vim.g.neovide_input_macos_option_key_is_meta = true
+  -- string attendue par les Neovide récents : "both" | "only_left" | "only_right" | "none"
+  -- "both" = l'ancien `true` ; si Option ne tape plus les caractères spéciaux
+  -- du layout, passer à "only_left"/"only_right" ou "none"
+  vim.g.neovide_input_macos_option_key_is_meta = "both"
+  -- Suppress swap-file ATTENTION dialog in embed mode (triggers wait_return deadlock)
+  vim.opt.shortmess:append("A")
   vim.o.background = options.opt.background
   -- vim.g.neovide_transparency = 0.95
   -- vim.g.transparency = 1

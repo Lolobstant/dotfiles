@@ -93,7 +93,6 @@ return {
   },
   {
     "coffebar/neovim-project",
-    -- event = 'VeryLazy',
     opts = {
       projects = { -- define project roots
         "~/Dev/mangas.io/*",

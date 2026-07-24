@@ -21,9 +21,9 @@ return {
         "markdown",
         "markdown_inline",
         -- "sql",  -- tree-sitter-cli npm binary incompatible avec glibc 2.35 (Ubuntu 22.04)
+        -- "jsonc", -- not supported by nvim-treesitter main branch
         "yaml",
         "toml",
-        "jsonc",
         "dockerfile",
         -- "gitcommit",
         "gitignore",

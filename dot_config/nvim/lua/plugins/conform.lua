@@ -20,13 +20,14 @@ return {
 
     formatters_by_ft = {
       lua = { "stylua" },
-      -- biome first: runs only when biome.json exists (see condition below); falls back to prettierd
-      javascript      = { "biome", "prettierd", "prettier" },
-      typescript      = { "biome", "prettierd", "prettier" },
-      javascriptreact = { "biome", "prettierd", "prettier" },
-      typescriptreact = { "biome", "prettierd", "prettier" },
-      json            = { "biome", "prettierd", "prettier" },
-      jsonc           = { "biome", "prettierd" },
+      -- biome-check = format + safe lint fixes + assists (organize imports).
+      -- Runs only when biome.json exists (see condition below); falls back to prettierd
+      javascript      = { "biome-check", "prettierd", "prettier" },
+      typescript      = { "biome-check", "prettierd", "prettier" },
+      javascriptreact = { "biome-check", "prettierd", "prettier" },
+      typescriptreact = { "biome-check", "prettierd", "prettier" },
+      json            = { "biome-check", "prettierd", "prettier" },
+      jsonc           = { "biome-check", "prettierd" },
       -- prettierd handles everything biome doesn't cover
       html     = { "prettierd", "prettier" },
       css      = { "prettierd", "prettier" },
@@ -40,8 +41,8 @@ return {
       stylua = {
         env = { indent_type = "Spaces" },
       },
-      -- biome only runs when biome.json / biome.jsonc is present in the project tree
-      biome = {
+      -- biome-check only runs when biome.json / biome.jsonc is present in the project tree
+      ["biome-check"] = {
         condition = function(_, ctx)
           return vim.fs.find(
             { "biome.json", "biome.jsonc" },

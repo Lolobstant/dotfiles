@@ -26,7 +26,7 @@ local opts = {
     border = "rounded",
     -- backdrop = 100,
   },
-  checker = { enabled = true }, -- automatically check for plugin updates
+  checker = { enabled = true },
   performance = {
     rtp = {
       -- disable some rtp plugins
